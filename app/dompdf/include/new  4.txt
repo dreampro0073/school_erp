@@ -1,0 +1,27 @@
+[12:14:46 PM] jeetesh.sisodia: ./include/absolute_positioner.cls.php:    $frame = $this->_frame;
+./include/block_frame_reflower.cls.php:    $frame = $this->_frame;
+./include/block_frame_reflower.cls.php:    $frame = $this->_frame;
+./include/block_frame_reflower.cls.php:    $frame = $this->_frame;
+./include/block_positioner.cls.php:    $frame = $this->_frame;
+./include/cellmap.cls.php:      $frame = $arr["frame"];
+./include/cellmap.cls.php:      $frame = $arr["frame"];
+./include/fixed_positioner.cls.php:    $frame = $this->_frame;
+./include/frame_decorator.cls.php:    $frame = new Frame($node);
+./include/frame_decorator.cls.php:    $frame = new Frame($this->get_node()->cloneNode());
+./include/frame_decorator.cls.php:      $frame = $iter;      
+./include/frame_factory.cls.php:    $frame = new Page_Frame_Decorator($root, $dompdf);
+./include/frame_reflower.cls.php:    $frame = $this->_frame;
+./include/frame_reflower.cls.php:    $frame = $this->_frame;
+./include/frame_tree.cls.php:    $frame = new Frame($node);
+./include/frame_tree.cls.php:    $frame = $this->get_frame($frame_id);
+./include/image_frame_reflower.cls.php:    //$frame = $this->_frame;
+./include/inline_frame_decorator.cls.php:  function split($frame = null, $force_pagebreak = false) {
+./include/inline_frame_decorator.cls.php:      $frame = $iter;      
+./include/inline_frame_reflower.cls.php:    $frame = $this->_frame;
+./include/page_frame_decorator.cls.php:  function split($frame = null, $force_pagebreak = false) {
+./include/table_frame_decorator.cls.php:    while ( $frame = $frame->get_parent() )
+./include/table_frame_decorator.cls.php:          $frame = new Frame($tr);
+./include/table_frame_reflower.cls.php:    $frame = $this->_frame;
+./include/text_frame_reflower.cls.php:    $frame = $this->_frame;
+./include/text_frame_reflower.cls.php:    $frame = $this->_frame;
+./include/text_frame_reflower.cls.php:    $frame = $this->_frame;

@@ -1,0 +1,15 @@
+[12:04:05 PM] jeetesh.sisodia: ./include/block_frame_decorator.cls.php:      $current_line->wc += count(preg_split("/\s+/", trim($frame->get_text())));
+./include/dompdf.cls.php:        $formedialist = preg_split("/[\s\n,]/", $link->getAttribute("media"),-1, PREG_SPLIT_NO_EMPTY);
+./include/dompdf.cls.php:    $options = preg_split("/\s*,\s*/", trim($value));
+./include/functions.inc.php:    $headers = preg_split("/[\n\r]+/", trim($raw_headers));
+./include/image_renderer.cls.php:      $parts = preg_split("/\s*\n\s*/", $msg);
+./include/style.cls.php:    $parts = preg_split("/\s+/", $val);
+./include/style.cls.php:    $values = preg_split("/\s+/", $val);
+./include/stylesheet.cls.php:    //$s = preg_split("/([ :>.#+])/", $selector, -1, PREG_SPLIT_DELIM_CAPTURE);
+./include/stylesheet.cls.php:          $media = preg_split("/\s*,\s*/", mb_strtolower(trim($match[3])));
+./include/stylesheet.cls.php:    $arr = preg_split("/[\s\n,]/", $url,-1, PREG_SPLIT_NO_EMPTY);
+./include/stylesheet.cls.php:    $properties = preg_split("/;(?=(?:[^\(]*\([^\)]*\))*(?![^\)]*\)))/", $str);
+./include/text_frame_reflower.cls.php:    $words = preg_split('/([\s-]+)/u', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+./include/text_frame_reflower.cls.php:      $words = array_flip(preg_split("/[\s-]+/u",$str, -1, PREG_SPLIT_DELIM_CAPTURE));
+./include/text_frame_reflower.cls.php:      $lines = array_flip(preg_split("/\n/u", $str));
+./include/text_frame_reflower.cls.php:      $lines = array_flip(preg_split("/\n/", $text));

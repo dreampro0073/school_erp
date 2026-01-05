@@ -1,0 +1,43 @@
+[11:57:19 AM] jeetesh.sisodia: ./include/attribute_translator.cls.php:    if ( preg_match('/^#?([0-9A-F]{6})$/i', $value, $matches) ) {
+./include/dompdf.cls.php:        if ( preg_match("@Content-Type:\s*[\w/]+;\s*?charset=([^\s]+)@i", $_header, $matches) ) {
+./include/dompdf.cls.php:        if (preg_match($metatag, $str, $matches)) break;
+./include/dompdf.cls.php:      if ( preg_match("/^(.+)<(!doctype|html)/i", ltrim($str), $matches) ) {
+./include/dompdf.cls.php:        if ( !preg_match("/xhtml/i", $doc->doctype->publicId) ) {
+./include/font_metrics.cls.php:    if (preg_match("/bold/i", $type)) {
+./include/font_metrics.cls.php:      if (preg_match("/italic|oblique/i", $type)) {
+./include/font_metrics.cls.php:    elseif (preg_match("/italic|oblique/i", $type)) {
+./include/frame.cls.php:            if ( preg_match("/[ \t\r\n\f]+$/u", $node->data) ) {
+./include/frame_reflower.cls.php:    if (!preg_match_all($re, "$quotes", $matches, PREG_SET_ORDER))
+./include/frame_reflower.cls.php:    if (!preg_match_all($re, $content, $matches, PREG_SET_ORDER))
+./include/functions.inc.php:  if (!preg_match('/^data:(?P<mime>[a-z0-9\/+-.]+)(;charset=(?P<charset>[a-z0-9-])+)?(?P<base64>;base64)?\,(?P<data>.*)?/i', $data_uri, $match)) {
+./include/style.cls.php:    if ( preg_match("/^(italic|oblique|normal)\s*(.*)$/i",$val,$match) ) {
+./include/style.cls.php:    if ( preg_match("/^(small-caps|normal)\s*(.*)$/i",$val,$match) ) {
+./include/style.cls.php:    if ( preg_match("/^(bold|bolder|lighter|100|200|300|400|500|600|700|800|900|normal)\s*(.*)$/i",$val,$match) &&
+./include/style.cls.php:         !preg_match("/^(?:pt|px|pc|em|ex|in|cm|mm|%)/",$match[2])
+./include/style.cls.php:    if ( preg_match("/^(xx-small|x-small|small|medium|large|x-large|xx-large|smaller|larger|\d+\s*(?:pt|px|pc|em|ex|in|cm|mm|%))\s*(.*)$/i",$val,$match) ) {
+./include/style.cls.php:      if (preg_match("/^\/\s*(\d+\s*(?:pt|px|pc|em|ex|in|cm|mm|%))\s*(.*)$/i",$val,$match) ) {
+./include/style.cls.php:      } else if ( preg_match("/[.0-9]+(?:px|pt|pc|em|ex|%|in|mm|cm)|(?:thin|medium|thick)/", $value ) ) {
+./include/style.cls.php:      } else if ( preg_match("/[.0-9]+(?:px|pt|pc|em|ex|%|in|mm|cm)|(?:thin|medium|thick)/", $value ) ) {
+./include/style.cls.php:    if ( preg_match($length_re, $parts[0]) ) {
+./include/style.cls.php:      if ( isset($parts[1]) && preg_match($length_re, $parts[1]) ) {
+./include/style.cls.php:    if( !preg_match_all("/[a-z]+\([^\)]+\)/i", $val, $parts, PREG_SET_ORDER) ) {
+./include/style.cls.php:        if (preg_match("/$name\s*$pattern/i", $t, $matches)) {
+./include/style.cls.php:    if ( !preg_match($re, $val, $matches) ) {
+./include/style.cls.php:      if ( preg_match_all("/(".self::CSS_IDENTIFIER.")(?:\s+(".self::CSS_INTEGER."))?/", $val, $matches, PREG_SET_ORDER) ){
+./include/stylesheet.cls.php:          if ( preg_match("@Content-Type:\s*([\w/]+)@i", $_header, $matches) ) {
+./include/stylesheet.cls.php:          if ( preg_match("/^\d+$/", $nth) ) {
+./include/stylesheet.cls.php:    if ( !preg_match("/^(?P<a>-?[0-9]*)?n(?P<b>[-+]?[0-9]+)?$/", $expr, $matches)) {
+./include/stylesheet.cls.php:    if ( preg_match_all($re, $css, $matches, PREG_SET_ORDER) === false )
+./include/stylesheet.cls.php:      throw new DOMPDF_Exception("Error parsing css file: preg_match_all() failed.");
+./include/stylesheet.cls.php:    preg_match_all("/(url|local)\s*\([\"\']?([^\"\'\)]+)[\"\']?\)\s*(format\s*\([\"\']?([^\"\'\)]+)[\"\']?\))?/i", $descriptors->src, $src);
+./include/stylesheet.cls.php:        if (preg_match("/([a-z-]+)\s*:\s*[^:]+$/i", $prop, $m))
+./include/stylesheet.cls.php:    $important = preg_match("/(.*?)!\s*important/",$prop,$match);
+./lib/class.pdf.php:          } elseif (isset($font['Weight']) && preg_match('!(bold|black)!i', $font['Weight'])) {
+./lib/class.pdf.php:      preg_match_all("/(\P{Ll}+)/u", $text, $matches, PREG_SET_ORDER);
+./lib/class.pdf.php:      preg_match_all("/(\p{Ll}+)/u", $text, $matches, PREG_SET_ORDER);
+./lib/html5lib/InputStream.php:            $count = preg_match_all(
+./lib/php-font-lib/classes/adobe_font_metrics.cls.php:      if (!isset(Font_TrueType::$nameIdCodes[$id]) || preg_match("/[\r\n]/", $record->string)) {
+./lib/php-font-lib/classes/encoding_map.cls.php:      if (preg_match("/^[\!\=]([0-9A-F]{2,})\s+U\+([0-9A-F]{2})([0-9A-F]{2})\s+([^\s]+)/", $line, $matches)) {
+./www/examples.php:  preg_match("@[\\/](([^_]+)_?(.*))\.(".implode("|", $extensions).")$@i", $file, $matches);
+./www/fonts.php:  if (!preg_match("/(.*)([kmgt])/", $string, $matches)) {
+./www/setup.php:    "result"   => function_exists("preg_match") && @preg_match("/./u", "a"),
