@@ -2,26 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
+use App\Models\ClientService;
+use App\Models\Service;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class SuperAdminController extends Controller
 {
     public function dashboard()
     {
+        return view('admin.dashboard');
+    }
+
+    public function initDashboard(Request $request)
+    {
         $privColumn = $this->resolvePrivilegeColumnOnUsers();
 
         $stats = [
             'users' => $this->getUsersStats(),
-            'clients' => $this->getRoleStatsByPriv($privColumn, 2),  // Admin => School/Client
-            'students' => $this->getRoleStatsByPriv($privColumn, 4), // Student
-            'teachers' => $this->getRoleStatsByPriv($privColumn, 3), // Teacher
-            'parents' => $this->getRoleStatsByPriv($privColumn, 5),  // Parent
+            'clients' => $this->getRoleStatsByPriv($privColumn, 2),
+            'students' => $this->getRoleStatsByPriv($privColumn, 4),
+            'teachers' => $this->getRoleStatsByPriv($privColumn, 3),
+            'parents' => $this->getRoleStatsByPriv($privColumn, 5),
         ];
 
-        return view('admin.dashboard', compact('stats'));
+        return response()->json([
+            'success' => true,
+            'stats' => $stats,
+        ]);
     }
 
     public function usersList()
@@ -31,7 +45,33 @@ class SuperAdminController extends Controller
 
     public function createSchoolPage()
     {
-        return view('admin.users.create-school');
+        return view('admin.users.create-school', [
+            'isEdit' => false,
+            'school' => null,
+        ]);
+    }
+
+    public function editSchoolPage(int $id)
+    {
+        if (!Schema::hasTable('users')) {
+            return back()->with('failure', 'Users table not found.');
+        }
+
+        $query = User::query()->where('id', $id);
+        $privColumn = $this->resolvePrivilegeColumnOnUsers();
+        if ($privColumn) {
+            $query->where($privColumn, 2);
+        }
+
+        $school = $query->first();
+        if (!$school) {
+            return back()->with('failure', 'School not found.');
+        }
+
+        return view('admin.users.create-school', [
+            'isEdit' => true,
+            'school' => $school,
+        ]);
     }
 
     public function schoolServicesPage(int $id)
@@ -41,7 +81,7 @@ class SuperAdminController extends Controller
         }
 
         $privColumn = $this->resolvePrivilegeColumnOnUsers();
-        $schoolQuery = DB::table('users')->where('id', $id);
+        $schoolQuery = User::query()->where('id', $id);
         if ($privColumn) {
             $schoolQuery->where($privColumn, 2);
         }
@@ -57,7 +97,7 @@ class SuperAdminController extends Controller
             return back()->with('failure', 'Services table structure is not supported.');
         }
 
-        $services = DB::table('services')
+        $services = Service::query()
             ->select([
                 "{$serviceIdColumn} as id",
                 "{$serviceNameColumn} as name",
@@ -71,7 +111,7 @@ class SuperAdminController extends Controller
             return back()->with('failure', 'client_services table structure is not supported.');
         }
 
-        $mappings = DB::table('client_services')
+        $mappings = ClientService::query()
             ->where($clientColumn, $id)
             ->get();
 
@@ -96,7 +136,7 @@ class SuperAdminController extends Controller
         }
 
         $privColumn = $this->resolvePrivilegeColumnOnUsers();
-        $schoolQuery = DB::table('users')->where('id', $id);
+        $schoolQuery = User::query()->where('id', $id);
         if ($privColumn) {
             $schoolQuery->where($privColumn, 2);
         }
@@ -118,7 +158,7 @@ class SuperAdminController extends Controller
 
         $permissionColumn = $this->resolveColumn('client_services', ['permissions', 'permission', 'rights', 'access']);
 
-        DB::table('client_services')->where($clientColumn, $id)->delete();
+        ClientService::query()->where($clientColumn, $id)->delete();
 
         foreach ($servicesInput as $serviceId => $payload) {
             if (!is_array($payload) || empty($payload['enabled'])) {
@@ -150,7 +190,7 @@ class SuperAdminController extends Controller
                 $insert['updated_at'] = now();
             }
 
-            DB::table('client_services')->insert($insert);
+            ClientService::query()->insert($insert);
         }
 
         return back()->with('success', 'School services updated successfully.');
@@ -195,56 +235,61 @@ class SuperAdminController extends Controller
     public function createSchool(Request $request)
     {
         if (!Schema::hasTable('users')) {
-            return response()->json(['success' => false, 'message' => 'Users table not found.'], 422);
+            return back()->with('failure', 'Users table not found.');
         }
 
-        $validationRules = [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'password' => ['required', 'string', 'min:6'],
-            'erp_id' => ['nullable', 'string', 'max:50'],
-        ];
+        $validated = $this->validateSchoolPayload($request, null);
+        $validated['erp_id'] = $this->generateUniqueErpId();
+        $validated['password'] = $this->generateRandomPassword();
 
-        if (Schema::hasColumn('users', 'email')) {
-            $validationRules['email'][] = 'unique:users,email';
-        }
-        if (!Schema::hasColumn('users', 'erp_id')) {
-            unset($validationRules['erp_id']);
-        }
+        $insert = $this->buildSchoolUserPayload($validated, true);
+        User::query()->insert($insert);
 
-        $validated = $request->validate($validationRules);
-
-        $insert = [];
-        if (Schema::hasColumn('users', 'name')) {
-            $insert['name'] = $validated['name'];
-        }
-        if (Schema::hasColumn('users', 'email')) {
-            $insert['email'] = $validated['email'];
-        }
-        if (Schema::hasColumn('users', 'password')) {
-            $insert['password'] = Hash::make($validated['password']);
-        }
-        if (Schema::hasColumn('users', 'erp_id')) {
-            $insert['erp_id'] = $validated['erp_id'] ?? ('SCH' . date('ymdHis'));
+        $userId = 0;
+        if (Schema::hasColumn('users', 'id')) {
+            $userId = (int) User::query()
+                ->where('email', $validated['email'])
+                ->orderByDesc('id')
+                ->value('id');
         }
 
+        if ($userId > 0) {
+            $this->syncClientRecordFromUser($userId, $validated, null);
+        }
+
+        return redirect()->route('super-admin.users.type', ['type' => 'schools'])
+            ->with('success', 'School created successfully.');
+    }
+
+    public function updateSchool(Request $request, int $id)
+    {
+        if (!Schema::hasTable('users')) {
+            return back()->with('failure', 'Users table not found.');
+        }
+
+        $query = User::query()->where('id', $id);
         $privColumn = $this->resolvePrivilegeColumnOnUsers();
         if ($privColumn) {
-            $insert[$privColumn] = 2; // school/client role
+            $query->where($privColumn, 2);
         }
-        if (Schema::hasColumn('users', 'active')) {
-            $insert['active'] = 1;
-        }
-        if (Schema::hasColumn('users', 'created_at')) {
-            $insert['created_at'] = now();
-        }
-        if (Schema::hasColumn('users', 'updated_at')) {
-            $insert['updated_at'] = now();
+        $school = $query->first();
+        if (!$school) {
+            return back()->with('failure', 'School not found.');
         }
 
-        DB::table('users')->insert($insert);
+        $validated = $this->validateSchoolPayload($request, $id);
+        $update = $this->buildSchoolUserPayload($validated, false);
+        if (!empty($update)) {
+            User::query()->where('id', $id)->update($update);
+        }
 
-        return response()->json(['success' => true, 'message' => 'School created successfully.']);
+        $syncPayload = array_merge($validated, [
+            'erp_id' => $school->erp_id ?? null,
+        ]);
+        $this->syncClientRecordFromUser($id, $syncPayload, $school);
+
+        return redirect()->route('super-admin.users.type', ['type' => 'schools'])
+            ->with('success', 'School updated successfully.');
     }
 
     public function updateUserStatus(Request $request, int $id)
@@ -257,7 +302,7 @@ class SuperAdminController extends Controller
             'active' => ['required', 'in:0,1'],
         ]);
 
-        $query = DB::table('users')->where('id', $id);
+        $query = User::query()->where('id', $id);
         $privColumn = $this->resolvePrivilegeColumnOnUsers();
         if ($privColumn) {
             $query->where($privColumn, '!=', 1);
@@ -278,7 +323,7 @@ class SuperAdminController extends Controller
             return ['active' => 0, 'inactive' => 0, 'total' => 0];
         }
 
-        $base = DB::table('users');
+        $base = User::query();
         $privColumn = $this->resolvePrivilegeColumnOnUsers();
         if ($privColumn) {
             $base->where($privColumn, '!=', 1);
@@ -353,7 +398,7 @@ class SuperAdminController extends Controller
             return ['active' => 0, 'inactive' => 0, 'total' => 0];
         }
 
-        $total = (int) DB::table('clients')->count();
+        $total = (int) Client::query()->count();
         $userForeignKey = $this->resolveUserForeignKey('clients');
 
         if (
@@ -362,12 +407,12 @@ class SuperAdminController extends Controller
             Schema::hasColumn('users', 'id') &&
             Schema::hasColumn('users', 'active')
         ) {
-            $active = (int) DB::table('clients')
+            $active = (int) Client::query()
                 ->join('users', 'users.id', '=', "clients.{$userForeignKey}")
                 ->where('users.active', 1)
                 ->count();
 
-            $inactive = (int) DB::table('clients')
+            $inactive = (int) Client::query()
                 ->join('users', 'users.id', '=', "clients.{$userForeignKey}")
                 ->where('users.active', 0)
                 ->count();
@@ -376,8 +421,8 @@ class SuperAdminController extends Controller
         }
 
         if (Schema::hasColumn('clients', 'active')) {
-            $active = (int) DB::table('clients')->where('active', 1)->count();
-            $inactive = (int) DB::table('clients')->where('active', 0)->count();
+            $active = (int) Client::query()->where('active', 1)->count();
+            $inactive = (int) Client::query()->where('active', 0)->count();
             return ['active' => $active, 'inactive' => $inactive, 'total' => $total];
         }
 
@@ -390,7 +435,7 @@ class SuperAdminController extends Controller
             return ['active' => 0, 'inactive' => 0, 'total' => 0];
         }
 
-        $base = DB::table('users')->where($privColumn, $privValue);
+        $base = User::query()->where($privColumn, $privValue);
         $total = (int) (clone $base)->count();
 
         if (!Schema::hasColumn('users', 'active')) {
@@ -454,7 +499,7 @@ class SuperAdminController extends Controller
     private function buildUsersTypeQuery(string $type): array
     {
         $privColumn = $this->resolvePrivilegeColumnOnUsers();
-        $query = DB::table('users');
+        $query = User::query();
         $type = strtolower($type);
 
         $title = 'Users';
@@ -507,6 +552,160 @@ class SuperAdminController extends Controller
             'subtitle' => $subtitle,
             'type' => $type,
         ];
+    }
+
+    private function validateSchoolPayload(Request $request, ?int $userId): array
+    {
+        $rules = [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+        ];
+
+        if (Schema::hasColumn('users', 'email')) {
+            $emailRule = Rule::unique('users', 'email');
+            if ($userId !== null) {
+                $emailRule = $emailRule->ignore($userId, 'id');
+            }
+            $rules['email'][] = $emailRule;
+        }
+
+        return $request->validate($rules);
+    }
+
+    private function buildSchoolUserPayload(array $validated, bool $isCreate): array
+    {
+        $payload = [];
+
+        if (Schema::hasColumn('users', 'name')) {
+            $payload['name'] = $validated['name'];
+        }
+        if (Schema::hasColumn('users', 'email')) {
+            $payload['email'] = $validated['email'];
+        }
+        if (Schema::hasColumn('users', 'erp_id') && !empty($validated['erp_id'])) {
+            $payload['erp_id'] = $validated['erp_id'];
+        }
+        if (Schema::hasColumn('users', 'password') && !empty($validated['password'])) {
+            $payload['password'] = Hash::make($validated['password']);
+        }
+        if ($isCreate) {
+            $privColumn = $this->resolvePrivilegeColumnOnUsers();
+            if ($privColumn) {
+                $payload[$privColumn] = 2;
+            }
+            if (Schema::hasColumn('users', 'active')) {
+                $payload['active'] = 1;
+            }
+            if (Schema::hasColumn('users', 'created_at')) {
+                $payload['created_at'] = now();
+            }
+        }
+        if (Schema::hasColumn('users', 'updated_at')) {
+            $payload['updated_at'] = now();
+        }
+
+        return $payload;
+    }
+
+    private function syncClientRecordFromUser(int $userId, array $validated, $previousUser = null): void
+    {
+        if (!Schema::hasTable('clients')) {
+            return;
+        }
+
+        $clientUserFk = $this->resolveColumn('clients', ['user_id', 'users_id', 'userid', 'userId']);
+        $clientNameCol = $this->resolveColumn('clients', ['name', 'client_name', 'school_name', 'title']);
+        $clientEmailCol = $this->resolveColumn('clients', ['email', 'client_email']);
+        $clientErpCol = $this->resolveColumn('clients', ['erp_id', 'client_code', 'school_code']);
+
+        $clientPayload = [];
+        if ($clientUserFk) {
+            $clientPayload[$clientUserFk] = $userId;
+        }
+        if ($clientNameCol) {
+            $clientPayload[$clientNameCol] = $validated['name'];
+        }
+        if ($clientEmailCol) {
+            $clientPayload[$clientEmailCol] = $validated['email'];
+        }
+        if ($clientErpCol) {
+            $clientPayload[$clientErpCol] = $validated['erp_id'];
+        }
+        if (Schema::hasColumn('clients', 'active')) {
+            $clientPayload['active'] = 1;
+        }
+        if (Schema::hasColumn('clients', 'updated_at')) {
+            $clientPayload['updated_at'] = now();
+        }
+
+        if (empty($clientPayload)) {
+            return;
+        }
+
+        $query = Client::query();
+        if ($clientUserFk) {
+            $query->where($clientUserFk, $userId);
+        } elseif ($clientErpCol) {
+            $query->whereIn($clientErpCol, array_values(array_unique(array_filter([
+                $validated['erp_id'] ?? null,
+                $previousUser->{$clientErpCol} ?? null,
+            ]))));
+        } elseif ($clientEmailCol) {
+            $query->whereIn($clientEmailCol, array_values(array_unique(array_filter([
+                $validated['email'] ?? null,
+                $previousUser->{$clientEmailCol} ?? null,
+            ]))));
+        } else {
+            return;
+        }
+
+        $existing = $query->first();
+        if ($existing) {
+            if ($clientUserFk) {
+                Client::query()->where($clientUserFk, $userId)->update($clientPayload);
+            } elseif ($clientErpCol) {
+                Client::query()
+                    ->whereIn($clientErpCol, array_values(array_unique(array_filter([
+                        $validated['erp_id'] ?? null,
+                        $previousUser->{$clientErpCol} ?? null,
+                    ]))))
+                    ->update($clientPayload);
+            } elseif ($clientEmailCol) {
+                Client::query()
+                    ->whereIn($clientEmailCol, array_values(array_unique(array_filter([
+                        $validated['email'] ?? null,
+                        $previousUser->{$clientEmailCol} ?? null,
+                    ]))))
+                    ->update($clientPayload);
+            }
+            return;
+        }
+
+        if (Schema::hasColumn('clients', 'created_at')) {
+            $clientPayload['created_at'] = now();
+        }
+        Client::query()->insert($clientPayload);
+    }
+
+    private function generateUniqueErpId(): string
+    {
+        $prefix = 'SCH';
+
+        if (!Schema::hasTable('users') || !Schema::hasColumn('users', 'erp_id')) {
+            return $prefix . date('ymdHis');
+        }
+
+        do {
+            $candidate = $prefix . strtoupper(Str::random(8));
+            $exists = User::query()->where('erp_id', $candidate)->exists();
+        } while ($exists);
+
+        return $candidate;
+    }
+
+    private function generateRandomPassword(int $length = 12): string
+    {
+        return Str::random($length) . rand(10, 99);
     }
 
 }

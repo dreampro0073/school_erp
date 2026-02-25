@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\StandardsController;
+use App\Http\Controllers\SectionsController;
+use App\Http\Controllers\SuperAdminController;
 
 // Route::apiResource('students', StudentController::class);
 Route::prefix('students')
@@ -19,5 +22,30 @@ Route::prefix('services')
     ->group(function () {
         Route::post('/init', 'initServices');
         Route::post('/store', 'storeService');
+    }
+);
+
+Route::prefix('standards')
+    ->controller(StandardsController::class)
+    ->group(function () {
+        Route::post('/init', 'initStandards');
+        Route::post('/store', 'storeStandard');
+        Route::post('/delete', 'deleteStandard');
+    }
+);
+
+Route::prefix('sections')
+    ->controller(SectionsController::class)
+    ->group(function () {
+        Route::post('/init', 'initSections');
+        Route::post('/store', 'storeSection');
+        Route::post('/delete', 'deleteSection');
+    }
+);
+
+Route::prefix('dashboard')
+    ->controller(SuperAdminController::class)
+    ->group(function () {
+        Route::post('/init', 'initDashboard');
     }
 );

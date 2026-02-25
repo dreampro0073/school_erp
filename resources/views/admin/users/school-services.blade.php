@@ -27,7 +27,7 @@
             <table class="table bordered-table mb-0">
                <thead>
                   <tr>
-                     <th style="width: 70px;">Enable</th>
+                     <th class="w-auto">Enable</th>
                      <th>Service</th>
                   </tr>
                </thead>

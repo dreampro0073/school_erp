@@ -81,6 +81,7 @@
                      @if (in_array('id', $columns, true) && in_array('active', $columns, true))
                         <td>
                            @if (($currentType ?? '') === 'schools')
+                              <a href="{{ route('super-admin.schools.edit-page', ['id' => $user->id]) }}" class="btn btn-sm btn-warning-100 text-warning-600 me-8">Edit School</a>
                               <a href="{{ route('super-admin.schools.services', ['id' => $user->id]) }}" target="_blank" class="btn btn-sm btn-info-100 text-info-600 me-8">Services</a>
                            @endif
                            @if ((int) $user->active === 1)

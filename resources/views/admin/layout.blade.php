@@ -62,9 +62,11 @@
     <script type="text/javascript" src="{{url('assets/scripts/core/custom.js')}}"></script>
     <script type="text/javascript" src="{{url('assets/scripts/core/app.js')}}" ></script>
     <script type="text/javascript" src="{{url('assets/scripts/core/services.js')}}" ></script>
-    <!-- <script type="text/javascript" type="text/javascript" src="{{url('assets/scripts/core/controller.js')}}"></script> -->
+    <script type="text/javascript" src="{{url('assets/scripts/core/controller.js')}}"></script>
     <script type="text/javascript" type="text/javascript" src="{{url('assets/scripts/core/student_ctrl.js')}}"></script>
     <script type="text/javascript" type="text/javascript" src="{{url('assets/scripts/core/services_ctrl.js')}}"></script>
+    <script type="text/javascript" type="text/javascript" src="{{url('assets/scripts/core/standards_ctrl.js')}}"></script>
+    <script type="text/javascript" type="text/javascript" src="{{url('assets/scripts/core/sections_ctrl.js')}}"></script>
 
     @yield('footer_scripts')
 

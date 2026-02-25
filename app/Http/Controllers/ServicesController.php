@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Service;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class ServicesController extends Controller
@@ -43,7 +43,7 @@ class ServicesController extends Controller
             $select[] = 'created_at';
         }
 
-        $query = DB::table('services')->select($select);
+        $query = Service::query()->select($select);
         $query->orderBy($idColumn, 'desc');
 
         return response()->json([
@@ -89,7 +89,7 @@ class ServicesController extends Controller
         $serviceId = isset($payload['id']) ? (int) $payload['id'] : 0;
 
         if ($serviceId > 0) {
-            DB::table('services')->where($idColumn, $serviceId)->update($updateOrInsert);
+            Service::query()->where($idColumn, $serviceId)->update($updateOrInsert);
             return response()->json(['success' => true, 'message' => 'Service updated successfully.']);
         }
 
@@ -97,7 +97,7 @@ class ServicesController extends Controller
             $updateOrInsert['created_at'] = now();
         }
 
-        DB::table('services')->insert($updateOrInsert);
+        Service::query()->insert($updateOrInsert);
         return response()->json(['success' => true, 'message' => 'Service created successfully.']);
     }
 

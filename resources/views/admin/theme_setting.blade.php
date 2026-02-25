@@ -57,44 +57,38 @@
             <button type="button"
                class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
                data-color="base" aria-label="Base">
-            <span class="color-picker-btn__box h-40-px w-100 rounded-3"
-               style="background-color: #25A194;"></span>
-            <span class="fw-medium mt-1" style="color: #25A194;">Base</span>
+            <span class="color-picker-btn__box h-40-px w-100 rounded-3 bg-success"></span>
+            <span class="fw-medium mt-1 text-success">Base</span>
             </button>
             <button type="button"
                class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
                data-color="red" aria-label="Red">
-            <span class="color-picker-btn__box h-40-px w-100 rounded-3"
-               style="background-color: #dc2626;"></span>
-            <span class="fw-medium mt-1" style="color: #dc2626;">Red</span>
+            <span class="color-picker-btn__box h-40-px w-100 rounded-3 bg-danger"></span>
+            <span class="fw-medium mt-1 text-danger">Red</span>
             </button>
             <button type="button"
                class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
                data-color="blue" aria-label="Blue">
-            <span class="color-picker-btn__box h-40-px w-100 rounded-3"
-               style="background-color: #2563eb;"></span>
-            <span class="fw-medium mt-1" style="color: #2563eb;">Blue</span>
+            <span class="color-picker-btn__box h-40-px w-100 rounded-3 bg-primary"></span>
+            <span class="fw-medium mt-1 text-primary">Blue</span>
             </button>
             <button type="button"
                class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
                data-color="yellow" aria-label="Yellow">
-            <span class="color-picker-btn__box h-40-px w-100 rounded-3"
-               style="background-color: #ff9f29;"></span>
-            <span class="fw-medium mt-1" style="color: #ff9f29;">Yellow</span>
+            <span class="color-picker-btn__box h-40-px w-100 rounded-3 bg-warning"></span>
+            <span class="fw-medium mt-1 text-warning-emphasis">Yellow</span>
             </button>
             <button type="button"
                class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
                data-color="cyan" aria-label="Cyan">
-            <span class="color-picker-btn__box h-40-px w-100 rounded-3"
-               style="background-color: #00b8f2;"></span>
-            <span class="fw-medium mt-1" style="color: #00b8f2;">Cyan</span>
+            <span class="color-picker-btn__box h-40-px w-100 rounded-3 bg-info"></span>
+            <span class="fw-medium mt-1 text-info">Cyan</span>
             </button>
             <button type="button"
                class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
                data-color="violet" aria-label="Violet">
-            <span class="color-picker-btn__box h-40-px w-100 rounded-3"
-               style="background-color: #7c3aed;"></span>
-            <span class="fw-medium mt-1" style="color: #7c3aed;">Violet</span>
+            <span class="color-picker-btn__box h-40-px w-100 rounded-3 bg-secondary"></span>
+            <span class="fw-medium mt-1 text-secondary">Violet</span>
             </button>
          </div>
       </div>
