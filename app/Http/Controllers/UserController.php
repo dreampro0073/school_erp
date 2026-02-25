@@ -21,11 +21,28 @@ class UserController extends Controller{
 
             $request->session()->regenerate();
 
+            $user = Auth::user();
+            $privillage = (int) ($user->privillage ?? $user->privilege ?? 0);
+
+            if ($privillage === 1) {
+                return redirect()->to('/super-admin/dashboard');
+            }
+
             return redirect()->to('students');
         }
 
         return back()
             ->withInput($request->only('email'))
             ->with('failure', 'Invalid username or password');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
     }
 }

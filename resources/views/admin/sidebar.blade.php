@@ -2,6 +2,11 @@
 <button type="button" class="sidebar-close-btn">
    <iconify-icon icon="radix-icons:cross-2"></iconify-icon>
 </button>
+@php
+   $authUser = Auth::user();
+   $authPriv = $authUser->priv ?? $authUser->privillage ?? $authUser->privilege ?? null;
+   $isPrivOne = (int) $authPriv === 1;
+@endphp
 <div class="">
    <div class="sidebar-logo d-flex align-items-center justify-content-between">
       <a href="index.html" class="">
@@ -34,13 +39,15 @@
       </span>
       </button>
       <ul class="dropdown-menu dropdown-menu-lg-end border p-12">
-         <li>
-            <a href="student-details.html" 
-               class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
-            <i class="ri-user-3-line"></i>
-            My Profile
-            </a>
-         </li>
+         @if (!$isPrivOne)
+            <li>
+               <a href="student-details.html" 
+                  class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
+               <i class="ri-user-3-line"></i>
+               My Profile
+               </a>
+            </li>
+         @endif
          <li>
             <a href="general.html"
                class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
@@ -49,18 +56,74 @@
             </a>
          </li>
          <li>
-            <a href="login.html"
+            <a href="javascript:void(0)"
+               onclick="document.getElementById('logoutFormSidebar').submit();"
                class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
-            <i class="ri-shut-down-line"></i>
-            Log Out
+               <i class="ri-shut-down-line"></i>
+               Log Out
             </a>
          </li>
       </ul>
    </div>
 </div>
+<form id="logoutFormSidebar" method="POST" action="{{ route('logout') }}" style="display:none;">
+   @csrf
+</form>
 <!-- User Info end -->
 <div class="sidebar-menu-area">
    <ul class="sidebar-menu" id="sidebar-menu">
+      @if ($isPrivOne)
+      <li class="dropdown">
+         <a href="javascript:void(0)">
+         <i class="ri-home-4-line"></i>
+         <span>Dashboard</span>
+         </a>
+         <ul class="sidebar-submenu">
+            <li>
+               <a href="{{ route('super-admin.users.type', ['type' => 'schools']) }}">
+               <i class="ri-circle-fill circle-icon w-auto"></i>
+               School
+               </a>
+            </li>
+            <li>
+               <a href="{{ route('super-admin.users.type', ['type' => 'students']) }}">
+               <i class="ri-circle-fill circle-icon w-auto"></i>
+               Student
+               </a>
+            </li>
+            <li>
+               <a href="{{ route('super-admin.users.type', ['type' => 'teachers']) }}">
+               <i class="ri-circle-fill circle-icon w-auto"></i>
+               Teacher
+               </a>
+            </li>
+            <li>
+               <a href="{{ route('super-admin.users.type', ['type' => 'parents']) }}">
+               <i class="ri-circle-fill circle-icon w-auto"></i>
+               Parent
+               </a>
+            </li>
+         </ul>
+      </li>
+      <li>
+         <a href="{{ route('super-admin.services.index') }}">
+         <i class="ri-service-line"></i>
+         <span>Services</span>
+         </a>
+      </li>
+      <li>
+         <a href="general.html">
+         <i class="ri-settings-3-line"></i>
+         <span>Setting</span>
+         </a>
+      </li>
+      <li>
+         <a href="javascript:void(0)" onclick="document.getElementById('logoutFormSidebar').submit();">
+         <i class="ri-shut-down-line"></i>
+         <span>Logout</span>
+         </a>
+      </li>
+      @else
       <li class="dropdown">
          <a href="javascript:void(0)">
          <i class="ri-home-4-line"></i>
@@ -68,36 +131,42 @@
          </a>
          <ul class="sidebar-submenu">
             <li>
-               <a href="index.html">
+               <a href="{{ route('super-admin.users.type', ['type' => 'schools']) }}">
                <i class="ri-circle-fill circle-icon w-auto"></i>
                School
                </a>
             </li>
             <li>
-               <a href="index-2.html">
+               <a href="{{ route('super-admin.users.type', ['type' => 'students']) }}">
                <i class="ri-circle-fill circle-icon w-auto"></i>
                Student
                </a>
             </li>
             <li>
-               <a href="index-3.html">
+               <a href="{{ route('super-admin.users.type', ['type' => 'teachers']) }}">
                <i class="ri-circle-fill circle-icon w-auto"></i>
                Teacher
                </a>
             </li>
             <li>
-               <a href="index-4.html">
+               <a href="{{ route('super-admin.users.type', ['type' => 'parents']) }}">
                <i class="ri-circle-fill circle-icon w-auto"></i>
                Parent
                </a>
             </li>
             <li>
-               <a href="index-5.html">
+               <a href="{{ url('/super-admin/dashboard') }}">
                <i class="ri-circle-fill circle-icon w-auto"></i>
                LMS 
                </a>
             </li>
          </ul>
+      </li>
+      <li>
+         <a href="{{ route('super-admin.services.index') }}">
+         <i class="ri-service-line"></i>
+         <span>Services</span>
+         </a>
       </li>
       <li class="dropdown">
          <a href="javascript:void(0)">
@@ -550,5 +619,6 @@
             </li>
          </ul>
       </li>
+      @endif
    </ul>
 </div>

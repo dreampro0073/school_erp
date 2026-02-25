@@ -2,137 +2,56 @@
 
 @section('main')
 <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
-    <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
-	<div class="">
-	    <h6 class="fw-semibold mb-0">Dashboard</h6>
-		    <p class="text-neutral-600 mt-4 mb-0">School -&gt; Manage your school, track attendance, expense, and net worth.</p>
-		  </div>
-		</div>
-	</div>
-<div ng-controller="dashboardCtrl" ng-init="init();">
+   <div>
+      <h6 class="fw-semibold mb-0">Dashboard</h6>
+      <p class="text-neutral-600 mt-4 mb-0">School -&gt; Manage your school, track attendance, expense, and net worth.</p>
+   </div>
+</div>
+<div>
 	<div class="row gy-4">
    <div class="col-xxl-8">
       <div class="row gy-4">
-         <div class="col-xxl-4 col-sm-6">
-            <div class="card shadow-1 radius-8 gradient-bg-end-1 h-100">
-               <div class="card-body p-20">
-                  <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
-                     <div class="w-44-px h-44-px bg-warning-600 rounded-circle d-flex justify-content-center align-items-center">
-                        <img src="assets/images/icons/dashboard-icon1.png" alt="Icon">
+         @php
+            $cards = [
+                ['label' => 'Total Users', 'key' => 'users', 'icon' => 'dashboard-icon1.png', 'bg' => 'bg-warning-600', 'gradient' => 'gradient-bg-end-1', 'url' => route('super-admin.users.type', ['type' => 'users'])],
+                ['label' => 'Total Schools', 'key' => 'clients', 'icon' => 'dashboard-icon2.png', 'bg' => 'bg-blue-600', 'gradient' => 'gradient-bg-end-2', 'url' => route('super-admin.users.type', ['type' => 'schools'])],
+                ['label' => 'Total Students', 'key' => 'students', 'icon' => 'dashboard-icon3.png', 'bg' => 'bg-purple-600', 'gradient' => 'gradient-bg-end-3', 'url' => route('super-admin.users.type', ['type' => 'students'])],
+                ['label' => 'Total Teachers', 'key' => 'teachers', 'icon' => 'dashboard-icon4.png', 'bg' => 'bg-primary-600', 'gradient' => 'gradient-bg-end-4', 'url' => route('super-admin.users.type', ['type' => 'teachers'])],
+                ['label' => 'Total Parents', 'key' => 'parents', 'icon' => 'dashboard-icon5.png', 'bg' => 'bg-success-600', 'gradient' => 'gradient-bg-end-5', 'url' => route('super-admin.users.type', ['type' => 'parents'])],
+                ['label' => 'Inactive Users', 'key' => 'users', 'icon' => 'dashboard-icon6.png', 'bg' => 'bg-cyan-600', 'gradient' => 'gradient-bg-end-6', 'show' => 'inactive', 'url' => route('super-admin.users.type', ['type' => 'inactive-users'])],
+            ];
+         @endphp
+         @foreach ($cards as $card)
+            @php
+               $entity = $stats[$card['key']] ?? ['active' => 0, 'inactive' => 0, 'total' => 0];
+               $mainValue = isset($card['show']) && $card['show'] === 'inactive' ? $entity['inactive'] : $entity['total'];
+            @endphp
+            <div class="col-xxl-4 col-sm-6">
+               @if (!empty($card['url']))
+                  <a href="{{ $card['url'] }}" class="text-decoration-none">
+               @endif
+                  <div class="card shadow-1 radius-8 {{ $card['gradient'] }} h-100">
+                     <div class="card-body p-20">
+                        <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
+                           <div class="w-44-px h-44-px {{ $card['bg'] }} rounded-circle d-flex justify-content-center align-items-center">
+                              <img src="assets/images/icons/{{ $card['icon'] }}" alt="Icon">
+                           </div>
+                           <p class="fw-medium text-primary-light mb-1">{{ $card['label'] }}</p>
+                        </div>
+                        <h6 class="mb-0">{{ number_format($mainValue) }}</h6>
+                        <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                           <span class="d-inline-flex align-items-center gap-1 text-success-600 text-sm fw-semibold">
+                              Active: {{ number_format($entity['active']) }}
+                           </span>
+                           <span>Inactive: {{ number_format($entity['inactive']) }}</span>
+                        </p>
                      </div>
-                     <p class="fw-medium text-primary-light mb-1">Total Student</p>
                   </div>
-                  <h6 class="mb-0">20,000</h6>
-                  <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                     <span class="d-inline-flex align-items-center gap-1 text-primary-600 text-sm fw-semibold">
-                        10%
-                        <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
-                     </span>
-                     +5 This Month
-                  </p>
-               </div>
+               @if (!empty($card['url']))
+                  </a>
+               @endif
             </div>
-         </div>
-         <div class="col-xxl-4 col-sm-6">
-            <div class="card shadow-1 radius-8 gradient-bg-end-2 h-100">
-               <div class="card-body p-20">
-                  <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
-                     <div class="w-44-px h-44-px bg-blue-600 rounded-circle d-flex justify-content-center align-items-center">
-                        <img src="assets/images/icons/dashboard-icon2.png" alt="Icon">
-                     </div>
-                     <p class="fw-medium text-primary-light mb-1">Total Student</p>
-                  </div>
-                  <h6 class="mb-0">20,000</h6>
-                  <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                     <span class="d-inline-flex align-items-center gap-1 text-primary-600 text-sm fw-semibold">
-                        10%
-                        <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
-                     </span>
-                     +5 This Month
-                  </p>
-               </div>
-            </div>
-         </div>
-         <div class="col-xxl-4 col-sm-6">
-            <div class="card shadow-1 radius-8 gradient-bg-end-3 h-100">
-               <div class="card-body p-20">
-                  <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
-                     <div class="w-44-px h-44-px bg-purple-600 rounded-circle d-flex justify-content-center align-items-center">
-                        <img src="assets/images/icons/dashboard-icon3.png" alt="Icon">
-                     </div>
-                     <p class="fw-medium text-primary-light mb-1">Total Student</p>
-                  </div>
-                  <h6 class="mb-0">20,000</h6>
-                  <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                     <span class="d-inline-flex align-items-center gap-1 text-primary-600 text-sm fw-semibold">
-                        10%
-                        <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
-                     </span>
-                     +5 This Month
-                  </p>
-               </div>
-            </div>
-         </div>
-         <div class="col-xxl-4 col-sm-6">
-            <div class="card shadow-1 radius-8 gradient-bg-end-4 h-100">
-               <div class="card-body p-20">
-                  <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
-                     <div class="w-44-px h-44-px bg-primary-600 rounded-circle d-flex justify-content-center align-items-center">
-                        <img src="assets/images/icons/dashboard-icon4.png" alt="Icon">
-                     </div>
-                     <p class="fw-medium text-primary-light mb-1">Total Student</p>
-                  </div>
-                  <h6 class="mb-0">20,000</h6>
-                  <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                     <span class="d-inline-flex align-items-center gap-1 text-primary-600 text-sm fw-semibold">
-                        10%
-                        <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
-                     </span>
-                     +5 This Month
-                  </p>
-               </div>
-            </div>
-         </div>
-         <div class="col-xxl-4 col-sm-6">
-            <div class="card shadow-1 radius-8 gradient-bg-end-5 h-100">
-               <div class="card-body p-20">
-                  <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
-                     <div class="w-44-px h-44-px bg-success-600 rounded-circle d-flex justify-content-center align-items-center">
-                        <img src="assets/images/icons/dashboard-icon5.png" alt="Icon">
-                     </div>
-                     <p class="fw-medium text-primary-light mb-1">Total Student</p>
-                  </div>
-                  <h6 class="mb-0">20,000</h6>
-                  <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                     <span class="d-inline-flex align-items-center gap-1 text-primary-600 text-sm fw-semibold">
-                        10%
-                        <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
-                     </span>
-                     +5 This Month
-                  </p>
-               </div>
-            </div>
-         </div>
-         <div class="col-xxl-4 col-sm-6">
-            <div class="card shadow-1 radius-8 gradient-bg-end-6 h-100">
-               <div class="card-body p-20">
-                  <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
-                     <div class="w-44-px h-44-px bg-cyan-600 rounded-circle d-flex justify-content-center align-items-center">
-                        <img src="assets/images/icons/dashboard-icon6.png" alt="Icon">
-                     </div>
-                     <p class="fw-medium text-primary-light mb-1">Total Student</p>
-                  </div>
-                  <h6 class="mb-0">20,000</h6>
-                  <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                     <span class="d-inline-flex align-items-center gap-1 text-primary-600 text-sm fw-semibold">
-                        10%
-                        <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
-                     </span>
-                     +5 This Month
-                  </p>
-               </div>
-            </div>
-         </div>
+         @endforeach
       </div>
    </div>
    <div class="col-xxl-4">
