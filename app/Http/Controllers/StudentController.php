@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student;
+use App\Models\Student,App\Models\User;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -11,6 +11,9 @@ class StudentController extends Controller
         return view('admin.students.index');
     }
     public function initStudents(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+
         $students = Student::latest()->get();
 
         $data['success'] = true;

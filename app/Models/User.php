@@ -36,6 +36,16 @@ class User extends Authenticatable {
         'password', 'remember_token',
     ];
 
+    public static function authUser($apiToken){
+        $user = User::where('api_token',$apiToken)->first();
+
+        if($user){
+            return $user;
+        }else{
+            return "User not found";
+        }
+    }
+
    
 
         
