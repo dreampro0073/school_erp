@@ -21,7 +21,9 @@ Route::prefix('students')->middleware(['auth'])
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth'])->controller(SuperAdminController::class)->group(function () {
+Route::prefix('super-admin')->middleware(['auth'])
+    ->controller(SuperAdminController::class)
+    ->group(function () {
         Route::get('/dashboard', 'dashboard');
         Route::get('/schools/create', 'createSchoolPage')->name('super-admin.schools.create-page');
         Route::get('/schools/{id}/edit', 'editSchoolPage')->name('super-admin.schools.edit-page');
@@ -35,22 +37,30 @@ Route::prefix('super-admin')->middleware(['auth'])->controller(SuperAdminControl
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth'])->controller(ServicesController::class)->group(function () {
-        Route::get('/services', 'index')->name('super-admin.services.index');
+Route::prefix('super-admin')->middleware(['auth'])
+    ->controller(ServicesController::class)
+    ->group(function () {
+            Route::get('/services', 'index')->name('super-admin.services.index');
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth'])->controller(StandardsController::class)->group(function () {
+Route::prefix('super-admin')->middleware(['auth'])
+    ->controller(StandardsController::class)
+    ->group(function () {
         Route::get('/standards', 'index')->name('super-admin.standards.index');
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth'])->controller(SectionsController::class)->group(function () {
+Route::prefix('super-admin')->middleware(['auth'])
+    ->controller(SectionsController::class)
+    ->group(function () {
         Route::get('/sections', 'index')->name('super-admin.sections.index');
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth'])->controller(SubjectsController::class)->group(function () {
+Route::prefix('super-admin')->middleware(['auth'])
+    ->controller(SubjectsController::class)
+    ->group(function () {  
         Route::get('/subjects', 'index')->name('super-admin.subjects.index');
     }
 );
