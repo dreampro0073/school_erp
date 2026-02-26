@@ -136,6 +136,12 @@
          </a>
       </li>
       <li>
+         <a href="{{ route('super-admin.fee-types.index') }}">
+         <i class="ri-money-dollar-circle-line"></i>
+         <span>Fee Types</span>
+         </a>
+      </li>
+      <li>
          <a href="general.html">
          <i class="ri-settings-3-line"></i>
          <span>Setting</span>

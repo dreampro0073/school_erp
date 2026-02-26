@@ -68,6 +68,7 @@
     <script type="text/javascript" type="text/javascript" src="{{url('assets/scripts/core/standards_ctrl.js')}}"></script>
     <script type="text/javascript" type="text/javascript" src="{{url('assets/scripts/core/sections_ctrl.js')}}"></script>
     <script type="text/javascript" src="{{url('assets/scripts/core/subjects_ctrl.js')}}"></script>
+    <script type="text/javascript" src="{{url('assets/scripts/core/fee_types_ctrl.js')}}"></script>
 
     @yield('footer_scripts')
 

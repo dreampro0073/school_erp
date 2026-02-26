@@ -8,6 +8,7 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\StandardsController;
 use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\SubjectsController;
+use App\Http\Controllers\FeeTypesController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class,'postLogin']);
@@ -51,5 +52,10 @@ Route::prefix('super-admin')->middleware(['auth'])->controller(SectionsControlle
 
 Route::prefix('super-admin')->middleware(['auth'])->controller(SubjectsController::class)->group(function () {
         Route::get('/subjects', 'index')->name('super-admin.subjects.index');
+    }
+);
+
+Route::prefix('super-admin')->middleware(['auth'])->controller(FeeTypesController::class)->group(function () {
+        Route::get('/fee-types', 'index')->name('super-admin.fee-types.index');
     }
 );

@@ -9,6 +9,7 @@ use App\Http\Controllers\StandardsController;
 use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SubjectsController;
+use App\Http\Controllers\FeeTypesController;
 
 // Route::apiResource('students', StudentController::class);
 Route::prefix('students')
@@ -50,6 +51,15 @@ Route::prefix('subjects')
         Route::post('/init', 'initSubjects');
         Route::post('/store', 'storeSubject');
         Route::post('/delete', 'deleteSubject');
+    }
+);
+
+Route::prefix('fee-types')
+    ->controller(FeeTypesController::class)
+    ->group(function () {
+        Route::post('/init', 'initFeeTypes');
+        Route::post('/store', 'storeFeeType');
+        Route::post('/delete', 'deleteFeeType');
     }
 );
 
