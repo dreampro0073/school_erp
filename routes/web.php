@@ -7,6 +7,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\StandardsController;
 use App\Http\Controllers\SectionsController;
+use App\Http\Controllers\SubjectsController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class,'postLogin']);
@@ -45,5 +46,10 @@ Route::prefix('super-admin')->middleware(['auth'])->controller(StandardsControll
 
 Route::prefix('super-admin')->middleware(['auth'])->controller(SectionsController::class)->group(function () {
         Route::get('/sections', 'index')->name('super-admin.sections.index');
+    }
+);
+
+Route::prefix('super-admin')->middleware(['auth'])->controller(SubjectsController::class)->group(function () {
+        Route::get('/subjects', 'index')->name('super-admin.subjects.index');
     }
 );

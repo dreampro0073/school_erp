@@ -47,6 +47,61 @@
                </div>
             </div>
 
+            <div class="row gy-3 mt-1">
+               <div class="col-lg-6">
+                  <div class="border rounded p-16 h-100">
+                     <div class="d-flex justify-content-between align-items-center mb-12">
+                        <h6 class="mb-0">Services</h6>
+                        <span class="text-sm text-neutral-600">Select services for this school</span>
+                     </div>
+                     @if (!empty($services) && count($services))
+                        <div class="d-flex flex-column gap-8">
+                           @foreach ($services as $service)
+                              <label class="form-check d-flex align-items-center gap-2 mb-0">
+                                 <input
+                                    type="checkbox"
+                                    class="form-check-input mt-0"
+                                    name="services[]"
+                                    value="{{ $service->id }}"
+                                    {{ in_array((int) $service->id, $selectedServiceIds ?? [], true) ? 'checked' : '' }}
+                                 >
+                                 <span class="form-check-label">{{ $service->name }}</span>
+                              </label>
+                           @endforeach
+                        </div>
+                     @else
+                        <p class="text-neutral-600 mb-0">No services found.</p>
+                     @endif
+                  </div>
+               </div>
+               <div class="col-lg-6">
+                  <div class="border rounded p-16 h-100">
+                     <div class="d-flex justify-content-between align-items-center mb-12">
+                        <h6 class="mb-0">Standards</h6>
+                        <span class="text-sm text-neutral-600">Select standards for this school</span>
+                     </div>
+                     @if (!empty($standards) && count($standards))
+                        <div class="d-flex flex-column gap-8">
+                           @foreach ($standards as $standard)
+                              <label class="form-check d-flex align-items-center gap-2 mb-0">
+                                 <input
+                                    type="checkbox"
+                                    class="form-check-input mt-0"
+                                    name="standards[]"
+                                    value="{{ $standard->id }}"
+                                    {{ in_array((int) $standard->id, $selectedStandardIds ?? [], true) ? 'checked' : '' }}
+                                 >
+                                 <span class="form-check-label">{{ $standard->name }}</span>
+                              </label>
+                           @endforeach
+                        </div>
+                     @else
+                        <p class="text-neutral-600 mb-0">No standards found.</p>
+                     @endif
+                  </div>
+               </div>
+            </div>
+
             <div class="mt-24 d-flex align-items-center gap-2">
                <button type="submit" class="btn btn-success-600">{{ $isEditMode ? 'Update School' : 'Create School' }}</button>
                <a href="{{ route('super-admin.users.type', ['type' => 'schools']) }}" class="btn btn-light">Cancel</a>

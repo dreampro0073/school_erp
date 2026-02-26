@@ -130,6 +130,12 @@
          </a>
       </li>
       <li>
+         <a href="{{ route('super-admin.subjects.index') }}">
+         <i class="ri-book-open-line"></i>
+         <span>Subjects</span>
+         </a>
+      </li>
+      <li>
          <a href="general.html">
          <i class="ri-settings-3-line"></i>
          <span>Setting</span>

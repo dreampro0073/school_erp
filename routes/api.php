@@ -8,6 +8,7 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\StandardsController;
 use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\SubjectsController;
 
 // Route::apiResource('students', StudentController::class);
 Route::prefix('students')
@@ -40,6 +41,15 @@ Route::prefix('sections')
         Route::post('/init', 'initSections');
         Route::post('/store', 'storeSection');
         Route::post('/delete', 'deleteSection');
+    }
+);
+
+Route::prefix('subjects')
+    ->controller(SubjectsController::class)
+    ->group(function () {
+        Route::post('/init', 'initSubjects');
+        Route::post('/store', 'storeSubject');
+        Route::post('/delete', 'deleteSubject');
     }
 );
 
