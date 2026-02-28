@@ -1,64 +1,63 @@
 @extends('admin.layout')
 
 @section('main')
-<div ng-controller="dashboardCtrl" ng-init="init();">
-   <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
-      <div>
-         <h6 class="fw-semibold mb-0">Dashboard</h6>
-         <p class="text-neutral-600 mt-4 mb-0">School -> Manage your school, track attendance, expense, and net worth.</p>
-      </div>
-   </div>
-
-   <div class="row gy-4">
-      <div class="col-xxl-8">
-         <div class="row gy-4">
-            <div class="col-xxl-4 col-sm-6" ng-repeat="card in cards track by $index">
-               <a ng-if="card.url" ng-href="@{{card.url}}" class="text-decoration-none">
-                  <div class="card shadow-1 radius-8 h-100" ng-class="card.gradient">
-                     <div class="card-body p-20">
-                        <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
-                           <div class="w-44-px h-44-px rounded-circle d-flex justify-content-center align-items-center" ng-class="card.bg">
-                              <img ng-src="assets/images/icons/@{{card.icon}}" alt="Icon">
+<div ng-controller="adminDashboardCtrl" ng-init="init();" class="container-fluid px-0">
+   <div class="row g-3">
+      <div class="col-12 col-xxl-8">
+         <div class="row g-3">
+            <div class="col-12 col-sm-6 col-xl-4" ng-repeat="card in cards track by card.key">
+               <a ng-if="card.url" ng-href="@{{card.url}}" class="text-decoration-none text-reset d-block h-100">
+                  <div class="card h-100 border-0 shadow-sm">
+                     <div class="card-body">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                           <div class="rounded-circle p-2 d-inline-flex align-items-center justify-content-center" ng-class="card.iconBgClass">
+                              <img ng-src="assets/images/icons/@{{card.icon}}" alt="@{{card.label}}" width="28" height="28">
                            </div>
-                           <p class="fw-medium text-primary-light mb-1">@{{card.label}}</p>
+                           <h6 class="mb-0">@{{card.label}}</h6>
                         </div>
-                        <h6 class="mb-0">@{{card.mainValue | number}}</h6>
-                        <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                           <span class="d-inline-flex align-items-center gap-1 text-success-600 text-sm fw-semibold">
-                              Active: @{{card.active | number}}
-                           </span>
+                        <h4 class="mb-3 fw-bold">@{{card.mainValue | number}}</h4>
+                        <div class="d-flex justify-content-between text-secondary small">
+                           <span>Active: @{{card.active | number}}</span>
                            <span>Inactive: @{{card.inactive | number}}</span>
-                        </p>
+                        </div>
                      </div>
                   </div>
                </a>
+
+               <div ng-if="!card.url" class="card h-100 border-0 shadow-sm">
+                  <div class="card-body">
+                     <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle p-2 d-inline-flex align-items-center justify-content-center" ng-class="card.iconBgClass">
+                           <img ng-src="assets/images/icons/@{{card.icon}}" alt="@{{card.label}}" width="28" height="28">
+                        </div>
+                        <h6 class="mb-0">@{{card.label}}</h6>
+                     </div>
+                     <h4 class="mb-3 fw-bold">@{{card.mainValue | number}}</h4>
+                     <div class="d-flex justify-content-between text-secondary small">
+                        <span>Active: @{{card.active | number}}</span>
+                        <span>Inactive: @{{card.inactive | number}}</span>
+                     </div>
+                  </div>
+               </div>
             </div>
          </div>
       </div>
-      <div class="col-xxl-4">
-         <div class="card h-100">
-            <div class="card-body">
-               <div class="d-flex flex-wrap align-items-center justify-content-between border-bottom border-neutral-200 pb-16 mb-16">
-                  <h6 class="text-lg mb-0">Student Attendance</h6>
-               </div>
-               <div class="d-flex flex-column gap-12">
-                  <div class="d-flex align-items-center justify-content-between">
-                     <span class="text-neutral-600">Present</span>
-                     <span class="fw-semibold text-primary-light">87%</span>
-                  </div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <span class="text-neutral-600">Absent</span>
-                     <span class="fw-semibold text-primary-light">40%</span>
-                  </div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <span class="text-neutral-600">Late</span>
-                     <span class="fw-semibold text-primary-light">20%</span>
-                  </div>
-                  <div class="d-flex align-items-center justify-content-between">
-                     <span class="text-neutral-600">Half day</span>
-                     <span class="fw-semibold text-primary-light">20%</span>
-                  </div>
-               </div>
+
+      <div class="col-12 col-xxl-4">
+         <div class="card h-100 border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+               <h6 class="mb-0">Student Attendance</h6>
+            </div>
+            <div class="card-body p-0">
+               <ul class="list-group list-group-flush">
+                  <li ng-repeat="item in attendance track by item.key" class="list-group-item d-flex justify-content-between align-items-center">
+                     <span class="fw-medium">@{{item.label}}</span>
+                     <span class="d-flex align-items-center gap-2">
+                        <span class="badge rounded-pill" ng-class="item.badgeClass">@{{item.percent}}%</span>
+                        <span class="text-secondary small">(@{{item.count}})</span>
+                     </span>
+                  </li>
+               </ul>
             </div>
          </div>
       </div>

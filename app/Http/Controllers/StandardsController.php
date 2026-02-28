@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ModelHelper;
 use App\Models\Standard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -26,8 +27,8 @@ class StandardsController extends Controller
             return response()->json(['success' => true, 'standards' => []]);
         }
 
-        $idColumn = $this->resolveColumn('standards', ['id', 'standard_id', 'sid']);
-        $nameColumn = $this->resolveColumn('standards', ['name', 'standard_name', 'title']);
+        $idColumn = ModelHelper::resolveColumn('standards', ['id', 'standard_id', 'sid']);
+        $nameColumn = ModelHelper::resolveColumn('standards', ['name', 'standard_name', 'title']);
         if (!$idColumn || !$nameColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported standards table structure.'], 422);
         }
@@ -63,8 +64,8 @@ class StandardsController extends Controller
             return response()->json(['success' => false, 'message' => 'standards table not found.'], 422);
         }
 
-        $idColumn = $this->resolveColumn('standards', ['id', 'standard_id', 'sid']);
-        $nameColumn = $this->resolveColumn('standards', ['name', 'standard_name', 'title']);
+        $idColumn = ModelHelper::resolveColumn('standards', ['id', 'standard_id', 'sid']);
+        $nameColumn = ModelHelper::resolveColumn('standards', ['name', 'standard_name', 'title']);
         if (!$idColumn || !$nameColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported standards table structure.'], 422);
         }
@@ -110,7 +111,7 @@ class StandardsController extends Controller
             return response()->json(['success' => false, 'message' => 'standards table not found.'], 422);
         }
 
-        $idColumn = $this->resolveColumn('standards', ['id', 'standard_id', 'sid']);
+        $idColumn = ModelHelper::resolveColumn('standards', ['id', 'standard_id', 'sid']);
         if (!$idColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported standards table structure.'], 422);
         }
@@ -121,15 +122,5 @@ class StandardsController extends Controller
 
         Standard::query()->where($idColumn, (int) $payload['id'])->delete();
         return response()->json(['success' => true, 'message' => 'Standard deleted successfully.']);
-    }
-
-    private function resolveColumn(string $table, array $candidates): ?string
-    {
-        foreach ($candidates as $column) {
-            if (Schema::hasColumn($table, $column)) {
-                return $column;
-            }
-        }
-        return null;
     }
 }

@@ -22,10 +22,15 @@ class UserController extends Controller{
             $request->session()->regenerate();
 
             $user = Auth::user();
-            $privillage = (int) ($user->privillage ?? $user->privilege ?? 0);
+            $privillage = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+            $active = (int) ($user->active ?? 1);
 
-            if ($privillage === 1) {
+            if ($privillage === 1 && $active === 0) {
                 return redirect()->to('/super-admin/dashboard');
+            }
+
+            if ($privillage === 2) {
+                return redirect()->to('/admin/dashboard');
             }
 
             return redirect()->to('students');

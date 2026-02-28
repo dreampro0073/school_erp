@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ModelHelper;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -26,8 +27,8 @@ class ServicesController extends Controller
             return response()->json(['success' => true, 'services' => []]);
         }
 
-        $idColumn = $this->resolveColumn('services', ['id', 'service_id', 'sid']);
-        $nameColumn = $this->resolveColumn('services', ['name', 'service_name', 'title']);
+        $idColumn = ModelHelper::resolveColumn('services', ['id', 'service_id', 'sid']);
+        $nameColumn = ModelHelper::resolveColumn('services', ['name', 'service_name', 'title']);
         if (!$idColumn || !$nameColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported services table structure.'], 422);
         }
@@ -64,8 +65,8 @@ class ServicesController extends Controller
             return response()->json(['success' => false, 'message' => 'services table not found.'], 422);
         }
 
-        $idColumn = $this->resolveColumn('services', ['id', 'service_id', 'sid']);
-        $nameColumn = $this->resolveColumn('services', ['name', 'service_name', 'title']);
+        $idColumn = ModelHelper::resolveColumn('services', ['id', 'service_id', 'sid']);
+        $nameColumn = ModelHelper::resolveColumn('services', ['name', 'service_name', 'title']);
         if (!$idColumn || !$nameColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported services table structure.'], 422);
         }
@@ -99,15 +100,5 @@ class ServicesController extends Controller
 
         Service::query()->insert($updateOrInsert);
         return response()->json(['success' => true, 'message' => 'Service created successfully.']);
-    }
-
-    private function resolveColumn(string $table, array $candidates): ?string
-    {
-        foreach ($candidates as $column) {
-            if (Schema::hasColumn($table, $column)) {
-                return $column;
-            }
-        }
-        return null;
     }
 }

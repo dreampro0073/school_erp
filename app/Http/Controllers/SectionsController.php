@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ModelHelper;
 use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -26,8 +27,8 @@ class SectionsController extends Controller
             return response()->json(['success' => true, 'sections' => []]);
         }
 
-        $idColumn = $this->resolveColumn('sections', ['id', 'section_id', 'sid']);
-        $nameColumn = $this->resolveColumn('sections', ['name', 'section_name', 'title']);
+        $idColumn = ModelHelper::resolveColumn('sections', ['id', 'section_id', 'sid']);
+        $nameColumn = ModelHelper::resolveColumn('sections', ['name', 'section_name', 'title']);
         if (!$idColumn || !$nameColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported sections table structure.'], 422);
         }
@@ -63,8 +64,8 @@ class SectionsController extends Controller
             return response()->json(['success' => false, 'message' => 'sections table not found.'], 422);
         }
 
-        $idColumn = $this->resolveColumn('sections', ['id', 'section_id', 'sid']);
-        $nameColumn = $this->resolveColumn('sections', ['name', 'section_name', 'title']);
+        $idColumn = ModelHelper::resolveColumn('sections', ['id', 'section_id', 'sid']);
+        $nameColumn = ModelHelper::resolveColumn('sections', ['name', 'section_name', 'title']);
         if (!$idColumn || !$nameColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported sections table structure.'], 422);
         }
@@ -110,7 +111,7 @@ class SectionsController extends Controller
             return response()->json(['success' => false, 'message' => 'sections table not found.'], 422);
         }
 
-        $idColumn = $this->resolveColumn('sections', ['id', 'section_id', 'sid']);
+        $idColumn = ModelHelper::resolveColumn('sections', ['id', 'section_id', 'sid']);
         if (!$idColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported sections table structure.'], 422);
         }
@@ -121,15 +122,5 @@ class SectionsController extends Controller
 
         Section::query()->where($idColumn, (int) $payload['id'])->delete();
         return response()->json(['success' => true, 'message' => 'Section deleted successfully.']);
-    }
-
-    private function resolveColumn(string $table, array $candidates): ?string
-    {
-        foreach ($candidates as $column) {
-            if (Schema::hasColumn($table, $column)) {
-                return $column;
-            }
-        }
-        return null;
     }
 }

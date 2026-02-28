@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Subject;
 use App\Models\User;
+use App\Models\ModelHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
@@ -12,7 +13,7 @@ class SubjectsController extends Controller
     public function index()
     {
         $authUser = auth()->user();
-        if (!$this->isPrivOne($authUser)) {
+        if (!User::isPrivOne($authUser)) {
             abort(403);
         }
 
@@ -21,11 +22,11 @@ class SubjectsController extends Controller
 
     public function initSubjects(Request $request)
     {
-        $user = $this->resolveApiUser($request);
+        $user = User::resolveApiUser($request);
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
-        if (!$this->isPrivOne($user)) {
+        if (!User::isPrivOne($user)) {
             return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
         }
 
@@ -33,8 +34,8 @@ class SubjectsController extends Controller
             return response()->json(['success' => true, 'subjects' => []]);
         }
 
-        $idColumn = $this->resolveColumn('subjects', ['id', 'subject_id', 'sid']);
-        $nameColumn = $this->resolveColumn('subjects', ['name', 'subject_name', 'title']);
+        $idColumn = ModelHelper::resolveColumn('subjects', ['id', 'subject_id', 'sid']);
+        $nameColumn = ModelHelper::resolveColumn('subjects', ['name', 'subject_name', 'title']);
         if (!$idColumn || !$nameColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported subjects table structure.'], 422);
         }
@@ -60,11 +61,11 @@ class SubjectsController extends Controller
 
     public function storeSubject(Request $request)
     {
-        $user = $this->resolveApiUser($request);
+        $user = User::resolveApiUser($request);
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
-        if (!$this->isPrivOne($user)) {
+        if (!User::isPrivOne($user)) {
             return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
         }
 
@@ -72,8 +73,8 @@ class SubjectsController extends Controller
             return response()->json(['success' => false, 'message' => 'subjects table not found.'], 422);
         }
 
-        $idColumn = $this->resolveColumn('subjects', ['id', 'subject_id', 'sid']);
-        $nameColumn = $this->resolveColumn('subjects', ['name', 'subject_name', 'title']);
+        $idColumn = ModelHelper::resolveColumn('subjects', ['id', 'subject_id', 'sid']);
+        $nameColumn = ModelHelper::resolveColumn('subjects', ['name', 'subject_name', 'title']);
         if (!$idColumn || !$nameColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported subjects table structure.'], 422);
         }
@@ -109,11 +110,11 @@ class SubjectsController extends Controller
 
     public function deleteSubject(Request $request)
     {
-        $user = $this->resolveApiUser($request);
+        $user = User::resolveApiUser($request);
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
-        if (!$this->isPrivOne($user)) {
+        if (!User::isPrivOne($user)) {
             return response()->json(['success' => false, 'message' => 'Forbidden'], 403);
         }
 
@@ -121,7 +122,7 @@ class SubjectsController extends Controller
             return response()->json(['success' => false, 'message' => 'subjects table not found.'], 422);
         }
 
-        $idColumn = $this->resolveColumn('subjects', ['id', 'subject_id', 'sid']);
+        $idColumn = ModelHelper::resolveColumn('subjects', ['id', 'subject_id', 'sid']);
         if (!$idColumn) {
             return response()->json(['success' => false, 'message' => 'Unsupported subjects table structure.'], 422);
         }
@@ -133,36 +134,4 @@ class SubjectsController extends Controller
         Subject::query()->where($idColumn, (int) $payload['id'])->delete();
         return response()->json(['success' => true, 'message' => 'Subject deleted successfully.']);
     }
-
-    private function resolveApiUser(Request $request): ?User
-    {
-        $apiToken = $request->header('apiToken');
-        $user = User::authUser($apiToken);
-        if (!$user || is_string($user)) {
-            return null;
-        }
-
-        return $user;
-    }
-
-    private function isPrivOne($user): bool
-    {
-        if (!$user) {
-            return false;
-        }
-
-        $priv = $user->priv ?? $user->privillage ?? $user->privilege ?? null;
-        return (int) $priv === 1;
-    }
-
-    private function resolveColumn(string $table, array $candidates): ?string
-    {
-        foreach ($candidates as $column) {
-            if (Schema::hasColumn($table, $column)) {
-                return $column;
-            }
-        }
-        return null;
-    }
 }
-

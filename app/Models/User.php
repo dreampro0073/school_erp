@@ -4,6 +4,7 @@ namespace App\Models;
 
 use DB, Session, Cache;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -44,6 +45,34 @@ class User extends Authenticatable {
         }else{
             return "User not found";
         }
+    }
+
+    public static function resolveApiUser(Request $request, ?int $requiredPriv = null): ?self
+    {
+        $apiToken = $request->header('apiToken');
+        $user = self::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return null;
+        }
+
+        if ($requiredPriv !== null) {
+            $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+            if ($priv !== $requiredPriv) {
+                return null;
+            }
+        }
+
+        return $user;
+    }
+
+    public static function isPrivOne($user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        $priv = $user->priv ?? $user->privillage ?? $user->privilege ?? null;
+        return (int) $priv === 1;
     }
 
    

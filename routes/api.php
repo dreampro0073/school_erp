@@ -10,6 +10,9 @@ use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SubjectsController;
 use App\Http\Controllers\FeeTypesController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\IncomeController;
+use App\Http\Controllers\AttendanceController;
 
 // Route::apiResource('students', StudentController::class);
 Route::prefix('students')
@@ -67,5 +70,48 @@ Route::prefix('dashboard')
     ->controller(SuperAdminController::class)
     ->group(function () {
         Route::post('/init', 'initDashboard');
+    }
+);
+
+Route::prefix('admin/dashboard')
+    ->controller(AdminController::class)
+    ->group(function () {
+        Route::post('/init', 'initDashboard');
+    }
+);
+
+Route::prefix('admin')
+    ->controller(AdminController::class)
+    ->group(function () {
+        Route::post('/students/init', 'initStudents');
+        Route::post('/students/get', 'getStudent');
+        Route::post('/students/store', 'storeStudent');
+        Route::post('/students/status', 'updateStudentStatus');
+        Route::post('/teachers/init', 'initTeachers');
+        Route::post('/teachers/get', 'getTeacher');
+        Route::post('/teachers/store', 'storeTeacher');
+    }
+);
+
+Route::prefix('admin')
+    ->controller(IncomeController::class)
+    ->group(function () {
+        Route::post('/incomes/init', 'initIncomes');
+        Route::post('/incomes/store', 'storeIncome');
+        Route::post('/income-entries/init', 'initIncomeEntries');
+        Route::post('/income-entries/store', 'storeIncomeEntry');
+        Route::post('/expenses/init', 'initExpenses');
+        Route::post('/expenses/store', 'storeExpense');
+        Route::post('/expense-entries/init', 'initExpenseEntries');
+        Route::post('/expense-entries/store', 'storeExpenseEntry');
+    }
+);
+
+Route::prefix('admin')
+    ->controller(AttendanceController::class)
+    ->group(function () {
+        Route::post('/attendance/init', 'init');
+        Route::post('/attendance/store', 'store');
+        Route::post('/attendance/list', 'list');
     }
 );

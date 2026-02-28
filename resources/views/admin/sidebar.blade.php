@@ -148,6 +148,12 @@
          </a>
       </li>
       <li>
+         <a href="{{ route('worklog.index') }}">
+         <i class="ri-file-list-3-line"></i>
+         <span>Worklog</span>
+         </a>
+      </li>
+      <li>
          <a href="javascript:void(0)" onclick="document.getElementById('logoutFormSidebar').submit();">
          <i class="ri-shut-down-line"></i>
          <span>Logout</span>
@@ -161,42 +167,12 @@
          </a>
          <ul class="sidebar-submenu">
             <li>
-               <a href="{{ route('super-admin.users.type', ['type' => 'schools']) }}">
+               <a href="{{ url('/admin/dashboard') }}">
                <i class="ri-circle-fill circle-icon w-auto"></i>
-               Schools
-               </a>
-            </li>
-            <li>
-               <a href="{{ route('super-admin.users.type', ['type' => 'students']) }}">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Students
-               </a>
-            </li>
-            <li>
-               <a href="{{ route('super-admin.users.type', ['type' => 'teachers']) }}">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Teachers
-               </a>
-            </li>
-            <li>
-               <a href="{{ route('super-admin.users.type', ['type' => 'parents']) }}">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Parents
-               </a>
-            </li>
-            <li>
-               <a href="{{ url('/super-admin/dashboard') }}">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               LMS 
+               Overview
                </a>
             </li>
          </ul>
-      </li>
-      <li>
-         <a href="{{ route('super-admin.services.index') }}">
-         <i class="ri-service-line"></i>
-         <span>Services</span>
-         </a>
       </li>
       <li class="dropdown">
          <a href="javascript:void(0)">
@@ -205,39 +181,15 @@
          </a>
          <ul class="sidebar-submenu">
             <li>
-               <a href="add-new-student.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Add New Student
-               </a>
-            </li>
-            <li>
-               <a href="student-list.html">
+               <a href="{{ route('admin.students.index') }}">
                <i class="ri-circle-fill circle-icon w-auto"></i>
                Student List
                </a>
             </li>
             <li>
-               <a href="suspended-student.html">
+               <a href="{{ route('admin.students.add') }}">
                <i class="ri-circle-fill circle-icon w-auto"></i>
-               Suspend Student
-               </a>
-            </li>
-            <li>
-               <a href="student-category.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Student Categories
-               </a>
-            </li>
-            <li>
-               <a href="edit-student.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Edit Student
-               </a>
-            </li>
-            <li>
-               <a href="student-details.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Student Details
+               Add Student
                </a>
             </li>
          </ul>
@@ -249,65 +201,15 @@
          </a>
          <ul class="sidebar-submenu">
             <li>
-               <a href="add-new-teacher.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Add New Teacher
-               </a>
-            </li>
-            <li>
-               <a href="teacher-list.html">
+               <a href="{{ route('admin.teachers.index') }}">
                <i class="ri-circle-fill circle-icon w-auto"></i>
                Teacher List
                </a>
             </li>
             <li>
-               <a href="edit-teacher.html">
+               <a href="{{ route('admin.teachers.add') }}">
                <i class="ri-circle-fill circle-icon w-auto"></i>
-               Edit Teacher
-               </a>
-            </li>
-            <li>
-               <a href="teacher-details.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Teacher Details
-               </a>
-            </li>
-            <li>
-               <a href="teacher-timetable.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Teacher Timetable
-               </a>
-            </li>
-         </ul>
-      </li>
-      <li class="dropdown">
-         <a href="javascript:void(0)">
-         <i class="ri-account-circle-line"></i>
-         <span>Guardian</span>
-         </a>
-         <ul class="sidebar-submenu">
-            <li>
-               <a href="add-new-guardian.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Add New Guardians
-               </a>
-            </li>
-            <li>
-               <a href="guardian-list.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Guardians List
-               </a>
-            </li>
-            <li>
-               <a href="edit-guardian.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Edit Guardian
-               </a>
-            </li>
-            <li>
-               <a href="guardian-details.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Guardian Details
+               Add Teacher
                </a>
             </li>
          </ul>
@@ -369,6 +271,12 @@
                </a>
             </li>
          </ul>
+      </li>
+      <li>
+         <a href="{{ route('worklog.index') }}">
+         <i class="ri-file-list-3-line"></i>
+         <span>Worklog</span>
+         </a>
       </li>
       <li class="dropdown">
          <a href="javascript:void(0)">
@@ -489,39 +397,13 @@
       <li class="dropdown">
          <a href="javascript:void(0)">
          <i class="ri-money-dollar-circle-line"></i>
-         <span>Accounts</span>
+         <span>Income & Expenses</span>
          </a>
          <ul class="sidebar-submenu">
-            <li>
-               <a href="income-head.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Income Head
-               </a>
-            </li>
-            <li>
-               <a href="income-list.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Income List
-               </a>
-            </li>
-            <li>
-               <a href="expense-head.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Expense Head
-               </a>
-            </li>
-            <li>
-               <a href="expense-list.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Expense List
-               </a>
-            </li>
-            <li>
-               <a href="transaction.html">
-               <i class="ri-circle-fill circle-icon w-auto"></i>
-               Transaction
-               </a>
-            </li>
+            <li><a href="{{ route('admin.incomes.index') }}"><i class="ri-circle-fill circle-icon w-auto"></i>Incomes</a></li>
+            <li><a href="{{ route('admin.income-entries.index') }}"><i class="ri-circle-fill circle-icon w-auto"></i>Income Entries</a></li>
+            <li><a href="{{ route('admin.expenses.index') }}"><i class="ri-circle-fill circle-icon w-auto"></i>Expenses</a></li>
+            <li><a href="{{ route('admin.expense-entries.index') }}"><i class="ri-circle-fill circle-icon w-auto"></i>Expense Entries</a></li>
          </ul>
       </li>
       <li class="dropdown">

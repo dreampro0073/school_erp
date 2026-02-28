@@ -61,7 +61,11 @@
                         <td>{{ $user->erp_id }}</td>
                      @endif
                      @if (in_array('name', $columns, true))
-                        <td>{{ $user->name }}</td>
+                        <td>
+                           <a href="{{ route('super-admin.users.profile', ['id' => $user->id]) }}" class="text-primary-600 fw-semibold">
+                              {{ $user->name }}
+                           </a>
+                        </td>
                      @endif
                      @if (in_array('email', $columns, true))
                         <td>{{ $user->email }}</td>

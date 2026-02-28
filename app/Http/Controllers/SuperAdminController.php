@@ -8,6 +8,7 @@ use App\Models\ClientStandard;
 use App\Models\Service;
 use App\Models\Standard;
 use App\Models\User;
+use App\Models\ModelHelper;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
@@ -111,8 +112,8 @@ class SuperAdminController extends Controller
             return back()->with('failure', 'School not found.');
         }
 
-        $serviceIdColumn = $this->resolveColumn('services', ['id', 'service_id', 'sid']);
-        $serviceNameColumn = $this->resolveColumn('services', ['name', 'service_name', 'title']);
+        $serviceIdColumn = ModelHelper::resolveColumn('services', ['id', 'service_id', 'sid']);
+        $serviceNameColumn = ModelHelper::resolveColumn('services', ['name', 'service_name', 'title']);
         if (!$serviceIdColumn || !$serviceNameColumn) {
             return back()->with('failure', 'Services table structure is not supported.');
         }
@@ -125,8 +126,8 @@ class SuperAdminController extends Controller
             ->orderBy($serviceNameColumn)
             ->get();
 
-        $clientColumn = $this->resolveColumn('client_services', ['client_id', 'school_id', 'user_id', 'users_id']);
-        $serviceColumn = $this->resolveColumn('client_services', ['service_id', 'services_id']);
+        $clientColumn = ModelHelper::resolveColumn('client_services', ['client_id', 'school_id', 'user_id', 'users_id']);
+        $serviceColumn = ModelHelper::resolveColumn('client_services', ['service_id', 'services_id']);
         if (!$clientColumn || !$serviceColumn) {
             return back()->with('failure', 'client_services table structure is not supported.');
         }
@@ -170,13 +171,13 @@ class SuperAdminController extends Controller
             $servicesInput = [];
         }
 
-        $clientColumn = $this->resolveColumn('client_services', ['client_id', 'school_id', 'user_id', 'users_id']);
-        $serviceColumn = $this->resolveColumn('client_services', ['service_id', 'services_id']);
+        $clientColumn = ModelHelper::resolveColumn('client_services', ['client_id', 'school_id', 'user_id', 'users_id']);
+        $serviceColumn = ModelHelper::resolveColumn('client_services', ['service_id', 'services_id']);
         if (!$clientColumn || !$serviceColumn) {
             return back()->with('failure', 'client_services table structure is not supported.');
         }
 
-        $permissionColumn = $this->resolveColumn('client_services', ['permissions', 'permission', 'rights', 'access']);
+        $permissionColumn = ModelHelper::resolveColumn('client_services', ['permissions', 'permission', 'rights', 'access']);
 
         ClientService::query()->where($clientColumn, $id)->delete();
 
@@ -250,6 +251,35 @@ class SuperAdminController extends Controller
         $currentType = $queryMeta['type'];
 
         return view('admin.users.index', compact('users', 'columns', 'pageTitle', 'pageSubtitle', 'currentType'));
+    }
+
+    public function userProfile(int $id)
+    {
+        if (!Schema::hasTable('users')) {
+            return back()->with('failure', 'Users table not found.');
+        }
+
+        $query = User::query()->where('id', $id);
+        $privColumn = $this->resolvePrivilegeColumnOnUsers();
+        if ($privColumn) {
+            $query->where($privColumn, '!=', 1);
+        }
+
+        $user = $query->first();
+        if (!$user) {
+            return back()->with('failure', 'User not found.');
+        }
+
+        $roleValue = (int) ($privColumn ? ($user->{$privColumn} ?? 0) : 0);
+        $roleLabel = match ($roleValue) {
+            2 => 'School',
+            3 => 'Teacher',
+            4 => 'Student',
+            5 => 'Parent',
+            default => 'User',
+        };
+
+        return view('admin.users.profile', compact('user', 'roleLabel'));
     }
 
     public function createSchool(Request $request)
@@ -367,7 +397,7 @@ class SuperAdminController extends Controller
 
     private function getSimpleStats(array $tableCandidates): array
     {
-        $table = $this->resolveTable($tableCandidates);
+        $table = ModelHelper::resolveTable($tableCandidates);
         if (!$table) {
             return ['active' => 0, 'inactive' => 0, 'total' => 0];
         }
@@ -387,7 +417,7 @@ class SuperAdminController extends Controller
 
     private function getEntityStats(array $tableCandidates): array
     {
-        $table = $this->resolveTable($tableCandidates);
+        $table = ModelHelper::resolveTable($tableCandidates);
         if (!$table) {
             return ['active' => 0, 'inactive' => 0, 'total' => 0];
         }
@@ -472,17 +502,6 @@ class SuperAdminController extends Controller
         return ['active' => $active, 'inactive' => $inactive, 'total' => $total];
     }
 
-    private function resolveTable(array $candidates): ?string
-    {
-        foreach ($candidates as $table) {
-            if (Schema::hasTable($table)) {
-                return $table;
-            }
-        }
-
-        return null;
-    }
-
     private function resolveUserForeignKey(string $table): ?string
     {
         foreach (['user_id', 'users_id', 'userid', 'userId'] as $column) {
@@ -498,21 +517,6 @@ class SuperAdminController extends Controller
     {
         foreach (['priv', 'privillage', 'privilege', 'privilege_id', 'role_id', 'user_type'] as $column) {
             if (Schema::hasColumn('users', $column)) {
-                return $column;
-            }
-        }
-
-        return null;
-    }
-
-    private function resolveColumn(string $table, array $candidates): ?string
-    {
-        if (!Schema::hasTable($table)) {
-            return null;
-        }
-
-        foreach ($candidates as $column) {
-            if (Schema::hasColumn($table, $column)) {
                 return $column;
             }
         }
@@ -641,10 +645,10 @@ class SuperAdminController extends Controller
             return;
         }
 
-        $clientUserFk = $this->resolveColumn('clients', ['user_id', 'users_id', 'userid', 'userId']);
-        $clientNameCol = $this->resolveColumn('clients', ['name', 'client_name', 'school_name', 'title']);
-        $clientEmailCol = $this->resolveColumn('clients', ['email', 'client_email']);
-        $clientErpCol = $this->resolveColumn('clients', ['erp_id', 'client_code', 'school_code']);
+        $clientUserFk = ModelHelper::resolveColumn('clients', ['user_id', 'users_id', 'userid', 'userId']);
+        $clientNameCol = ModelHelper::resolveColumn('clients', ['name', 'client_name', 'school_name', 'title']);
+        $clientEmailCol = ModelHelper::resolveColumn('clients', ['email', 'client_email']);
+        $clientErpCol = ModelHelper::resolveColumn('clients', ['erp_id', 'client_code', 'school_code']);
 
         $clientPayload = [];
         if ($clientUserFk) {
@@ -742,8 +746,8 @@ class SuperAdminController extends Controller
             return collect();
         }
 
-        $serviceIdColumn = $this->resolveColumn('services', ['id', 'service_id', 'sid']);
-        $serviceNameColumn = $this->resolveColumn('services', ['name', 'service_name', 'title']);
+        $serviceIdColumn = ModelHelper::resolveColumn('services', ['id', 'service_id', 'sid']);
+        $serviceNameColumn = ModelHelper::resolveColumn('services', ['name', 'service_name', 'title']);
         if (!$serviceIdColumn || !$serviceNameColumn) {
             return collect();
         }
@@ -763,8 +767,8 @@ class SuperAdminController extends Controller
             return collect();
         }
 
-        $standardIdColumn = $this->resolveColumn('standards', ['id', 'standard_id', 'sid']);
-        $standardNameColumn = $this->resolveColumn('standards', ['name', 'standard_name', 'title']);
+        $standardIdColumn = ModelHelper::resolveColumn('standards', ['id', 'standard_id', 'sid']);
+        $standardNameColumn = ModelHelper::resolveColumn('standards', ['name', 'standard_name', 'title']);
         if (!$standardIdColumn || !$standardNameColumn) {
             return collect();
         }
@@ -784,8 +788,8 @@ class SuperAdminController extends Controller
             return [];
         }
 
-        $clientColumn = $this->resolveColumn('client_services', ['client_id', 'school_id', 'user_id', 'users_id']);
-        $serviceColumn = $this->resolveColumn('client_services', ['service_id', 'services_id']);
+        $clientColumn = ModelHelper::resolveColumn('client_services', ['client_id', 'school_id', 'user_id', 'users_id']);
+        $serviceColumn = ModelHelper::resolveColumn('client_services', ['service_id', 'services_id']);
         if (!$clientColumn || !$serviceColumn) {
             return [];
         }
@@ -806,8 +810,8 @@ class SuperAdminController extends Controller
             return [];
         }
 
-        $clientColumn = $this->resolveColumn('client_standards', ['client_id', 'school_id', 'user_id', 'users_id']);
-        $standardColumn = $this->resolveColumn('client_standards', ['standard_id', 'standards_id', 'sid']);
+        $clientColumn = ModelHelper::resolveColumn('client_standards', ['client_id', 'school_id', 'user_id', 'users_id']);
+        $standardColumn = ModelHelper::resolveColumn('client_standards', ['standard_id', 'standards_id', 'sid']);
         if (!$clientColumn || !$standardColumn) {
             return [];
         }
@@ -842,13 +846,13 @@ class SuperAdminController extends Controller
             return;
         }
 
-        $clientColumn = $this->resolveColumn('client_services', ['client_id', 'school_id', 'user_id', 'users_id']);
-        $serviceColumn = $this->resolveColumn('client_services', ['service_id', 'services_id']);
+        $clientColumn = ModelHelper::resolveColumn('client_services', ['client_id', 'school_id', 'user_id', 'users_id']);
+        $serviceColumn = ModelHelper::resolveColumn('client_services', ['service_id', 'services_id']);
         if (!$clientColumn || !$serviceColumn) {
             return;
         }
 
-        $permissionColumn = $this->resolveColumn('client_services', ['permissions', 'permission', 'rights', 'access']);
+        $permissionColumn = ModelHelper::resolveColumn('client_services', ['permissions', 'permission', 'rights', 'access']);
         ClientService::query()->where($clientColumn, $schoolId)->delete();
 
         foreach ($serviceIds as $serviceId) {
@@ -886,8 +890,8 @@ class SuperAdminController extends Controller
             return;
         }
 
-        $clientColumn = $this->resolveColumn('client_standards', ['client_id', 'school_id', 'user_id', 'users_id']);
-        $standardColumn = $this->resolveColumn('client_standards', ['standard_id', 'standards_id', 'sid']);
+        $clientColumn = ModelHelper::resolveColumn('client_standards', ['client_id', 'school_id', 'user_id', 'users_id']);
+        $standardColumn = ModelHelper::resolveColumn('client_standards', ['standard_id', 'standards_id', 'sid']);
         if (!$clientColumn || !$standardColumn) {
             return;
         }
