@@ -1,3 +1,4 @@
+<?php 
 ALTER TABLE `students` ADD `first_name` VARCHAR(255) NULL DEFAULT NULL AFTER `erp_id`, ADD `last_name` VARCHAR(255) NULL DEFAULT NULL AFTER `first_name`;
 
 CREATE TABLE `worklog` (
