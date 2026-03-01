@@ -41,6 +41,7 @@ Route::prefix('teachers')->middleware(['auth', 'teacher-only'])
     ->controller(TeacherController::class)
     ->group(function () {
         Route::get('/dashboard', 'dashboard');
+        Route::get('/exam-marks', 'examMarksPage')->name('teachers.exam-marks.index');
     }
 );
 

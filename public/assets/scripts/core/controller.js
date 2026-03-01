@@ -1114,3 +1114,122 @@ app.controller('chatCtrl', function($scope, DBService, $timeout) {
         }, 80);
     };
 });
+
+// *** examMarksCtrl ***
+app.controller('examMarksCtrl', function($scope, DBService) {
+    function todayDate() {
+        var d = new Date();
+        var m = String(d.getMonth() + 1).padStart(2, '0');
+        var day = String(d.getDate()).padStart(2, '0');
+        return d.getFullYear() + '-' + m + '-' + day;
+    }
+
+    $scope.students = [];
+    $scope.subjects = [];
+    $scope.rows = [];
+    $scope.saving = false;
+    $scope.filters = {
+        exam_name: '',
+        student_id: '',
+        subject_id: ''
+    };
+    $scope.formData = {};
+
+    $scope.resetForm = function() {
+        $scope.formData = {
+            id: '',
+            exam_name: '',
+            exam_date: todayDate(),
+            student_id: '',
+            subject_id: '',
+            total_marks: 100,
+            obtained_marks: '',
+            remark: ''
+        };
+    };
+
+    $scope.init = function() {
+        $scope.resetForm();
+        DBService.postCall({}, '/api/teachers/exam-marks/init').then(function(data) {
+            if (!(data && data.success)) {
+                $scope.students = [];
+                $scope.subjects = [];
+                $scope.rows = [];
+                return;
+            }
+
+            $scope.students = data.students || [];
+            $scope.subjects = data.subjects || [];
+            $scope.rows = data.rows || [];
+        });
+    };
+
+    $scope.loadRows = function() {
+        DBService.postCall({
+            exam_name: $scope.filters.exam_name || '',
+            student_id: $scope.filters.student_id || null,
+            subject_id: $scope.filters.subject_id || null
+        }, '/api/teachers/exam-marks/list').then(function(data) {
+            if (data && data.success) {
+                $scope.rows = data.rows || [];
+            } else {
+                $scope.rows = [];
+            }
+        });
+    };
+
+    $scope.resetFilters = function() {
+        $scope.filters = { exam_name: '', student_id: '', subject_id: '' };
+        $scope.loadRows();
+    };
+
+    $scope.editRow = function(row) {
+        $scope.formData = {
+            id: row.id,
+            exam_name: row.exam_name,
+            exam_date: row.exam_date,
+            student_id: String(row.student_id || ''),
+            subject_id: row.subject_id ? String(row.subject_id) : '',
+            total_marks: row.total_marks,
+            obtained_marks: row.obtained_marks,
+            remark: row.remark || ''
+        };
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    $scope.saveMark = function() {
+        if (!$scope.formData.student_id || !$scope.formData.exam_name || !$scope.formData.exam_date) {
+            alert('Please fill required fields.');
+            return;
+        }
+
+        if (parseFloat($scope.formData.obtained_marks || 0) > parseFloat($scope.formData.total_marks || 0)) {
+            alert('Obtained marks cannot be greater than total marks.');
+            return;
+        }
+
+        $scope.saving = true;
+        DBService.postCall({
+            id: $scope.formData.id || null,
+            exam_name: $scope.formData.exam_name,
+            exam_date: $scope.formData.exam_date,
+            student_id: parseInt($scope.formData.student_id, 10),
+            subject_id: $scope.formData.subject_id ? parseInt($scope.formData.subject_id, 10) : null,
+            total_marks: parseFloat($scope.formData.total_marks || 0),
+            obtained_marks: parseFloat($scope.formData.obtained_marks || 0),
+            remark: $scope.formData.remark || ''
+        }, '/api/teachers/exam-marks/store').then(function(data) {
+            $scope.saving = false;
+            if (data && data.success) {
+                alert(data.message || 'Saved successfully.');
+                $scope.rows = data.rows || [];
+                $scope.resetForm();
+            } else {
+                alert((data && data.message) ? data.message : 'Unable to save marks.');
+            }
+        }, function() {
+            $scope.saving = false;
+            alert('Unable to save marks.');
+        });
+    };
+});

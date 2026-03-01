@@ -16,6 +16,11 @@ class TeacherController extends Controller
         return view('teachers.dashboard');
     }
 
+    public function examMarksPage()
+    {
+        return view('teachers.exam_marks');
+    }
+
     public function initDashboard(Request $request)
     {
         $user = User::resolveApiUser($request, 3);
@@ -96,6 +101,149 @@ class TeacherController extends Controller
             'myAttendance' => $myAttendance,
             'myAttendanceTotal' => $myAttendanceTotal,
             'recentStudentAttendance' => $recentStudentAttendance,
+        ]);
+    }
+
+    public function initExamMarks(Request $request)
+    {
+        $user = User::resolveApiUser($request, 3);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        if (!Schema::hasTable('exam_marks')) {
+            return response()->json(['success' => false, 'message' => 'exam_marks table not found.'], 422);
+        }
+
+        $clientId = (int) ($user->client_id ?? 0);
+
+        return response()->json([
+            'success' => true,
+            'students' => $this->resolveExamStudents($clientId),
+            'subjects' => $this->resolveExamSubjects($clientId),
+            'rows' => $this->resolveExamMarkRows($clientId, [
+                'student_id' => null,
+                'subject_id' => null,
+                'exam_name' => '',
+            ]),
+        ]);
+    }
+
+    public function listExamMarks(Request $request)
+    {
+        $user = User::resolveApiUser($request, 3);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        if (!Schema::hasTable('exam_marks')) {
+            return response()->json(['success' => false, 'message' => 'exam_marks table not found.'], 422);
+        }
+
+        $filters = $request->validate([
+            'student_id' => ['nullable', 'integer', 'min:1'],
+            'subject_id' => ['nullable', 'integer', 'min:1'],
+            'exam_name' => ['nullable', 'string', 'max:120'],
+        ]);
+
+        $clientId = (int) ($user->client_id ?? 0);
+        return response()->json([
+            'success' => true,
+            'rows' => $this->resolveExamMarkRows($clientId, [
+                'student_id' => isset($filters['student_id']) ? (int) $filters['student_id'] : null,
+                'subject_id' => isset($filters['subject_id']) ? (int) $filters['subject_id'] : null,
+                'exam_name' => trim((string) ($filters['exam_name'] ?? '')),
+            ]),
+        ]);
+    }
+
+    public function storeExamMark(Request $request)
+    {
+        $user = User::resolveApiUser($request, 3);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        if (!Schema::hasTable('exam_marks')) {
+            return response()->json(['success' => false, 'message' => 'exam_marks table not found.'], 422);
+        }
+
+        $data = $request->validate([
+            'id' => ['nullable', 'integer', 'min:1'],
+            'student_id' => ['required', 'integer', 'min:1'],
+            'subject_id' => ['nullable', 'integer', 'min:1'],
+            'exam_name' => ['required', 'string', 'max:120'],
+            'exam_date' => ['required', 'date'],
+            'total_marks' => ['required', 'numeric', 'min:1'],
+            'obtained_marks' => ['required', 'numeric', 'min:0'],
+            'remark' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        if ((float) $data['obtained_marks'] > (float) $data['total_marks']) {
+            return response()->json(['success' => false, 'message' => 'Obtained marks cannot be greater than total marks.'], 422);
+        }
+
+        $clientId = (int) ($user->client_id ?? 0);
+        if (!$this->isValidExamStudent((int) $data['student_id'], $clientId)) {
+            return response()->json(['success' => false, 'message' => 'Invalid student.'], 422);
+        }
+
+        $subjectId = isset($data['subject_id']) ? (int) $data['subject_id'] : 0;
+        if ($subjectId > 0 && !$this->isValidExamSubject($subjectId, $clientId)) {
+            return response()->json(['success' => false, 'message' => 'Invalid subject.'], 422);
+        }
+
+        $payload = [
+            'student_id' => (int) $data['student_id'],
+            'subject_id' => $subjectId,
+            'exam_name' => trim((string) $data['exam_name']),
+            'exam_date' => $data['exam_date'],
+            'total_marks' => (float) $data['total_marks'],
+            'obtained_marks' => (float) $data['obtained_marks'],
+            'remark' => isset($data['remark']) ? trim((string) $data['remark']) : null,
+        ];
+
+        if (Schema::hasColumn('exam_marks', 'client_id')) {
+            $payload['client_id'] = $clientId;
+        }
+        if (Schema::hasColumn('exam_marks', 'marked_by')) {
+            $payload['marked_by'] = (int) ($user->id ?? 0);
+        }
+        if (Schema::hasColumn('exam_marks', 'updated_at')) {
+            $payload['updated_at'] = now();
+        }
+
+        if (!empty($data['id'])) {
+            $query = DB::table('exam_marks')->where('id', (int) $data['id']);
+            if (Schema::hasColumn('exam_marks', 'client_id')) {
+                $query->where('client_id', $clientId);
+            }
+            if (Schema::hasColumn('exam_marks', 'marked_by')) {
+                $query->where('marked_by', (int) ($user->id ?? 0));
+            }
+
+            if (!$query->exists()) {
+                return response()->json(['success' => false, 'message' => 'Exam mark entry not found.'], 404);
+            }
+
+            $query->update($payload);
+            $message = 'Exam mark updated successfully.';
+        } else {
+            if (Schema::hasColumn('exam_marks', 'created_at')) {
+                $payload['created_at'] = now();
+            }
+            DB::table('exam_marks')->insert($payload);
+            $message = 'Exam mark added successfully.';
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'rows' => $this->resolveExamMarkRows($clientId, [
+                'student_id' => null,
+                'subject_id' => null,
+                'exam_name' => '',
+            ]),
         ]);
     }
 
@@ -345,5 +493,158 @@ class TeacherController extends Controller
 
         $fullName = trim((string) ($row->first_name ?? '') . ' ' . (string) ($row->last_name ?? ''));
         return $fullName !== '' ? $fullName : 'N/A';
+    }
+
+    private function resolveExamStudents(int $clientId): array
+    {
+        if (!Schema::hasTable('students')) {
+            return [];
+        }
+
+        $idCol = ModelHelper::resolveColumn('students', ['id', 'student_id', 'sid']);
+        $nameCol = ModelHelper::resolveColumn('students', ['first_name', 'name', 'student_name']);
+        $lastNameCol = ModelHelper::resolveColumn('students', ['last_name']);
+        $admissionCol = ModelHelper::resolveColumn('students', ['admission_no', 'erp_id']);
+        if (!$idCol || !$nameCol) {
+            return [];
+        }
+
+        $query = DB::table('students');
+        if ($clientId > 0 && Schema::hasColumn('students', 'client_id')) {
+            $query->where('client_id', $clientId);
+        }
+        if (Schema::hasColumn('students', 'active')) {
+            $query->where('active', 1);
+        }
+
+        $select = ["{$idCol} as id", "{$nameCol} as first_name"];
+        if ($lastNameCol) {
+            $select[] = "{$lastNameCol} as last_name";
+        }
+        if ($admissionCol) {
+            $select[] = "{$admissionCol} as admission_no";
+        }
+
+        return $query->orderByDesc($idCol)->limit(1000)->get($select)->map(function ($row) {
+            $fullName = trim((string) ($row->first_name ?? '') . ' ' . (string) ($row->last_name ?? ''));
+            return [
+                'id' => (int) ($row->id ?? 0),
+                'name' => $fullName !== '' ? $fullName : (string) ($row->first_name ?? 'Student'),
+                'admission_no' => (string) ($row->admission_no ?? ''),
+            ];
+        })->all();
+    }
+
+    private function resolveExamSubjects(int $clientId): array
+    {
+        if (!Schema::hasTable('subjects')) {
+            return [];
+        }
+
+        $idCol = ModelHelper::resolveColumn('subjects', ['id', 'subject_id']);
+        $nameCol = ModelHelper::resolveColumn('subjects', ['name', 'subject_name', 'title']);
+        if (!$idCol || !$nameCol) {
+            return [];
+        }
+
+        $query = DB::table('subjects');
+        if ($clientId > 0 && Schema::hasColumn('subjects', 'client_id')) {
+            $query->where('client_id', $clientId);
+        }
+        if (Schema::hasColumn('subjects', 'active')) {
+            $query->where('active', 1);
+        }
+
+        return $query->orderBy($nameCol)->limit(500)->get(["{$idCol} as id", "{$nameCol} as name"])->map(function ($row) {
+            return [
+                'id' => (int) ($row->id ?? 0),
+                'name' => (string) ($row->name ?? 'Subject'),
+            ];
+        })->all();
+    }
+
+    private function isValidExamStudent(int $studentId, int $clientId): bool
+    {
+        if (!Schema::hasTable('students') || $studentId <= 0) {
+            return false;
+        }
+
+        $idCol = ModelHelper::resolveColumn('students', ['id', 'student_id', 'sid']);
+        if (!$idCol) {
+            return false;
+        }
+
+        $query = DB::table('students')->where($idCol, $studentId);
+        if ($clientId > 0 && Schema::hasColumn('students', 'client_id')) {
+            $query->where('client_id', $clientId);
+        }
+
+        return $query->exists();
+    }
+
+    private function isValidExamSubject(int $subjectId, int $clientId): bool
+    {
+        if (!Schema::hasTable('subjects') || $subjectId <= 0) {
+            return false;
+        }
+
+        $idCol = ModelHelper::resolveColumn('subjects', ['id', 'subject_id']);
+        if (!$idCol) {
+            return false;
+        }
+
+        $query = DB::table('subjects')->where($idCol, $subjectId);
+        if ($clientId > 0 && Schema::hasColumn('subjects', 'client_id')) {
+            $query->where('client_id', $clientId);
+        }
+
+        return $query->exists();
+    }
+
+    private function resolveExamMarkRows(int $clientId, array $filters): array
+    {
+        if (!Schema::hasTable('exam_marks')) {
+            return [];
+        }
+
+        $query = DB::table('exam_marks');
+        if ($clientId > 0 && Schema::hasColumn('exam_marks', 'client_id')) {
+            $query->where('client_id', $clientId);
+        }
+        if (!empty($filters['student_id'])) {
+            $query->where('student_id', (int) $filters['student_id']);
+        }
+        if (!empty($filters['subject_id'])) {
+            $query->where('subject_id', (int) $filters['subject_id']);
+        }
+        if (!empty($filters['exam_name'])) {
+            $query->where('exam_name', 'like', '%' . $filters['exam_name'] . '%');
+        }
+
+        $rows = $query->orderByDesc('exam_date')->orderByDesc('id')->limit(500)->get();
+        $studentMap = collect($this->resolveExamStudents($clientId))->keyBy('id');
+        $subjectMap = collect($this->resolveExamSubjects($clientId))->keyBy('id');
+
+        return $rows->map(function ($row) use ($studentMap, $subjectMap) {
+            $student = $studentMap->get((int) ($row->student_id ?? 0), null);
+            $subject = $subjectMap->get((int) ($row->subject_id ?? 0), null);
+            $percent = ((float) ($row->total_marks ?? 0) > 0)
+                ? round(((float) ($row->obtained_marks ?? 0) / (float) $row->total_marks) * 100, 2)
+                : 0;
+
+            return [
+                'id' => (int) ($row->id ?? 0),
+                'student_id' => (int) ($row->student_id ?? 0),
+                'student_name' => (string) ($student['name'] ?? 'N/A'),
+                'subject_id' => (int) ($row->subject_id ?? 0),
+                'subject_name' => (string) ($subject['name'] ?? 'General'),
+                'exam_name' => (string) ($row->exam_name ?? ''),
+                'exam_date' => (string) ($row->exam_date ?? ''),
+                'total_marks' => (float) ($row->total_marks ?? 0),
+                'obtained_marks' => (float) ($row->obtained_marks ?? 0),
+                'percentage' => $percent,
+                'remark' => (string) ($row->remark ?? ''),
+            ];
+        })->all();
     }
 }

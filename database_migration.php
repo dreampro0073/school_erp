@@ -63,3 +63,25 @@ CREATE TABLE IF NOT EXISTS `chat_messages` (
   KEY `chat_messages_client_id_index` (`client_id`),
   KEY `chat_messages_pair_created_idx` (`sender_id`, `receiver_id`, `created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `exam_marks` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `client_id` BIGINT UNSIGNED NULL,
+  `student_id` BIGINT UNSIGNED NOT NULL,
+  `subject_id` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  `marked_by` BIGINT UNSIGNED NULL,
+  `exam_name` VARCHAR(120) NOT NULL,
+  `exam_date` DATE NOT NULL,
+  `total_marks` DECIMAL(8,2) NOT NULL DEFAULT 100.00,
+  `obtained_marks` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+  `remark` TEXT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `exam_marks_client_id_index` (`client_id`),
+  KEY `exam_marks_student_id_index` (`student_id`),
+  KEY `exam_marks_subject_id_index` (`subject_id`),
+  KEY `exam_marks_marked_by_index` (`marked_by`),
+  KEY `exam_marks_exam_date_index` (`exam_date`),
+  KEY `exam_marks_lookup_idx` (`client_id`, `student_id`, `subject_id`, `exam_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

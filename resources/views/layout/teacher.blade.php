@@ -4,3 +4,9 @@
       <span>Dashboard</span>
    </a>
 </li>
+<li>
+   <a href="{{ route('teachers.exam-marks.index') }}">
+      <i class="ri-file-chart-line"></i>
+      <span>Exam Marks</span>
+   </a>
+</li>

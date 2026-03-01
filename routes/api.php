@@ -126,6 +126,15 @@ Route::prefix('teachers/dashboard')
     }
 );
 
+Route::prefix('teachers/exam-marks')
+    ->controller(TeacherController::class)
+    ->group(function () {
+        Route::post('/init', 'initExamMarks');
+        Route::post('/store', 'storeExamMark');
+        Route::post('/list', 'listExamMarks');
+    }
+);
+
 Route::prefix('gurdian/dashboard')
     ->controller(GuardianController::class)
     ->group(function () {
