@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('layout.layout')
 
 @section('main')
 <div ng-controller="incomesCtrl" ng-init="init();" class="mt-24">

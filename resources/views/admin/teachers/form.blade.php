@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('layout.layout')
 
 @section('main')
 <div ng-controller="addTeacherCtrl" ng-init="init('{{ $teacherToken }}');" class="mt-24">

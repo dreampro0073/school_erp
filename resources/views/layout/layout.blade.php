@@ -21,8 +21,8 @@
     <link rel="stylesheet" type="text/css" href="{{url('assets/css/style.css')}}">
 <body ng-app="app">
     <aside class="sidebar">
-        @include('admin.theme_setting')
-        @include('admin.sidebar')
+        @include('layout.theme_setting')
+        @include('layout.sidebar')
     </aside>
   
     <main class="dashboard-main">

@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('layout.layout')
 
 @section('main')
 <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">

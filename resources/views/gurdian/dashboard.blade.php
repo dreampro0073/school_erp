@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('layout.layout')
 
 @section('main')
 <div ng-controller="guardianDashboardCtrl" ng-init="init();" class="container-fluid px-0">

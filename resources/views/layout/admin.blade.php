@@ -72,6 +72,32 @@
 <!-- User Info end -->
 <div class="sidebar-menu-area">
    <ul class="sidebar-menu" id="sidebar-menu">
+
+      <!-- SuperAdmin -->
+      @if(Auth::user()->priv == 1) 
+         @include("layout.supar_admin")
+      @endif
+
+      <!-- Admin -->
+      @if(Auth::user()->priv == 2)
+         @include("layout.admin")
+      @endif      
+
+      <!-- Teacher -->
+      @if(Auth::user()->priv == 3)
+         @include("layout.teacher")
+      @endif      
+
+      <!-- Student -->
+      @if(Auth::user()->priv == 4)
+         @include("layout.student")
+      @endif      
+
+      <!-- Gurdian -->
+      @if(Auth::user()->priv == 5)
+         @include("layout.parents")
+      @endif
+
       @if ($isPrivOne)
       <li class="dropdown">
          <a href="javascript:void(0)">
