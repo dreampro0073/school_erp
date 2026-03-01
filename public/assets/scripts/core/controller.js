@@ -977,3 +977,30 @@ app.controller('teacherDashboardCtrl', function($scope, DBService) {
         });
     };
 });
+
+// *** guardianDashboardCtrl ***
+app.controller('guardianDashboardCtrl', function($scope, DBService) {
+    $scope.loading = true;
+    $scope.today = '';
+    $scope.guardian = {};
+    $scope.children = [];
+
+    $scope.init = function() {
+        DBService.postCall({}, '/api/gurdian/dashboard/init').then(function(data) {
+            $scope.loading = false;
+            if (!(data && data.success)) {
+                $scope.guardian = {};
+                $scope.children = [];
+                return;
+            }
+
+            $scope.today = data.today || '';
+            $scope.guardian = data.guardian || {};
+            $scope.children = data.children || [];
+        }, function() {
+            $scope.loading = false;
+            $scope.guardian = {};
+            $scope.children = [];
+        });
+    };
+});

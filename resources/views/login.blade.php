@@ -53,13 +53,19 @@
             </div>
            <form action="{{url('login')}}" method="post" class="d-flex flex-column gap-32 submit-form">
                 @csrf
+                @if (session('failure'))
+                    <div class="alert alert-danger py-8 px-12 mb-0">{{ session('failure') }}</div>
+                @endif
                 <div class="d-flex flex-column gap-16">
                     <div>
                         <label for="email" class="text-sm fw-semibold text-primary-light d-inline-block mb-8">
                             Email Address
                             <span class="text-danger-600">*</span>
                         </label>
-                        <input name="email" type="email" id="email" class="email-field form-control" placeholder="Enter your email">
+                        <input name="email" type="email" id="email" class="email-field form-control" placeholder="Enter your email" value="{{ old('email') }}">
+                        @error('email')
+                            <label class="error">{{ $message }}</label>
+                        @enderror
                     </div>
 
                     <div>
@@ -72,6 +78,24 @@
                             <button type="button" class="toggle-password btn p-0 border-0 bg-transparent position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light cursor-pointer ri-eye-line" data-toggle="#password" aria-label="Toggle password visibility">
                             </button>
                         </div>
+                        @error('password')
+                            <label class="error">{{ $message }}</label>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="captcha" class="text-sm fw-semibold text-primary-light d-inline-block mb-8">
+                            Captcha
+                            <span class="text-danger-600">*</span>
+                        </label>
+                        <div class="d-flex align-items-center gap-8 mb-8">
+                            <img id="captcha-image" src="{{ route('login.captcha') }}?t={{ time() }}" alt="Captcha image" width="150" height="50" class="border radius-8">
+                            <button type="button" id="refresh-captcha" class="btn btn-outline-secondary btn-sm">Refresh</button>
+                        </div>
+                        <input name="captcha" type="text" id="captcha" class="form-control" placeholder="Enter captcha text" autocomplete="off">
+                        @error('captcha')
+                            <label class="error">{{ $message }}</label>
+                        @enderror
                     </div>
                 </div>
                 <div class="d-flex justify-content-between gap-2">
@@ -142,6 +166,11 @@
     <script type="text/javascript" src="{{url('assets/scripts/jquery.validate.js')}}"></script>
     <script type="text/javascript">
         $(".check-form").validate();
+
+        $('#refresh-captcha').on('click', function () {
+            var img = document.getElementById('captcha-image');
+            img.src = "{{ route('login.captcha') }}?t=" + Date.now();
+        });
     </script>
 </body>
 </html>

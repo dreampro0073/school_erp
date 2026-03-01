@@ -14,8 +14,10 @@ use App\Http\Controllers\WorklogController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\GuardianController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
+Route::get('/login/captcha', [UserController::class, 'captcha'])->name('login.captcha');
 Route::post('/login', [UserController::class,'postLogin']);
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
@@ -36,6 +38,13 @@ Route::prefix('students')->middleware(['auth'])
 
 Route::prefix('teachers')->middleware(['auth', 'teacher-only'])
     ->controller(TeacherController::class)
+    ->group(function () {
+        Route::get('/dashboard', 'dashboard');
+    }
+);
+
+Route::prefix('gurdian')->middleware(['auth', 'guardian-only'])
+    ->controller(GuardianController::class)
     ->group(function () {
         Route::get('/dashboard', 'dashboard');
     }

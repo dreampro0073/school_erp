@@ -4,22 +4,51 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class UserController extends Controller{
     public function login(){   
         return view('login');
     }
 
+    public function captcha(Request $request): Response
+    {
+        $code = strtoupper(Str::random(6));
+        $request->session()->put('login_captcha', strtolower($code));
+
+        $svg = $this->buildCaptchaSvg($code);
+
+        return response($svg, 200, [
+            'Content-Type' => 'image/svg+xml',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+        ]);
+    }
+
     public function postLogin(Request $request){
         $credentials = $request->validate([
             'email'    => ['required', 'email'],
             'password' => ['required'],
+            'captcha'  => ['required', 'string'],
         ]);
+
+        $captchaInput = strtolower(trim((string) $request->input('captcha')));
+        $captchaStored = strtolower((string) $request->session()->get('login_captcha', ''));
+        $request->session()->forget('login_captcha');
+
+        if ($captchaStored === '' || $captchaInput !== $captchaStored) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['captcha' => 'Invalid captcha. Please try again.']);
+        }
+
+        unset($credentials['captcha']);
 
         if (Auth::attempt($credentials)) {
 
             $request->session()->regenerate();
+            $request->session()->forget('login_captcha');
 
             $user = Auth::user();
             $privillage = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
@@ -37,12 +66,46 @@ class UserController extends Controller{
                 return redirect()->to('/teachers/dashboard');
             }
 
+            if ($privillage === 5) {
+                return redirect()->to('/gurdian/dashboard');
+            }
+
             return redirect()->to('students');
         }
 
         return back()
             ->withInput($request->only('email'))
             ->with('failure', 'Invalid username or password');
+    }
+
+    private function buildCaptchaSvg(string $code): string
+    {
+        $bg = sprintf('#%02x%02x%02x', random_int(220, 245), random_int(220, 245), random_int(220, 245));
+        $text = sprintf('#%02x%02x%02x', random_int(40, 90), random_int(40, 90), random_int(40, 90));
+
+        $lines = '';
+        for ($i = 0; $i < 5; $i++) {
+            $lineColor = sprintf('#%02x%02x%02x', random_int(120, 190), random_int(120, 190), random_int(120, 190));
+            $x1 = random_int(0, 150);
+            $y1 = random_int(0, 50);
+            $x2 = random_int(0, 150);
+            $y2 = random_int(0, 50);
+            $lines .= "<line x1=\"{$x1}\" y1=\"{$y1}\" x2=\"{$x2}\" y2=\"{$y2}\" stroke=\"{$lineColor}\" stroke-width=\"1\" />";
+        }
+
+        $letters = '';
+        foreach (str_split($code) as $index => $char) {
+            $x = 15 + ($index * 22) + random_int(-2, 2);
+            $y = 33 + random_int(-4, 4);
+            $rotate = random_int(-18, 18);
+            $letters .= "<text x=\"{$x}\" y=\"{$y}\" fill=\"{$text}\" font-size=\"26\" font-family=\"monospace\" transform=\"rotate({$rotate} {$x} {$y})\">{$char}</text>";
+        }
+
+        return "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"150\" height=\"50\" viewBox=\"0 0 150 50\">"
+            . "<rect width=\"150\" height=\"50\" rx=\"6\" ry=\"6\" fill=\"{$bg}\" />"
+            . $lines
+            . $letters
+            . '</svg>';
     }
 
     public function logout(Request $request)
