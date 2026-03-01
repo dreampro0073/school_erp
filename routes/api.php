@@ -15,6 +15,7 @@ use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\ChatController;
 
 // Route::apiResource('students', StudentController::class);
 Route::prefix('students')
@@ -129,5 +130,14 @@ Route::prefix('gurdian/dashboard')
     ->controller(GuardianController::class)
     ->group(function () {
         Route::post('/init', 'initDashboard');
+    }
+);
+
+Route::prefix('chat')
+    ->controller(ChatController::class)
+    ->group(function () {
+        Route::post('/init', 'init');
+        Route::post('/thread', 'thread');
+        Route::post('/send', 'send');
     }
 );

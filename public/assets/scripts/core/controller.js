@@ -1004,3 +1004,113 @@ app.controller('guardianDashboardCtrl', function($scope, DBService) {
         });
     };
 });
+
+// *** chatCtrl ***
+app.controller('chatCtrl', function($scope, DBService, $timeout) {
+    $scope.users = [];
+    $scope.messages = [];
+    $scope.selectedUser = null;
+    $scope.searchUser = '';
+    $scope.sending = false;
+    $scope.loadingThread = false;
+    $scope.draft = { message: '' };
+
+    $scope.init = function() {
+        DBService.postCall({}, '/api/chat/init').then(function(data) {
+            if (!(data && data.success)) {
+                $scope.users = [];
+                $scope.messages = [];
+                $scope.selectedUser = null;
+                return;
+            }
+
+            $scope.users = data.users || [];
+            var selectedUserId = parseInt(data.selected_user_id || 0, 10);
+            if (selectedUserId > 0) {
+                for (var i = 0; i < $scope.users.length; i++) {
+                    if (parseInt($scope.users[i].id || 0, 10) === selectedUserId) {
+                        $scope.selectedUser = $scope.users[i];
+                        break;
+                    }
+                }
+            }
+            $scope.messages = data.messages || [];
+        });
+    };
+
+    $scope.selectUser = function(user) {
+        if (!user || !user.id) {
+            return;
+        }
+        $scope.selectedUser = user;
+        $scope.fetchThread();
+    };
+
+    $scope.fetchThread = function() {
+        if (!$scope.selectedUser || !$scope.selectedUser.id) {
+            $scope.messages = [];
+            return;
+        }
+
+        $scope.loadingThread = true;
+        DBService.postCall({
+            user_id: $scope.selectedUser.id
+        }, '/api/chat/thread').then(function(data) {
+            $scope.loadingThread = false;
+            if (data && data.success) {
+                $scope.messages = data.messages || [];
+                $scope.scrollBottom();
+            } else {
+                $scope.messages = [];
+            }
+        }, function() {
+            $scope.loadingThread = false;
+            $scope.messages = [];
+        });
+    };
+
+    $scope.sendMessage = function() {
+        if (!$scope.selectedUser || !$scope.selectedUser.id) {
+            return;
+        }
+
+        var message = ($scope.draft.message || '').trim();
+        if (!message) {
+            return;
+        }
+
+        $scope.sending = true;
+        DBService.postCall({
+            user_id: $scope.selectedUser.id,
+            message: message
+        }, '/api/chat/send').then(function(data) {
+            $scope.sending = false;
+            if (data && data.success) {
+                $scope.draft.message = '';
+                $scope.messages = data.messages || [];
+                $scope.scrollBottom();
+            } else {
+                alert((data && data.message) ? data.message : 'Unable to send message.');
+            }
+        }, function() {
+            $scope.sending = false;
+            alert('Unable to send message.');
+        });
+    };
+
+    $scope.handleEnter = function($event) {
+        if ($event.keyCode === 13 && !$event.shiftKey) {
+            $event.preventDefault();
+            $scope.sendMessage();
+        }
+    };
+
+    $scope.scrollBottom = function() {
+        $timeout(function() {
+            var box = document.getElementById('chatThreadBox');
+            if (box) {
+                box.scrollTop = box.scrollHeight;
+            }
+        }, 80);
+    };
+});

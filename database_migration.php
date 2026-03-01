@@ -47,3 +47,19 @@ ON DUPLICATE KEY UPDATE
 `is_default` = VALUES(`is_default`),
 `active` = VALUES(`active`),
 `updated_at` = NOW();
+
+CREATE TABLE IF NOT EXISTS `chat_messages` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `sender_id` BIGINT UNSIGNED NOT NULL,
+  `receiver_id` BIGINT UNSIGNED NOT NULL,
+  `client_id` BIGINT UNSIGNED NULL,
+  `message` TEXT NOT NULL,
+  `read_at` TIMESTAMP NULL DEFAULT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `chat_messages_sender_id_index` (`sender_id`),
+  KEY `chat_messages_receiver_id_index` (`receiver_id`),
+  KEY `chat_messages_client_id_index` (`client_id`),
+  KEY `chat_messages_pair_created_idx` (`sender_id`, `receiver_id`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

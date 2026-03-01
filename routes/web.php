@@ -15,6 +15,7 @@ use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\ChatController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::get('/login/captcha', [UserController::class, 'captcha'])->name('login.captcha');
@@ -47,6 +48,13 @@ Route::prefix('gurdian')->middleware(['auth', 'guardian-only'])
     ->controller(GuardianController::class)
     ->group(function () {
         Route::get('/dashboard', 'dashboard');
+    }
+);
+
+Route::prefix('chat')->middleware(['auth'])
+    ->controller(ChatController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('chat.index');
     }
 );
 
