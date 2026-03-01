@@ -1,4 +1,4 @@
-app.controller('dashboardCtrl', function($scope, DBService) {
+app.controller('dashboardCtrl', function($scope , DBService){
     $scope.cards = [];
 
     $scope.init = function() {
@@ -72,7 +72,7 @@ app.controller('dashboardCtrl', function($scope, DBService) {
 
 // *** attendanceCtrl ***
 
-app.controller('attendanceCtrl', function($scope, DBService) {
+app.controller('attendanceCtrl', function($scope , DBService){
     var now = new Date();
     var month = String(now.getMonth() + 1).padStart(2, '0');
     var day = String(now.getDate()).padStart(2, '0');
@@ -188,7 +188,7 @@ app.controller('attendanceCtrl', function($scope, DBService) {
 });
 
 // *** feeTypesCtrl ***
-app.controller('feeTypesCtrl', function($scope, DBService) {
+app.controller('feeTypesCtrl', function($scope , DBService){
     $scope.feeTypes = [];
     $scope.processing = false;
     $scope.formData = {
@@ -255,7 +255,7 @@ app.controller('feeTypesCtrl', function($scope, DBService) {
 });
 
 // *** sectionsCtrl ***
-app.controller('sectionsCtrl', function($scope, DBService) {
+app.controller('sectionsCtrl', function($scope , DBService){
     $scope.sections = [];
     $scope.processing = false;
     $scope.formData = {
@@ -322,7 +322,7 @@ app.controller('sectionsCtrl', function($scope, DBService) {
 });
 
 // *** DBService ***
-app.service('DBService', function($http, $rootScope){
+app.service('DBService', function($http , $rootScope){
     this.getCall = function(route){
         var promise = $http({
             method: 'GET',
@@ -366,7 +366,7 @@ app.service('DBService', function($http, $rootScope){
 });
 
 // *** servicesCtrl ***
-app.controller('servicesCtrl', function($scope, DBService) {
+app.controller('servicesCtrl', function($scope , DBService){
     $scope.services = [];
     $scope.processing = false;
     $scope.formData = {
@@ -418,7 +418,7 @@ app.controller('servicesCtrl', function($scope, DBService) {
 });
 
 // *** standardsCtrl ***
-app.controller('standardsCtrl', function($scope, DBService) {
+app.controller('standardsCtrl', function($scope , DBService){
     $scope.standards = [];
     $scope.processing = false;
     $scope.formData = {
@@ -485,7 +485,7 @@ app.controller('standardsCtrl', function($scope, DBService) {
 });
 
 // *** subjectsCtrl ***
-app.controller('subjectsCtrl', function($scope, DBService) {
+app.controller('subjectsCtrl', function($scope , DBService){
     $scope.subjects = [];
     $scope.processing = false;
     $scope.formData = {
@@ -552,7 +552,7 @@ app.controller('subjectsCtrl', function($scope, DBService) {
 });
 
 // *** studentCtrl ***
-app.controller('studentCtrl', function($scope, DBService) {
+app.controller('studentCtrl', function($scope , DBService){
     $scope.loading = false;
     $scope.allStudents = [];
     $scope.students = [];
@@ -633,7 +633,7 @@ app.controller('studentCtrl', function($scope, DBService) {
     };
 });
 
-app.controller('addStudentCtrl', function($scope, DBService) {
+app.controller('addStudentCtrl', function($scope , DBService){
     $scope.processing = false;
     $scope.formData = {
         enc_id: '',
@@ -706,7 +706,7 @@ app.controller('addStudentCtrl', function($scope, DBService) {
     };
 });
 
-app.controller('studentProfileCtrl', function($scope, DBService) {
+app.controller('studentProfileCtrl', function($scope , DBService){
     $scope.baseUrl = base_url;
     $scope.encId = '';
     $scope.student = {};
@@ -733,7 +733,7 @@ app.controller('studentProfileCtrl', function($scope, DBService) {
 });
 
 // *** teacherCtrl ***
-app.controller('teacherCtrl', function($scope, DBService) {
+app.controller('teacherCtrl', function($scope , DBService){
     $scope.loading = false;
     $scope.allTeachers = [];
     $scope.teachers = [];
@@ -791,7 +791,7 @@ app.controller('teacherCtrl', function($scope, DBService) {
     };
 });
 
-app.controller('addTeacherCtrl', function($scope, DBService) {
+app.controller('addTeacherCtrl', function($scope , DBService){
     $scope.processing = false;
     $scope.formData = {
         enc_id: '',
@@ -851,7 +851,7 @@ app.controller('addTeacherCtrl', function($scope, DBService) {
 });
 
 // *** adminDashboardCtrl ***
-app.controller('adminDashboardCtrl', function($scope, DBService) {
+app.controller('adminDashboardCtrl', function($scope , DBService){
     $scope.cards = [];
     $scope.attendance = [];
     var cardStyleMap = {
@@ -946,7 +946,7 @@ app.controller('adminDashboardCtrl', function($scope, DBService) {
 });
 
 // *** teacherDashboardCtrl ***
-app.controller('teacherDashboardCtrl', function($scope, DBService) {
+app.controller('teacherDashboardCtrl', function($scope , DBService){
     $scope.loading = true;
     $scope.today = '';
     $scope.teacherProfile = {};
@@ -979,7 +979,7 @@ app.controller('teacherDashboardCtrl', function($scope, DBService) {
 });
 
 // *** guardianDashboardCtrl ***
-app.controller('guardianDashboardCtrl', function($scope, DBService) {
+app.controller('guardianDashboardCtrl', function($scope , DBService){
     $scope.loading = true;
     $scope.today = '';
     $scope.guardian = {};
@@ -1006,7 +1006,7 @@ app.controller('guardianDashboardCtrl', function($scope, DBService) {
 });
 
 // *** chatCtrl ***
-app.controller('chatCtrl', function($scope, DBService, $timeout) {
+app.controller('chatCtrl', function($scope , DBService, $timeout){
     $scope.users = [];
     $scope.messages = [];
     $scope.selectedUser = null;
@@ -1116,7 +1116,7 @@ app.controller('chatCtrl', function($scope, DBService, $timeout) {
 });
 
 // *** examMarksCtrl ***
-app.controller('examMarksCtrl', function($scope, DBService) {
+app.controller('examMarksCtrl', function($scope , DBService){
     function todayDate() {
         var d = new Date();
         var m = String(d.getMonth() + 1).padStart(2, '0');
