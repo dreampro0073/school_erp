@@ -37,7 +37,7 @@ Route::prefix('students')->middleware(['auth'])
     }
 );
 
-Route::prefix('teachers')->middleware(['auth', 'teacher-only'])
+Route::prefix('teachers')->middleware(['auth', 'teacher'])
     ->controller(TeacherController::class)
     ->group(function () {
         Route::get('/dashboard', 'dashboard');
@@ -45,7 +45,7 @@ Route::prefix('teachers')->middleware(['auth', 'teacher-only'])
     }
 );
 
-Route::prefix('gurdian')->middleware(['auth', 'guardian-only'])
+Route::prefix('gurdian')->middleware(['auth', 'guardian'])
     ->controller(GuardianController::class)
     ->group(function () {
         Route::get('/dashboard', 'dashboard');
@@ -59,7 +59,7 @@ Route::prefix('chat')->middleware(['auth'])
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth', 'super-admin-only'])
+Route::prefix('super-admin')->middleware(['auth', 'super-admin'])
     ->controller(SuperAdminController::class)
     ->group(function () {
         Route::get('/dashboard', 'dashboard');
@@ -76,7 +76,7 @@ Route::prefix('super-admin')->middleware(['auth', 'super-admin-only'])
     }
 );
 
-Route::prefix('admin')->middleware(['auth', 'admin-only'])
+Route::prefix('admin')->middleware(['auth', 'admin'])
     ->controller(AdminController::class)
     ->group(function () {
         Route::get('/dashboard', 'dashboard');
@@ -88,7 +88,7 @@ Route::prefix('admin')->middleware(['auth', 'admin-only'])
     }
 );
 
-Route::prefix('admin')->middleware(['auth', 'admin-only'])
+Route::prefix('admin')->middleware(['auth', 'admin'])
     ->controller(IncomeController::class)
     ->group(function () {
         Route::get('/incomes', 'incomesPage')->name('admin.incomes.index');
@@ -98,42 +98,42 @@ Route::prefix('admin')->middleware(['auth', 'admin-only'])
     }
 );
 
-Route::prefix('admin')->middleware(['auth', 'admin-only'])
+Route::prefix('admin')->middleware(['auth', 'admin'])
     ->controller(AttendanceController::class)
     ->group(function () {
         Route::get('/attendance', 'index')->name('admin.attendance.index');
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth', 'super-admin-only'])
+Route::prefix('super-admin')->middleware(['auth', 'super-admin'])
     ->controller(ServicesController::class)
     ->group(function () {
             Route::get('/services', 'index')->name('super-admin.services.index');
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth', 'super-admin-only'])
+Route::prefix('super-admin')->middleware(['auth', 'super-admin'])
     ->controller(StandardsController::class)
     ->group(function () {
         Route::get('/standards', 'index')->name('super-admin.standards.index');
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth', 'super-admin-only'])
+Route::prefix('super-admin')->middleware(['auth', 'super-admin'])
     ->controller(SectionsController::class)
     ->group(function () {
         Route::get('/sections', 'index')->name('super-admin.sections.index');
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth', 'super-admin-only'])
+Route::prefix('super-admin')->middleware(['auth', 'super-admin'])
     ->controller(SubjectsController::class)
     ->group(function () {  
         Route::get('/subjects', 'index')->name('super-admin.subjects.index');
     }
 );
 
-Route::prefix('super-admin')->middleware(['auth', 'super-admin-only'])->controller(FeeTypesController::class)->group(function () {
+Route::prefix('super-admin')->middleware(['auth', 'super-admin'])->controller(FeeTypesController::class)->group(function () {
         Route::get('/fee-types', 'index')->name('super-admin.fee-types.index');
     }
 );

@@ -13,10 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'super-admin-only' => \App\Http\Middleware\EnsureSuperAdmin::class,
-            'admin-only' => \App\Http\Middleware\EnsureAdmin::class,
-            'teacher-only' => \App\Http\Middleware\EnsureTeacher::class,
-            'guardian-only' => \App\Http\Middleware\EnsureGuardian::class,
+            'super-admin' => \App\Http\Middleware\EnsureSuperAdmin::class,
+            'admin' => \App\Http\Middleware\EnsureAdmin::class,
+            'teacher' => \App\Http\Middleware\EnsureTeacher::class,
+            'guardian' => \App\Http\Middleware\EnsureGuardian::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
