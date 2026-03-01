@@ -1,3 +1,41 @@
+function confirmAction(title, text, onConfirm) {
+    if (typeof window.Swal !== 'undefined' && typeof window.Swal.fire === 'function') {
+        window.Swal.fire({
+            title: title || 'Are you sure?',
+            text: text || 'Please confirm this action.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel'
+        }).then(function(result) {
+            if (result.isConfirmed && typeof onConfirm === 'function') {
+                onConfirm();
+            }
+        });
+        return;
+    }
+
+    if (typeof window.swal === 'function') {
+        window.swal({
+            title: title || 'Are you sure?',
+            text: text || 'Please confirm this action.',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel'
+        }, function(isConfirm) {
+            if (isConfirm && typeof onConfirm === 'function') {
+                onConfirm();
+            }
+        });
+        return;
+    }
+
+    if (window.confirm(text || 'Please confirm this action.') && typeof onConfirm === 'function') {
+        onConfirm();
+    }
+}
+
 app.controller('dashboardCtrl', function($scope , DBService){
     $scope.cards = [];
 
@@ -239,17 +277,15 @@ app.controller('feeTypesCtrl', function($scope , DBService){
     };
 
     $scope.deleteFeeType = function(item) {
-        if (!window.confirm('Delete fee type "' + item.name + '"?')) {
-            return;
-        }
-
-        DBService.postCall({ id: item.id }, '/api/fee-types/delete').then(function(data) {
-            if (data && data.success) {
-                $scope.init();
-                alert(data.message || 'Deleted successfully.');
-            } else {
-                alert((data && data.message) ? data.message : 'Unable to delete fee type.');
-            }
+        confirmAction('Delete Fee Type', 'Do you want to delete fee type "' + item.name + '"?', function() {
+            DBService.postCall({ id: item.id }, '/api/fee-types/delete').then(function(data) {
+                if (data && data.success) {
+                    $scope.init();
+                    alert(data.message || 'Deleted successfully.');
+                } else {
+                    alert((data && data.message) ? data.message : 'Unable to delete fee type.');
+                }
+            });
         });
     };
 });
@@ -306,17 +342,15 @@ app.controller('sectionsCtrl', function($scope , DBService){
     };
 
     $scope.deleteSection = function(item) {
-        if (!window.confirm('Delete section "' + item.name + '"?')) {
-            return;
-        }
-
-        DBService.postCall({ id: item.id }, '/api/sections/delete').then(function(data) {
-            if (data && data.success) {
-                $scope.init();
-                alert(data.message || 'Deleted successfully.');
-            } else {
-                alert((data && data.message) ? data.message : 'Unable to delete section.');
-            }
+        confirmAction('Delete Section', 'Do you want to delete section "' + item.name + '"?', function() {
+            DBService.postCall({ id: item.id }, '/api/sections/delete').then(function(data) {
+                if (data && data.success) {
+                    $scope.init();
+                    alert(data.message || 'Deleted successfully.');
+                } else {
+                    alert((data && data.message) ? data.message : 'Unable to delete section.');
+                }
+            });
         });
     };
 });
@@ -469,17 +503,15 @@ app.controller('standardsCtrl', function($scope , DBService){
     };
 
     $scope.deleteStandard = function(item) {
-        if (!window.confirm('Delete standard "' + item.name + '"?')) {
-            return;
-        }
-
-        DBService.postCall({ id: item.id }, '/api/standards/delete').then(function(data) {
-            if (data && data.success) {
-                $scope.init();
-                alert(data.message || 'Deleted successfully.');
-            } else {
-                alert((data && data.message) ? data.message : 'Unable to delete standard.');
-            }
+        confirmAction('Delete Standard', 'Do you want to delete standard "' + item.name + '"?', function() {
+            DBService.postCall({ id: item.id }, '/api/standards/delete').then(function(data) {
+                if (data && data.success) {
+                    $scope.init();
+                    alert(data.message || 'Deleted successfully.');
+                } else {
+                    alert((data && data.message) ? data.message : 'Unable to delete standard.');
+                }
+            });
         });
     };
 });
@@ -536,17 +568,15 @@ app.controller('subjectsCtrl', function($scope , DBService){
     };
 
     $scope.deleteSubject = function(item) {
-        if (!window.confirm('Delete subject "' + item.name + '"?')) {
-            return;
-        }
-
-        DBService.postCall({ id: item.id }, '/api/subjects/delete').then(function(data) {
-            if (data && data.success) {
-                $scope.init();
-                alert(data.message || 'Deleted successfully.');
-            } else {
-                alert((data && data.message) ? data.message : 'Unable to delete subject.');
-            }
+        confirmAction('Delete Subject', 'Do you want to delete subject "' + item.name + '"?', function() {
+            DBService.postCall({ id: item.id }, '/api/subjects/delete').then(function(data) {
+                if (data && data.success) {
+                    $scope.init();
+                    alert(data.message || 'Deleted successfully.');
+                } else {
+                    alert((data && data.message) ? data.message : 'Unable to delete subject.');
+                }
+            });
         });
     };
 });
@@ -617,18 +647,16 @@ app.controller('studentCtrl', function($scope , DBService){
         }
 
         var actionLabel = nextStatus === 1 ? 'activate' : 'deactivate';
-        if (!window.confirm('Are you sure you want to ' + actionLabel + ' this student?')) {
-            return;
-        }
-
-        DBService.postCall({
-            enc_id: student.enc_id,
-            active: String(nextStatus)
-        }, '/api/admin/students/status').then(function(data) {
-            alert((data && data.message) ? data.message : 'Status update failed.');
-            if (data && data.success) {
-                $scope.init();
-            }
+        confirmAction('Confirm Status Change', 'Are you sure you want to ' + actionLabel + ' this student?', function() {
+            DBService.postCall({
+                enc_id: student.enc_id,
+                active: String(nextStatus)
+            }, '/api/admin/students/status').then(function(data) {
+                alert((data && data.message) ? data.message : 'Status update failed.');
+                if (data && data.success) {
+                    $scope.init();
+                }
+            });
         });
     };
 });
