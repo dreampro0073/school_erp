@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Client;
 use App\Models\ClientService;
 use App\Models\ClientStandard;
@@ -16,8 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-class SuperAdminController extends Controller
-{
+class SuperAdminController extends Controller {
     public function dashboard()
     {
         return view('admin.dashboard');

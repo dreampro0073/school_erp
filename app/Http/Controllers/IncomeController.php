@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\User;
 use App\Models\ModelHelper;
 use Illuminate\Http\Request;
@@ -9,8 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-class IncomeController extends Controller
-{
+class IncomeController extends Controller {
     public function incomesPage()
     {
         return view('admin.finance.incomes');
@@ -73,7 +71,16 @@ class IncomeController extends Controller
 
     private function initMasterTable(Request $request, string $table, array $nameCandidates, string $responseKey)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -104,7 +111,16 @@ class IncomeController extends Controller
 
     private function storeMasterTable(Request $request, string $table, array $nameCandidates, string $label)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -147,7 +163,16 @@ class IncomeController extends Controller
 
     private function initEntryTable(Request $request, string $table)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -170,7 +195,16 @@ class IncomeController extends Controller
 
     private function storeEntryTable(Request $request, string $table, array $masterIdCandidates, string $label)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }

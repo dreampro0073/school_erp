@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\User;
 use App\Models\AttendanceStatus;
 use App\Models\ModelHelper;
@@ -13,8 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-class AdminController extends Controller
-{
+class AdminController extends Controller {
     public function dashboard()
     {
         return view('admin.dashboard');
@@ -73,7 +71,16 @@ class AdminController extends Controller
 
     public function initDashboard(Request $request)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
 
         if (!$user) {
             return response()->json([
@@ -104,7 +111,16 @@ class AdminController extends Controller
 
     public function initStudents(Request $request)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -126,7 +142,16 @@ class AdminController extends Controller
 
     public function initTeachers(Request $request)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -186,7 +211,16 @@ class AdminController extends Controller
 
     public function getTeacher(Request $request)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -224,7 +258,16 @@ class AdminController extends Controller
 
     public function storeTeacher(Request $request)
     {
-        $admin = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $admin = User::authUser($apiToken);
+        if (!$admin || is_string($admin)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($admin->priv ?? $admin->privillage ?? $admin->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$admin) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -310,7 +353,16 @@ class AdminController extends Controller
 
     public function getStudent(Request $request)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -352,7 +404,16 @@ class AdminController extends Controller
 
     public function updateStudentStatus(Request $request)
     {
-        $admin = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $admin = User::authUser($apiToken);
+        if (!$admin || is_string($admin)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($admin->priv ?? $admin->privillage ?? $admin->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$admin) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -419,7 +480,16 @@ class AdminController extends Controller
 
     public function storeStudent(Request $request)
     {
-        $admin = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $admin = User::authUser($apiToken);
+        if (!$admin || is_string($admin)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($admin->priv ?? $admin->privillage ?? $admin->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$admin) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -558,7 +628,16 @@ class AdminController extends Controller
 
     private function initMasterTable(Request $request, string $table, array $nameCandidates, string $responseKey)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -589,7 +668,16 @@ class AdminController extends Controller
 
     private function storeMasterTable(Request $request, string $table, array $nameCandidates, string $label)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -631,7 +719,16 @@ class AdminController extends Controller
 
     private function initEntryTable(Request $request, string $table, array $masterIdCandidates)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -653,7 +750,16 @@ class AdminController extends Controller
 
     private function storeEntryTable(Request $request, string $table, array $masterIdCandidates, string $label)
     {
-        $user = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }

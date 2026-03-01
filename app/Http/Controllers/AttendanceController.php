@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Attendance;
 use App\Models\AttendanceStatus;
 use App\Models\ModelHelper;
@@ -11,8 +10,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class AttendanceController extends Controller
-{
+class AttendanceController extends Controller {
     public function index()
     {
         return view('admin.attendance.index');
@@ -20,7 +18,16 @@ class AttendanceController extends Controller
 
     public function init(Request $request)
     {
-        $admin = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $admin = User::authUser($apiToken);
+        if (!$admin || is_string($admin)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($admin->priv ?? $admin->privillage ?? $admin->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$admin) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -74,7 +81,16 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
-        $admin = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $admin = User::authUser($apiToken);
+        if (!$admin || is_string($admin)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($admin->priv ?? $admin->privillage ?? $admin->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$admin) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -143,7 +159,16 @@ class AttendanceController extends Controller
 
     public function list(Request $request)
     {
-        $admin = User::resolveApiUser($request, 2);
+        $apiToken = $request->header('apiToken');
+        $admin = User::authUser($apiToken);
+        if (!$admin || is_string($admin)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($admin->priv ?? $admin->privillage ?? $admin->privilege ?? 0);
+        if ($priv !== 2) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$admin) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }

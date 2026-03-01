@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\AttendanceStatus;
 use App\Models\ModelHelper;
 use App\Models\User;
@@ -9,8 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class TeacherController extends Controller
-{
+class TeacherController extends Controller {
     public function dashboard()
     {
         return view('teachers.dashboard');
@@ -23,7 +21,16 @@ class TeacherController extends Controller
 
     public function initDashboard(Request $request)
     {
-        $user = User::resolveApiUser($request, 3);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 3) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -106,7 +113,16 @@ class TeacherController extends Controller
 
     public function initExamMarks(Request $request)
     {
-        $user = User::resolveApiUser($request, 3);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 3) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -131,7 +147,16 @@ class TeacherController extends Controller
 
     public function listExamMarks(Request $request)
     {
-        $user = User::resolveApiUser($request, 3);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 3) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
@@ -159,7 +184,16 @@ class TeacherController extends Controller
 
     public function storeExamMark(Request $request)
     {
-        $user = User::resolveApiUser($request, 3);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 3) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }

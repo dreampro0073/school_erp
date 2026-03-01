@@ -1,15 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\User;
 use App\Models\ModelHelper;
 use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
-class SectionsController extends Controller
-{
+class SectionsController extends Controller {
     public function index()
     {
         return view('admin.sections.index');

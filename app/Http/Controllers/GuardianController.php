@@ -1,15 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class GuardianController extends Controller
-{
+class GuardianController extends Controller {
     public function dashboard()
     {
         return view('gurdian.dashboard');
@@ -17,7 +15,16 @@ class GuardianController extends Controller
 
     public function initDashboard(Request $request)
     {
-        $user = User::resolveApiUser($request, 5);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
+
+        $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
+        if ($priv !== 5) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }

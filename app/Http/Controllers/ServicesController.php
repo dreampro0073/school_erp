@@ -1,15 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\User;
 use App\Models\ModelHelper;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
-class ServicesController extends Controller
-{
+class ServicesController extends Controller {
     public function index()
     {
         return view('admin.services.index');

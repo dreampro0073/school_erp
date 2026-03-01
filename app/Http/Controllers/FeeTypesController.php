@@ -1,15 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\FeeType;
 use App\Models\User;
 use App\Models\ModelHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
-class FeeTypesController extends Controller
-{
+class FeeTypesController extends Controller {
     public function index()
     {
         $authUser = auth()->user();
@@ -22,7 +20,11 @@ class FeeTypesController extends Controller
 
     public function initFeeTypes(Request $request)
     {
-        $user = User::resolveApiUser($request);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
@@ -61,7 +63,11 @@ class FeeTypesController extends Controller
 
     public function storeFeeType(Request $request)
     {
-        $user = User::resolveApiUser($request);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
@@ -110,7 +116,11 @@ class FeeTypesController extends Controller
 
     public function deleteFeeType(Request $request)
     {
-        $user = User::resolveApiUser($request);
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if (!$user || is_string($user)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+        }
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }

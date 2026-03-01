@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Student,App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 
 class StudentController extends Controller
 {
@@ -12,20 +11,10 @@ class StudentController extends Controller
         return view('admin.students.index');
     }
     public function initStudents(Request $request){
-        $user = User::resolveApiUser($request, 2);
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
-        }
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
 
-        $clientId = (int) ($user->client_id ?? 0);
-        if ($clientId <= 0 || !Schema::hasTable('students') || !Schema::hasColumn('students', 'client_id')) {
-            return response()->json(['success' => true, 'students' => []], 200, []);
-        }
-
-        $students = Student::query()
-            ->where('client_id', $clientId)
-            ->latest()
-            ->get();
+        $students = Student::latest()->get();
 
         $data['success'] = true;
         $data['students'] = $students;
