@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\AttendanceStatus;
 use App\Models\ModelHelper;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
@@ -92,7 +93,7 @@ class AdminController extends Controller
             'feeTypes' => $this->getTableStats(['fee_types', 'fee_type'], $clientId),
         ];
 
-        $attendance = $this->buildAttendanceStats($stats['students']['total']);
+        $attendance = $this->buildAttendanceStats($clientId);
 
         return response()->json([
             'success' => true,
@@ -1271,28 +1272,71 @@ class AdminController extends Controller
         return ['active' => $active, 'inactive' => $inactive, 'total' => $total];
     }
 
-    private function buildAttendanceStats(int $studentsTotal): array
+    private function buildAttendanceStats(int $clientId): array
     {
-        if ($studentsTotal <= 0) {
-            return [
-                ['key' => 'present', 'label' => 'Present', 'count' => 0, 'percent' => 0, 'color' => '#47a5a0'],
-                ['key' => 'absent', 'label' => 'Absent', 'count' => 0, 'percent' => 0, 'color' => '#f0803a'],
-                ['key' => 'late', 'label' => 'Late', 'count' => 0, 'percent' => 0, 'color' => '#a84de8'],
-                ['key' => 'half_day', 'label' => 'Half day', 'count' => 0, 'percent' => 0, 'color' => '#57c838'],
-            ];
+        $statuses = $this->getAttendanceStatuses();
+        if (empty($statuses)) {
+            return [];
         }
 
-        $present = (int) round($studentsTotal * 0.70);
-        $absent = (int) round($studentsTotal * 0.15);
-        $late = (int) round($studentsTotal * 0.10);
-        $halfDay = max($studentsTotal - ($present + $absent + $late), 0);
+        $counts = [];
+        foreach ($statuses as $status) {
+            $counts[(string) ($status['code'] ?? '')] = 0;
+        }
 
-        return [
-            ['key' => 'present', 'label' => 'Present', 'count' => $present, 'percent' => (int) round(($present / $studentsTotal) * 100), 'color' => '#47a5a0'],
-            ['key' => 'absent', 'label' => 'Absent', 'count' => $absent, 'percent' => (int) round(($absent / $studentsTotal) * 100), 'color' => '#f0803a'],
-            ['key' => 'late', 'label' => 'Late', 'count' => $late, 'percent' => (int) round(($late / $studentsTotal) * 100), 'color' => '#a84de8'],
-            ['key' => 'half_day', 'label' => 'Half day', 'count' => $halfDay, 'percent' => (int) round(($halfDay / $studentsTotal) * 100), 'color' => '#57c838'],
-        ];
+        if (Schema::hasTable('attendances') && $clientId > 0) {
+            $rows = DB::table('attendances')
+                ->select('status', DB::raw('COUNT(*) as total'))
+                ->where('client_id', $clientId)
+                ->where('user_type', 'student')
+                ->whereDate('attendance_date', now()->toDateString())
+                ->groupBy('status')
+                ->get();
+
+            foreach ($rows as $row) {
+                $code = (string) ($row->status ?? '');
+                if (array_key_exists($code, $counts)) {
+                    $counts[$code] = (int) ($row->total ?? 0);
+                }
+            }
+        }
+
+        $grandTotal = array_sum($counts);
+
+        return array_map(function (array $status) use ($counts, $grandTotal) {
+            $code = (string) ($status['code'] ?? '');
+            $count = (int) ($counts[$code] ?? 0);
+            return [
+                'key' => $code,
+                'label' => (string) ($status['label'] ?? $code),
+                'count' => $count,
+                'percent' => $grandTotal > 0 ? (int) round(($count / $grandTotal) * 100) : 0,
+                'bar_class' => (string) ($status['bar_class'] ?? 'bg-neutral-300'),
+                'badge_class' => (string) ($status['badge_class'] ?? 'text-bg-secondary'),
+            ];
+        }, $statuses);
+    }
+
+    private function getAttendanceStatuses(): array
+    {
+        if (!Schema::hasTable('attendance_statuses')) {
+            return [];
+        }
+
+        return AttendanceStatus::query()
+            ->where('active', 1)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get(['code', 'label', 'badge_class', 'bar_class'])
+            ->map(function (AttendanceStatus $status) {
+                return [
+                    'code' => (string) $status->code,
+                    'label' => (string) $status->label,
+                    'badge_class' => (string) ($status->badge_class ?? 'text-bg-secondary'),
+                    'bar_class' => (string) ($status->bar_class ?? 'bg-neutral-300'),
+                ];
+            })
+            ->all();
     }
     private function getClientRows(string $table, int $clientId): array
     {

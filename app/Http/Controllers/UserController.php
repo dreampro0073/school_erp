@@ -33,6 +33,10 @@ class UserController extends Controller{
                 return redirect()->to('/admin/dashboard');
             }
 
+            if ($privillage === 3) {
+                return redirect()->to('/teachers/dashboard');
+            }
+
             return redirect()->to('students');
         }
 

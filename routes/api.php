@@ -13,6 +13,7 @@ use App\Http\Controllers\FeeTypesController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\TeacherController;
 
 // Route::apiResource('students', StudentController::class);
 Route::prefix('students')
@@ -113,5 +114,12 @@ Route::prefix('admin')
         Route::post('/attendance/init', 'init');
         Route::post('/attendance/store', 'store');
         Route::post('/attendance/list', 'list');
+    }
+);
+
+Route::prefix('teachers/dashboard')
+    ->controller(TeacherController::class)
+    ->group(function () {
+        Route::post('/init', 'initDashboard');
     }
 );

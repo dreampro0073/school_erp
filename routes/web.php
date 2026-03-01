@@ -13,6 +13,7 @@ use App\Http\Controllers\FeeTypesController;
 use App\Http\Controllers\WorklogController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\TeacherController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class,'postLogin']);
@@ -30,6 +31,13 @@ Route::prefix('students')->middleware(['auth'])
     ->controller(StudentController::class)
     ->group(function () {
         Route::get('/', 'index');
+    }
+);
+
+Route::prefix('teachers')->middleware(['auth', 'teacher-only'])
+    ->controller(TeacherController::class)
+    ->group(function () {
+        Route::get('/dashboard', 'dashboard');
     }
 );
 

@@ -57,10 +57,7 @@
                      <td>@{{item.mobile || '-'}}</td>
                      <td>
                         <select class="form-select form-select-sm" ng-model="item.status">
-                           <option value="present">Present</option>
-                           <option value="absent">Absent</option>
-                           <option value="late">Late</option>
-                           <option value="half_day">Half Day</option>
+                           <option ng-repeat="status in statuses track by status.code" ng-value="status.code">@{{status.label}}</option>
                         </select>
                      </td>
                      <td>
@@ -118,7 +115,7 @@
                      <td>@{{row.date}}</td>
                      <td class="text-capitalize">@{{row.type}}</td>
                      <td>@{{row.name}}</td>
-                     <td class="text-capitalize">@{{row.status}}</td>
+                     <td><span class="badge" ng-class="row.status_badge_class">@{{row.status_label}}</span></td>
                      <td>@{{row.remark || '-'}}</td>
                   </tr>
                   <tr ng-if="!historyRows.length">

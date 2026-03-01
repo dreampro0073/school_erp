@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\AttendanceStatus;
 use App\Models\ModelHelper;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -35,6 +37,8 @@ class AttendanceController extends Controller
 
         $type = $payload['type'] ?? 'student';
         $date = $payload['date'] ?? now()->toDateString();
+        $statuses = $this->getAttendanceStatuses();
+        $defaultStatus = $this->getDefaultStatusCode($statuses);
 
         $people = $this->getPeople($type, $clientId);
         $attendanceRows = Attendance::query()
@@ -53,7 +57,7 @@ class AttendanceController extends Controller
                 'name' => $person['name'],
                 'mobile' => $person['mobile'],
                 'active' => (int) ($person['active'] ?? 1),
-                'status' => $attendance ? $attendance->status : 'present',
+                'status' => $attendance ? $attendance->status : $defaultStatus,
                 'remark' => $attendance ? (string) ($attendance->remark ?? '') : '',
             ];
         }
@@ -63,6 +67,8 @@ class AttendanceController extends Controller
             'date' => $date,
             'type' => $type,
             'items' => $items,
+            'statuses' => $statuses,
+            'default_status' => $defaultStatus,
         ]);
     }
 
@@ -77,13 +83,24 @@ class AttendanceController extends Controller
             return response()->json(['success' => false, 'message' => 'attendances table not found.'], 422);
         }
 
+        $statuses = $this->getAttendanceStatuses();
+        $allowedStatusCodes = array_values(array_filter(array_map(function (array $status) {
+            return (string) ($status['code'] ?? '');
+        }, $statuses)));
+        if (empty($allowedStatusCodes)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'attendance_statuses table is empty. Please add active statuses first.',
+            ], 422);
+        }
+
         $data = $request->validate([
             'type' => ['required', 'in:student,teacher'],
             'date' => ['required', 'date'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['required', 'integer'],
             'items.*.user_id' => ['nullable', 'integer'],
-            'items.*.status' => ['required', 'in:present,absent,late,half_day'],
+            'items.*.status' => ['required', Rule::in($allowedStatusCodes)],
             'items.*.remark' => ['nullable', 'string'],
         ]);
 
@@ -157,15 +174,20 @@ class AttendanceController extends Controller
             $query->whereDate('attendance_date', '<=', $payload['to_date']);
         }
 
-        $rows = $query->limit(300)->get()->map(function (Attendance $attendance) {
+        $statusMap = collect($this->getAttendanceStatuses())->keyBy('code');
+        $rows = $query->limit(300)->get()->map(function (Attendance $attendance) use ($statusMap) {
             $name = $this->resolvePersonName($attendance->user_type, (int) $attendance->entity_id);
+            $status = (string) $attendance->status;
+            $statusInfo = $statusMap->get($status, []);
             return [
                 'id' => (int) $attendance->id,
                 'date' => $attendance->attendance_date,
                 'type' => $attendance->user_type,
                 'entity_id' => (int) $attendance->entity_id,
                 'name' => $name,
-                'status' => $attendance->status,
+                'status' => $status,
+                'status_label' => (string) ($statusInfo['label'] ?? ucwords(str_replace('_', ' ', $status))),
+                'status_badge_class' => (string) ($statusInfo['badge_class'] ?? 'text-bg-secondary'),
                 'remark' => $attendance->remark,
                 'marked_by' => $attendance->marked_by,
                 'created_at' => $attendance->created_at,
@@ -249,5 +271,43 @@ class AttendanceController extends Controller
 
         $name = trim(($person->first_name ?? '') . ' ' . ($person->last_name ?? ''));
         return $name !== '' ? $name : 'N/A';
+    }
+
+    private function getAttendanceStatuses(): array
+    {
+        if (!Schema::hasTable('attendance_statuses')) {
+            return [];
+        }
+
+        return AttendanceStatus::query()
+            ->where('active', 1)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get(['code', 'label', 'badge_class', 'bar_class', 'is_default'])
+            ->map(function (AttendanceStatus $status) {
+                return [
+                    'code' => (string) $status->code,
+                    'label' => (string) $status->label,
+                    'badge_class' => (string) ($status->badge_class ?? 'text-bg-secondary'),
+                    'bar_class' => (string) ($status->bar_class ?? 'bg-neutral-300'),
+                    'is_default' => (bool) $status->is_default,
+                ];
+            })
+            ->all();
+    }
+
+    private function getDefaultStatusCode(array $statuses): string
+    {
+        foreach ($statuses as $status) {
+            if (!empty($status['is_default']) && !empty($status['code'])) {
+                return (string) $status['code'];
+            }
+        }
+
+        if (!empty($statuses[0]['code'])) {
+            return (string) $statuses[0]['code'];
+        }
+
+        return '';
     }
 }

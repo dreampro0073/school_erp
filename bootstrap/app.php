@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'super-admin-only' => \App\Http\Middleware\EnsureSuperAdmin::class,
             'admin-only' => \App\Http\Middleware\EnsureAdmin::class,
+            'teacher-only' => \App\Http\Middleware\EnsureTeacher::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
