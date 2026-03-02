@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller {
     public function login(){   
@@ -44,28 +46,43 @@ class UserController extends Controller {
 
         unset($credentials['captcha']);
 
+        $user = User::where("email", $request->input("email"))->first();
+        if($user){
+            if(isset($user->end_date) && date("Y-m-d", strtotime($user->end_date)) < date("Y-m-d")){
+                return Redirect::back()->with('failure','We’re sorry, but your account access has expired. Please contact management team to renew or extend your subscription or for further assistance.');
+            };
+        }
+
+        $credentials["active"] = 0;
+
         if (Auth::attempt($credentials)) {
+
+            DB::table('user_activities')->insert([
+                "user_id"=>Auth::id(),
+                "activity"=>"Login",
+                "remark"=>"Login",
+                "updated_at" => date("Y-m-d H:i:s"),
+                "created_at" => date("Y-m-d H:i:s"),
+            ]);
 
             $request->session()->regenerate();
             $request->session()->forget('login_captcha');
 
             $user = Auth::user();
-            $privillage = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
-            $active = (int) ($user->active ?? 1);
 
-            if ($privillage === 1 && $active === 0) {
+            if ($user->priv == 1) {
                 return redirect()->to('/super-admin/dashboard');
             }
 
-            if ($privillage === 2) {
+            if ($user->priv == 2) {
                 return redirect()->to('/admin/dashboard');
             }
 
-            if ($privillage === 3) {
+            if ($user->priv == 3) {
                 return redirect()->to('/teachers/dashboard');
             }
 
-            if ($privillage === 5) {
+            if ($user->priv == 5) {
                 return redirect()->to('/gurdian/dashboard');
             }
 
@@ -108,12 +125,22 @@ class UserController extends Controller {
     }
 
     public function logout(Request $request)
-    {
-        Auth::logout();
+    {   
+        if(Auth::user()){
+            DB::table('user_activities')->insert([
+                "user_id"=>Auth::id(),
+                "activity"=>"Logout",
+                "remark"=>"Logout",
+                "updated_at" => date("Y-m-d H:i:s"),
+                "created_at" => date("Y-m-d H:i:s"),
+            ]);
+
+            Auth::logout();
+
+        }
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return redirect()->route('login');
+        return redirect()->to('/');
     }
 }

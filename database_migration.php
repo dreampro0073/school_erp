@@ -149,3 +149,5 @@ SELECT 'Salary', 1, NOW(), NOW()
 WHERE NOT EXISTS (
   SELECT 1 FROM `expenses` WHERE LOWER(`name`) = 'salary'
 );
+
+ALTER TABLE `users` ADD `end_date` DATE NULL DEFAULT NULL AFTER `active`;

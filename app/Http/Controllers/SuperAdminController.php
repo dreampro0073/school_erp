@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
 class SuperAdminController extends Controller {
     public function dashboard()
     {
-        return view('admin.dashboard');
+        return view('super-admin.dashboard');
     }
 
     public function initDashboard(Request $request)
@@ -49,7 +49,7 @@ class SuperAdminController extends Controller {
         $services = $this->getSelectableServices();
         $standards = $this->getSelectableStandards();
 
-        return view('admin.users.create-school', [
+        return view('super-admin.create_school', [
             'isEdit' => false,
             'school' => null,
             'services' => $services,
@@ -79,7 +79,7 @@ class SuperAdminController extends Controller {
         $services = $this->getSelectableServices();
         $standards = $this->getSelectableStandards();
 
-        return view('admin.users.create-school', [
+        return view('super-admin.create_school', [
             'isEdit' => true,
             'school' => $school,
             'services' => $services,
@@ -141,7 +141,7 @@ class SuperAdminController extends Controller {
             $selected[$sid] = ['enabled' => true];
         }
 
-        return view('admin.users.school-services', [
+        return view('super-admin.school_services', [
             'school' => $school,
             'services' => $services,
             'selected' => $selected,
@@ -555,31 +555,31 @@ class SuperAdminController extends Controller {
             $query->where($privColumn, '!=', 1);
         }
 
-        if ($type === 'schools') {
+        if ($type == 'schools') {
             $title = 'Schools';
             $subtitle = 'Users with school/client role.';
             if ($privColumn) {
                 $query->where($privColumn, 2);
             }
-        } elseif ($type === 'students') {
+        } elseif ($type == 'students') {
             $title = 'Students';
             $subtitle = 'Users with student role.';
             if ($privColumn) {
                 $query->where($privColumn, 4);
             }
-        } elseif ($type === 'teachers') {
+        } elseif ($type == 'teachers') {
             $title = 'Teachers';
             $subtitle = 'Users with teacher role.';
             if ($privColumn) {
                 $query->where($privColumn, 3);
             }
-        } elseif ($type === 'parents') {
+        } elseif ($type == 'parents') {
             $title = 'Parents';
             $subtitle = 'Users with parent role.';
             if ($privColumn) {
                 $query->where($privColumn, 5);
             }
-        } elseif ($type === 'inactive-users') {
+        } elseif ($type == 'inactive-users') {
             $title = 'Inactive Users';
             $subtitle = 'Users where active = 0 (Super Admin skipped).';
             if (Schema::hasColumn('users', 'active')) {
