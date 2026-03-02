@@ -85,3 +85,67 @@ CREATE TABLE IF NOT EXISTS `exam_marks` (
   KEY `exam_marks_exam_date_index` (`exam_date`),
   KEY `exam_marks_lookup_idx` (`client_id`, `student_id`, `subject_id`, `exam_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `teacher_salary_structures` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `client_id` BIGINT UNSIGNED NULL,
+  `teacher_id` BIGINT UNSIGNED NOT NULL,
+  `component_name` VARCHAR(120) NOT NULL,
+  `component_type` ENUM('earning','deduction') NOT NULL DEFAULT 'earning',
+  `amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `sort_order` INT UNSIGNED NOT NULL DEFAULT 0,
+  `active` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `teacher_salary_structures_client_id_index` (`client_id`),
+  KEY `teacher_salary_structures_teacher_id_index` (`teacher_id`),
+  KEY `teacher_salary_structures_client_teacher_index` (`client_id`, `teacher_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `teacher_salary_logs` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `client_id` BIGINT UNSIGNED NULL,
+  `teacher_id` BIGINT UNSIGNED NOT NULL,
+  `salary_month` DATE NOT NULL,
+  `gross_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `deduction_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `net_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `payment_date` DATE NULL,
+  `payment_mode` VARCHAR(50) NULL,
+  `transaction_ref` VARCHAR(120) NULL,
+  `remark` TEXT NULL,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `teacher_salary_logs_client_id_index` (`client_id`),
+  KEY `teacher_salary_logs_teacher_id_index` (`teacher_id`),
+  KEY `teacher_salary_logs_salary_month_index` (`salary_month`),
+  KEY `teacher_salary_logs_lookup_index` (`client_id`, `teacher_id`, `salary_month`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `teacher_bank_details` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `client_id` BIGINT UNSIGNED NULL,
+  `teacher_id` BIGINT UNSIGNED NOT NULL,
+  `account_holder_name` VARCHAR(150) NOT NULL,
+  `bank_name` VARCHAR(150) NOT NULL,
+  `account_number` VARCHAR(50) NOT NULL,
+  `ifsc_code` VARCHAR(20) NOT NULL,
+  `branch_name` VARCHAR(150) NULL,
+  `upi_id` VARCHAR(120) NULL,
+  `active` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `teacher_bank_details_client_teacher_unique` (`client_id`, `teacher_id`),
+  KEY `teacher_bank_details_client_id_index` (`client_id`),
+  KEY `teacher_bank_details_teacher_id_index` (`teacher_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `expenses` (`name`, `active`, `created_at`, `updated_at`)
+SELECT 'Salary', 1, NOW(), NOW()
+WHERE NOT EXISTS (
+  SELECT 1 FROM `expenses` WHERE LOWER(`name`) = 'salary'
+);

@@ -763,6 +763,8 @@ app.controller('studentProfileCtrl', function($scope , DBService){
 // *** teacherCtrl ***
 app.controller('teacherCtrl', function($scope , DBService){
     $scope.loading = false;
+    $scope.logLoading = false;
+    $scope.logProcessing = false;
     $scope.allTeachers = [];
     $scope.teachers = [];
     $scope.baseUrl = base_url;
@@ -770,6 +772,22 @@ app.controller('teacherCtrl', function($scope , DBService){
         search: '',
         gender: '',
         status: ''
+    };
+    $scope.salaryFilters = {
+        teacher_id: null,
+        month: ''
+    };
+    $scope.teacherOptions = [];
+    $scope.salaryLogs = [];
+    $scope.logForm = {
+        teacher_id: null,
+        salary_month: '',
+        gross_amount: '',
+        deduction_amount: '0',
+        payment_date: '',
+        payment_mode: '',
+        transaction_ref: '',
+        remark: ''
     };
 
     $scope.applyFilters = function() {
@@ -816,6 +834,64 @@ app.controller('teacherCtrl', function($scope , DBService){
             $scope.applyFilters();
             $scope.loading = false;
         });
+
+        $scope.loadSalaryLogs();
+    };
+
+    $scope.loadSalaryLogs = function() {
+        var payload = {
+            teacher_id: $scope.salaryFilters.teacher_id || null,
+            month: $scope.salaryFilters.month || null
+        };
+
+        $scope.logLoading = true;
+        DBService.postCall(payload, '/api/admin/teacher-salary/logs/init').then(function(data) {
+            if (data && data.success) {
+                $scope.teacherOptions = data.teacher_options || [];
+                $scope.salaryLogs = data.logs || [];
+            } else {
+                $scope.salaryLogs = [];
+            }
+            $scope.logLoading = false;
+        }, function() {
+            $scope.logLoading = false;
+        });
+    };
+
+    $scope.resetSalaryFilters = function() {
+        $scope.salaryFilters = {
+            teacher_id: null,
+            month: ''
+        };
+        $scope.loadSalaryLogs();
+    };
+
+    $scope.saveSalaryLog = function() {
+        if (!$scope.logForm.teacher_id || !$scope.logForm.salary_month || $scope.logForm.gross_amount === '') {
+            alert('Teacher, Salary Month and Gross Amount are required.');
+            return;
+        }
+
+        $scope.logProcessing = true;
+        DBService.postCall($scope.logForm, '/api/admin/teacher-salary/logs/store').then(function(data) {
+            alert((data && data.message) ? data.message : 'Unable to save salary log.');
+            if (data && data.success) {
+                $scope.logForm = {
+                    teacher_id: null,
+                    salary_month: '',
+                    gross_amount: '',
+                    deduction_amount: '0',
+                    payment_date: '',
+                    payment_mode: '',
+                    transaction_ref: '',
+                    remark: ''
+                };
+                $scope.loadSalaryLogs();
+            }
+            $scope.logProcessing = false;
+        }, function() {
+            $scope.logProcessing = false;
+        });
     };
 });
 
@@ -833,7 +909,57 @@ app.controller('addTeacherCtrl', function($scope , DBService){
         aadhar_no: '',
         document_type: 'Aadhar',
         document_no: '',
-        active: '1'
+        active: '1',
+        salary_components: [
+            { component_name: 'Basic Salary', component_type: 'earning', amount: '' }
+        ],
+        bank_details: {
+            account_holder_name: '',
+            bank_name: '',
+            account_number: '',
+            ifsc_code: '',
+            branch_name: '',
+            upi_id: ''
+        }
+    };
+
+    $scope.addSalaryComponent = function() {
+        $scope.formData.salary_components.push({
+            component_name: '',
+            component_type: 'earning',
+            amount: ''
+        });
+    };
+
+    $scope.removeSalaryComponent = function(index) {
+        if (($scope.formData.salary_components || []).length <= 1) {
+            return;
+        }
+        $scope.formData.salary_components.splice(index, 1);
+    };
+
+    $scope.totalEarning = function() {
+        var total = 0;
+        angular.forEach($scope.formData.salary_components || [], function(item) {
+            if ((item.component_type || 'earning') !== 'deduction') {
+                total += parseFloat(item.amount || 0);
+            }
+        });
+        return total;
+    };
+
+    $scope.totalDeduction = function() {
+        var total = 0;
+        angular.forEach($scope.formData.salary_components || [], function(item) {
+            if ((item.component_type || 'earning') === 'deduction') {
+                total += parseFloat(item.amount || 0);
+            }
+        });
+        return total;
+    };
+
+    $scope.totalNet = function() {
+        return Math.max(0, $scope.totalEarning() - $scope.totalDeduction());
     };
 
     $scope.init = function(encId) {
@@ -860,18 +986,75 @@ app.controller('addTeacherCtrl', function($scope , DBService){
             $scope.formData.address = t.address || '';
             $scope.formData.aadhar_no = t.aadhar_no || '';
             $scope.formData.active = (t.active !== undefined && t.active !== null) ? String(t.active) : '1';
+
+            DBService.postCall({ enc_id: $scope.formData.enc_id }, '/api/admin/teacher-salary/profile/get').then(function(salaryData) {
+                if (!salaryData || !salaryData.success) {
+                    return;
+                }
+
+                if (angular.isArray(salaryData.salary_components) && salaryData.salary_components.length) {
+                    $scope.formData.salary_components = salaryData.salary_components;
+                }
+                if (salaryData.bank_details) {
+                    $scope.formData.bank_details.account_holder_name = salaryData.bank_details.account_holder_name || '';
+                    $scope.formData.bank_details.bank_name = salaryData.bank_details.bank_name || '';
+                    $scope.formData.bank_details.account_number = salaryData.bank_details.account_number || '';
+                    $scope.formData.bank_details.ifsc_code = salaryData.bank_details.ifsc_code || '';
+                    $scope.formData.bank_details.branch_name = salaryData.bank_details.branch_name || '';
+                    $scope.formData.bank_details.upi_id = salaryData.bank_details.upi_id || '';
+                }
+            });
         });
     };
 
     $scope.submit = function() {
+        var hasAnyBankField = false;
+        angular.forEach($scope.formData.bank_details || {}, function(value) {
+            if (String(value || '').trim() !== '') {
+                hasAnyBankField = true;
+            }
+        });
+        if (hasAnyBankField) {
+            if (!$scope.formData.bank_details.account_holder_name || !$scope.formData.bank_details.bank_name || !$scope.formData.bank_details.account_number || !$scope.formData.bank_details.ifsc_code) {
+                alert('Account Holder Name, Bank Name, Account Number and IFSC Code are required.');
+                return;
+            }
+        }
+
+        var invalidSalaryItem = false;
+        angular.forEach($scope.formData.salary_components || [], function(item) {
+            if (!item.component_name || item.amount === '' || item.amount === null || isNaN(parseFloat(item.amount))) {
+                invalidSalaryItem = true;
+            }
+        });
+        if (invalidSalaryItem) {
+            alert('Please fill valid salary component name and amount.');
+            return;
+        }
+
         $scope.processing = true;
 
         DBService.postCall($scope.formData, '/api/admin/teachers/store').then(function(data) {
-            alert((data && data.message) ? data.message : 'Unable to save teacher.');
-            if (data && data.success) {
-                window.location.href = base_url + '/admin/teachers';
+            if (!(data && data.success)) {
+                alert((data && data.message) ? data.message : 'Unable to save teacher.');
+                $scope.processing = false;
+                return;
             }
-            $scope.processing = false;
+
+            var encId = data.enc_id || $scope.formData.enc_id;
+            DBService.postCall({
+                enc_id: encId,
+                salary_components: $scope.formData.salary_components,
+                bank_details: $scope.formData.bank_details
+            }, '/api/admin/teacher-salary/profile/store').then(function(salaryResponse) {
+                alert((salaryResponse && salaryResponse.message) ? salaryResponse.message : 'Teacher saved, but salary profile failed.');
+                if (salaryResponse && salaryResponse.success) {
+                    window.location.href = base_url + '/admin/teachers';
+                }
+                $scope.processing = false;
+            }, function() {
+                $scope.processing = false;
+            });
         }, function() {
             $scope.processing = false;
         });

@@ -67,6 +67,79 @@
                   <label class="form-label">Document No</label>
                   <input type="text" class="form-control" ng-model="formData.document_no">
                </div>
+
+               <div class="col-12 mt-3">
+                  <hr>
+                  <h6 class="mb-0">Salary Structure</h6>
+                  <small class="text-secondary">Define monthly earning and deduction components for this teacher.</small>
+               </div>
+
+               <div class="col-12" ng-repeat="item in formData.salary_components track by $index">
+                  <div class="row g-2 align-items-end">
+                     <div class="col-md-5">
+                        <label class="form-label">Component Name *</label>
+                        <input type="text" class="form-control" ng-model="item.component_name" placeholder="Basic Salary / HRA / PF" required>
+                     </div>
+                     <div class="col-md-3">
+                        <label class="form-label">Type *</label>
+                        <select class="form-control" ng-model="item.component_type">
+                           <option value="earning">Earning</option>
+                           <option value="deduction">Deduction</option>
+                        </select>
+                     </div>
+                     <div class="col-md-3">
+                        <label class="form-label">Amount *</label>
+                        <input type="number" step="0.01" min="0" class="form-control" ng-model="item.amount" required>
+                     </div>
+                     <div class="col-md-1 d-grid">
+                        <button type="button" class="btn btn-outline-danger" ng-click="removeSalaryComponent($index)" title="Remove">
+                           <i class="ri-delete-bin-line"></i>
+                        </button>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="col-12 d-flex justify-content-between align-items-center">
+                  <button type="button" class="btn btn-outline-primary btn-sm" ng-click="addSalaryComponent()">
+                     <i class="ri-add-line"></i> Add Component
+                  </button>
+                  <div class="text-end">
+                     <div class="text-sm">Earnings: <strong>@{{ totalEarning() | number:2 }}</strong></div>
+                     <div class="text-sm">Deductions: <strong>@{{ totalDeduction() | number:2 }}</strong></div>
+                     <div>Net Salary: <strong>@{{ totalNet() | number:2 }}</strong></div>
+                  </div>
+               </div>
+
+               <div class="col-12 mt-3">
+                  <hr>
+                  <h6 class="mb-0">Bank Details</h6>
+                  <small class="text-secondary">If any bank field is entered, required fields must be filled.</small>
+               </div>
+
+               <div class="col-md-6">
+                  <label class="form-label">Account Holder Name *</label>
+                  <input type="text" class="form-control" ng-model="formData.bank_details.account_holder_name">
+               </div>
+               <div class="col-md-6">
+                  <label class="form-label">Bank Name *</label>
+                  <input type="text" class="form-control" ng-model="formData.bank_details.bank_name">
+               </div>
+               <div class="col-md-6">
+                  <label class="form-label">Account Number *</label>
+                  <input type="text" class="form-control" ng-model="formData.bank_details.account_number">
+               </div>
+               <div class="col-md-6">
+                  <label class="form-label">IFSC Code *</label>
+                  <input type="text" class="form-control text-uppercase" ng-model="formData.bank_details.ifsc_code">
+               </div>
+               <div class="col-md-6">
+                  <label class="form-label">Branch Name</label>
+                  <input type="text" class="form-control" ng-model="formData.bank_details.branch_name">
+               </div>
+               <div class="col-md-6">
+                  <label class="form-label">UPI ID</label>
+                  <input type="text" class="form-control" ng-model="formData.bank_details.upi_id">
+               </div>
             </div>
 
             <div class="mt-4 d-flex gap-2">

@@ -14,6 +14,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\SalaryController;
 
 // Grouped structure for middleware-based organization (no behavior change).
 Route::middleware([])->group(function () {
@@ -67,6 +68,13 @@ Route::middleware([])->group(function () {
             Route::post('/teachers/init', 'initTeachers');
             Route::post('/teachers/get', 'getTeacher');
             Route::post('/teachers/store', 'storeTeacher');
+        });
+
+        Route::prefix('teacher-salary')->controller(SalaryController::class)->group(function () {
+            Route::post('/profile/get', 'getTeacherSalaryProfile');
+            Route::post('/profile/store', 'saveTeacherSalaryProfile');
+            Route::post('/logs/init', 'initTeacherSalaryLogs');
+            Route::post('/logs/store', 'storeTeacherSalaryLog');
         });
 
         Route::controller(IncomeController::class)->group(function () {
