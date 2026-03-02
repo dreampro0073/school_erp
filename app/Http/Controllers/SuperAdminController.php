@@ -164,26 +164,46 @@ class SuperAdminController extends Controller {
             return back()->with('failure', 'School not found.');
         }
 
-        $servicesInput = $request->input('services', []);
-        if (!is_array($servicesInput)) {
-            $servicesInput = [];
-        }
+        $validated = $request->validate([
+            'services' => ['nullable', 'array'],
+            'services.*' => ['array'],
+            'services.*.enabled' => ['nullable', 'accepted'],
+        ]);
+        $servicesInput = $validated['services'] ?? [];
 
         $clientColumn = ModelHelper::resolveColumn('client_services', ['client_id', 'school_id', 'user_id', 'users_id']);
         $serviceColumn = ModelHelper::resolveColumn('client_services', ['service_id', 'services_id']);
         if (!$clientColumn || !$serviceColumn) {
             return back()->with('failure', 'client_services table structure is not supported.');
         }
+        $serviceIdColumn = ModelHelper::resolveColumn('services', ['id', 'service_id', 'sid']);
+        if (!$serviceIdColumn) {
+            return back()->with('failure', 'Services table structure is not supported.');
+        }
 
         $permissionColumn = ModelHelper::resolveColumn('client_services', ['permissions', 'permission', 'rights', 'access']);
 
-        ClientService::query()->where($clientColumn, $id)->delete();
-
+        $enabledServiceIds = [];
         foreach ($servicesInput as $serviceId => $payload) {
-            if (!is_array($payload) || empty($payload['enabled'])) {
+            if (!ctype_digit((string) $serviceId) || !is_array($payload) || empty($payload['enabled'])) {
                 continue;
             }
+            $enabledServiceIds[] = (int) $serviceId;
+        }
+        $enabledServiceIds = array_values(array_unique(array_filter($enabledServiceIds, fn (int $value) => $value > 0)));
 
+        if (!empty($enabledServiceIds)) {
+            $existingServiceCount = DB::table('services')
+                ->whereIn($serviceIdColumn, $enabledServiceIds)
+                ->count();
+            if ($existingServiceCount !== count($enabledServiceIds)) {
+                return back()->withErrors(['services' => 'One or more selected services are invalid.'])->withInput();
+            }
+        }
+
+        ClientService::query()->where($clientColumn, $id)->delete();
+
+        foreach ($enabledServiceIds as $serviceId) {
             $insert = [
                 $clientColumn => $id,
                 $serviceColumn => (int) $serviceId,

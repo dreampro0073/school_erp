@@ -19,8 +19,12 @@ class ChatController extends Controller {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }
 
+        $payload = $request->validate([
+            'user_id' => ['nullable', 'integer', 'min:1'],
+        ]);
+
         $users = $this->resolveAvailableUsers((int) $user->id, (int) ($user->client_id ?? 0));
-        $selectedUserId = (int) ($request->input('user_id') ?: ($users[0]['id'] ?? 0));
+        $selectedUserId = (int) (($payload['user_id'] ?? 0) ?: ($users[0]['id'] ?? 0));
         $messages = $selectedUserId > 0 ? $this->getThread((int) $user->id, $selectedUserId) : [];
 
         return response()->json([

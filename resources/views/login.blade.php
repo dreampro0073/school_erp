@@ -62,7 +62,7 @@
                             Email Address
                             <span class="text-danger-600">*</span>
                         </label>
-                        <input name="email" type="email" id="email" class="email-field form-control" placeholder="Enter your email" value="{{ old('email') }}">
+                        <input name="email" type="email" id="email" class="email-field form-control" placeholder="Enter your email" value="{{ old('email') }}" required>
                         @error('email')
                             <label class="error">{{ $message }}</label>
                         @enderror
@@ -74,7 +74,7 @@
                             <span class="text-danger-600">*</span>
                         </label>
                         <div class="position-relative">
-                            <input name="password" type="password" id="password" class="password-field form-control" placeholder="Enter your password">
+                            <input name="password" type="password" id="password" class="password-field form-control" placeholder="Enter your password" required>
                             <button type="button" class="toggle-password btn p-0 border-0 bg-transparent position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light cursor-pointer ri-eye-line" data-toggle="#password" aria-label="Toggle password visibility">
                             </button>
                         </div>
@@ -92,7 +92,7 @@
                             <img id="captcha-image" src="{{ route('login.captcha') }}?t={{ time() }}" alt="Captcha image" width="150" height="50" class="border radius-8">
                             <button type="button" id="refresh-captcha" class="btn btn-outline-secondary btn-sm">Refresh</button>
                         </div>
-                        <input name="captcha" type="text" id="captcha" class="form-control" placeholder="Enter captcha text" autocomplete="off">
+                        <input name="captcha" type="text" id="captcha" class="form-control" placeholder="Enter captcha text" autocomplete="off" required>
                         @error('captcha')
                             <label class="error">{{ $message }}</label>
                         @enderror
@@ -164,8 +164,9 @@
     </script>
     <script type="text/javascript" src="{{url('assets/scripts/jquery.min.js')}}"></script>
     <script type="text/javascript" src="{{url('assets/scripts/jquery.validate.js')}}"></script>
+    <script type="text/javascript" src="{{ url('assets/scripts/form-submit-validation.js') }}"></script>
     <script type="text/javascript">
-        $(".check-form").validate();
+        $(".submit-form").validate();
 
         $('#refresh-captcha').on('click', function () {
             var img = document.getElementById('captcha-image');
