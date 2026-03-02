@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureAdmin::class,
             'teacher' => \App\Http\Middleware\EnsureTeacher::class,
             'guardian' => \App\Http\Middleware\EnsureGuardian::class,
+            'api-token-user' => \App\Http\Middleware\EnsureApiTokenUser::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

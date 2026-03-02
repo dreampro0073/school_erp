@@ -17,7 +17,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SalaryController;
 
 // Grouped structure for middleware-based organization (no behavior change).
-Route::middleware([])->group(function () {
+Route::middleware(['api-token-user'])->group(function () {
     Route::prefix('students')->controller(StudentController::class)->group(function () {
         Route::post('/init', 'initStudents');
     });
