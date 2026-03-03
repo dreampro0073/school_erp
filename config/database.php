@@ -2,6 +2,13 @@
 
 use Illuminate\Support\Str;
 
+$mysqlSslOptions = [];
+if (class_exists(\Pdo\Mysql::class) && defined(\Pdo\Mysql::class . '::ATTR_SSL_CA')) {
+    $mysqlSslOptions[constant(\Pdo\Mysql::class . '::ATTR_SSL_CA')] = env('MYSQL_ATTR_SSL_CA');
+} elseif (defined(\PDO::class . '::MYSQL_ATTR_SSL_CA')) {
+    $mysqlSslOptions[constant(\PDO::class . '::MYSQL_ATTR_SSL_CA')] = env('MYSQL_ATTR_SSL_CA');
+}
+
 return [
 
     /*
@@ -57,9 +64,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => extension_loaded('pdo_mysql') ? array_filter($mysqlSslOptions) : [],
         ],
 
         'mariadb' => [
@@ -77,9 +82,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => extension_loaded('pdo_mysql') ? array_filter($mysqlSslOptions) : [],
         ],
 
         'pgsql' => [

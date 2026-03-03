@@ -801,8 +801,9 @@ class AdminController extends Controller {
         }
         $payload = ModelHelper::applyTimestamps($table, $payload, empty($data['id']));
 
-        if (!empty($data['id'])) {
-            $query = DB::table($table)->where('id', (int) $data['id']);
+        $entryIdColumn = ModelHelper::resolveFirstExistingColumn($table, ['id', Str::singular($table) . '_id']);
+        if (!empty($data['id']) && $entryIdColumn) {
+            $query = DB::table($table)->where($entryIdColumn, (int) $data['id']);
             ModelHelper::applyClientScope($query, $table, (int) ($user->client_id ?? 0));
             $query->update($payload);
             return response()->json(['success' => true, 'message' => "{$label} updated successfully."]);
@@ -1390,7 +1391,14 @@ class AdminController extends Controller {
             $counts[(string) ($status['code'] ?? '')] = 0;
         }
 
-        if (Schema::hasTable('attendances') && $clientId > 0) {
+        if (
+            Schema::hasTable('attendances') &&
+            $clientId > 0 &&
+            Schema::hasColumn('attendances', 'status') &&
+            Schema::hasColumn('attendances', 'client_id') &&
+            Schema::hasColumn('attendances', 'attendance_date') &&
+            Schema::hasColumn('attendances', 'user_type')
+        ) {
             $rows = DB::table('attendances')
                 ->select('status', DB::raw('COUNT(*) as total'))
                 ->where('client_id', $clientId)
@@ -1429,15 +1437,31 @@ class AdminController extends Controller {
             return [];
         }
 
-        return AttendanceStatus::query()
-            ->where('active', 1)
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get(['code', 'label', 'badge_class', 'bar_class'])
+        $query = AttendanceStatus::query();
+        if (Schema::hasColumn('attendance_statuses', 'active')) {
+            $query->where('active', 1);
+        }
+        if (Schema::hasColumn('attendance_statuses', 'sort_order')) {
+            $query->orderBy('sort_order');
+        }
+        if (Schema::hasColumn('attendance_statuses', 'id')) {
+            $query->orderBy('id');
+        }
+
+        $columns = array_values(array_filter(
+            ['code', 'label', 'badge_class', 'bar_class'],
+            fn (string $column): bool => Schema::hasColumn('attendance_statuses', $column)
+        ));
+        if (empty($columns)) {
+            return [];
+        }
+
+        return $query
+            ->get($columns)
             ->map(function (AttendanceStatus $status) {
                 return [
-                    'code' => (string) $status->code,
-                    'label' => (string) $status->label,
+                    'code' => (string) ($status->code ?? ''),
+                    'label' => (string) ($status->label ?? ''),
                     'badge_class' => (string) ($status->badge_class ?? 'text-bg-secondary'),
                     'bar_class' => (string) ($status->bar_class ?? 'bg-neutral-300'),
                 ];
