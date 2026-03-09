@@ -29,7 +29,7 @@ Route::middleware(['api-token-user'])->group(function () {
 
     Route::prefix('standards')->controller(StandardsController::class)->group(function () {
         Route::post('/init', 'initStandards');
-        Route::post('/store', 'storeStandard');
+        Route::post('/store', 'storeStandarΩΩΩΩßd');
         Route::post('/delete', 'deleteStandard');
     });
 
