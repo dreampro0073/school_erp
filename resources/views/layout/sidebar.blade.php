@@ -86,6 +86,7 @@
          @include('layout.parents')
       @endif
 
+      @if(false)
       <li>
          <a href="{{ route('chat.index') }}">
             <i class="ri-message-2-line"></i>
@@ -99,6 +100,7 @@
             <span>Worklog</span>
          </a>
       </li>
+      @endif
 
       <li>
          <a href="javascript:void(0);" onclick="document.getElementById('logoutFormSidebar').submit();">

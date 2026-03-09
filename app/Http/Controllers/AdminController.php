@@ -71,8 +71,10 @@ class AdminController extends Controller {
 
     public function initDashboard(Request $request)
     {
+
         $apiToken = $request->header('apiToken');
         $user = User::authUser($apiToken);
+
         if (!$user || is_string($user)) {
             return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
         }

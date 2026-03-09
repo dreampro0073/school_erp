@@ -6,6 +6,7 @@ use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 class StudentController extends Controller
 {
@@ -29,7 +30,7 @@ class StudentController extends Controller
 
         return response()->json([
             'success' => true,
-            'students' => $query->get(),
+            'students' => [],
         ]);
     }
 
@@ -40,30 +41,36 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
+      
+  
         $user = $this->resolveApiUser($request);
+
         if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized user.'
+            ], 401);
         }
 
         $data = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['nullable', 'string', 'max:255'],
-            'dob' => ['nullable', 'date'],
-            'gender' => ['nullable', 'string', 'max:50'],
-            'mobile' => ['nullable', 'string', 'max:50'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'address' => ['nullable', 'string', 'max:1000'],
-            'admission_no' => ['nullable', 'string', 'max:100'],
-            'aadhar_no' => ['nullable', 'string', 'max:50'],
-            'active' => ['nullable', 'in:0,1'],
+            'first_name' => ['required','string','max:255'],
+            'last_name' => ['nullable','string','max:255'],
+            
+            'gender' => ['nullable','string','max:50'],
+            'mobile' => ['nullable','string','max:50'],
+            'email' => ['nullable','email','max:255'],
+            'address' => ['nullable','string','max:1000'],
+            'admission_no' => ['nullable','string','max:100'],
+            'aadhar_no' => ['nullable','string','max:50'],
+            'active' => ['nullable','in:0,1'],
         ]);
 
-        if (Schema::hasColumn('students', 'client_id')) {
-            $data['client_id'] = (int) ($user->client_id ?? 0);
-        }
-        if (Schema::hasColumn('students', 'active')) {
-            $data['active'] = isset($data['active']) ? (int) $data['active'] : 1;
-        }
+     
+
+        $data['name'] = $data['first_name'].' '.$data['last_name'];
+
+        $data['client_id'] = $user->client_id;
+        $data['user_id'] = $user->id;
 
         $student = Student::create($data);
 
@@ -90,7 +97,7 @@ class StudentController extends Controller
         $data = $request->validate([
             'first_name' => ['sometimes', 'required', 'string', 'max:255'],
             'last_name' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'dob' => ['sometimes', 'nullable', 'date'],
+            // 'dob' => ['sometimes', 'nullable', 'date'],
             'gender' => ['sometimes', 'nullable', 'string', 'max:50'],
             'mobile' => ['sometimes', 'nullable', 'string', 'max:50'],
             'email' => ['sometimes', 'nullable', 'email', 'max:255'],
