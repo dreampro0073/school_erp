@@ -9,7 +9,7 @@
         </div>
     </div>
 
-    <div class="mt-24">
+<!--     <div class="mt-24">
         <div class="row gy-4">
             <div class="col-xxl-8">
                 <div class="row gy-4">
@@ -62,6 +62,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
 @endsection

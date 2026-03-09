@@ -4,19 +4,19 @@
       <span>Dashboard</span>
    </a>
 </li>
-
+@if(false)
 <li class="dropdown">
    <a href="javascript:void(0)">
       <i class="ri-graduation-cap-line"></i>
       <span>Students</span>
    </a>
    <ul class="sidebar-submenu">
-      <li>
+      <!-- <li>
          <a href="{{ route('admin.students.index') }}">
             <i class="ri-circle-fill circle-icon w-auto"></i>
             Student List
          </a>
-      </li>
+      </li> -->
       <li>
          <a href="{{ route('admin.students.add') }}">
             <i class="ri-circle-fill circle-icon w-auto"></i>
@@ -86,3 +86,4 @@
       </li>
    </ul>
 </li>
+@endif
