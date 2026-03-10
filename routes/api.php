@@ -62,15 +62,16 @@ Route::middleware(['api-token-user'])->group(function () {
             Route::post('/init', 'initDashboard');
         });
 
-        // Route::controller(AdminController::class)->group(function () {
-        //     Route::post('/students/init', 'initStudents');
-        //     Route::post('/students/get', 'getStudent');
-        //     Route::post('/students/store', 'storeStudent');
-        //     Route::post('/students/status', 'updateStudentStatus');
-        //     Route::post('/teachers/init', 'initTeachers');
-        //     Route::post('/teachers/get', 'getTeacher');
-        //     Route::post('/teachers/store', 'storeTeacher');
-        // });
+        Route::controller(AdminController::class)->group(function () {
+            // Route::post('/students/init', 'initStudents');
+            // Route::post('/students/get', 'getStudent');
+            // Route::post('/students/status', 'updateStudentStatus');
+            // Route::post('/teachers/init', 'initTeachers');
+            // Route::post('/teachers/get', 'getTeacher');
+            
+            Route::post('/teachers/store', 'storeTeacher');
+            Route::post('/students/store', 'storeStudent');
+        });
 
         // Route::prefix('teacher-salary')->controller(SalaryController::class)->group(function () {
         //     Route::post('/profile/get', 'getTeacherSalaryProfile');

@@ -68,10 +68,6 @@
    </div>
 </div>
 
-<form id="logoutFormSidebar" method="POST" action="{{ route('logout') }}" class="d-none">
-   @csrf
-</form>
-
 <div class="sidebar-menu-area">
    <ul class="sidebar-menu" id="sidebar-menu">
       @if ($authPriv === 1)
@@ -88,7 +84,7 @@
 
       @if(false)
       <li>
-         <a href="{{ route('chat.index') }}">
+         <a href="{{ url('chat/index') }}">
             <i class="ri-message-2-line"></i>
             <span>Chat</span>
          </a>
@@ -102,11 +98,11 @@
       </li>
       @endif
 
-      <li>
-         <a href="javascript:void(0);" onclick="document.getElementById('logoutFormSidebar').submit();">
-            <i class="ri-shut-down-line"></i>
-            <span>Logout</span>
+      <li class="nav-item">
+         <a href="{{url('/logout')}}" onclick="return confirm('Are you sure to Logout?');" >
+           <i class="ri-shut-down-line"></i>
+           <span class="title">Logout</span>
          </a>
-      </li>
+     </li>
    </ul>
 </div>

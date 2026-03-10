@@ -20,7 +20,7 @@ use App\Http\Controllers\ChatController;
 Route::get('/', [UserController::class, 'login'])->name('login');
 Route::get('/login/captcha', [UserController::class, 'captcha'])->name('login.captcha');
 Route::post('/login', [UserController::class, 'postLogin']);
-Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+Route::get('/logout', [UserController::class, 'logout']);
 
 Route::middleware(['auth'])->group(function () {
     // Route::prefix('worklog')->controller(WorklogController::class)->group(function () {

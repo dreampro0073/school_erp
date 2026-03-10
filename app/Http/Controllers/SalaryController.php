@@ -387,7 +387,7 @@ class SalaryController extends Controller
 
     private function saveTeacherBankDetails(array $data, int $clientId, int $teacherOwnerId): void
     {
-        if ($teacherOwnerId <= 0 || !Schema::hasTable('teacher_bank_details')) {
+        if ($teacherOwnerId <= 0 || !Schema::hasTable('bank_details')) {
             return;
         }
 
@@ -399,56 +399,56 @@ class SalaryController extends Controller
             || !empty(trim((string) ($bank['branch_name'] ?? '')))
             || !empty(trim((string) ($bank['upi_id'] ?? '')));
 
-        $query = DB::table('teacher_bank_details')->where('teacher_id', $teacherOwnerId);
-        if (Schema::hasColumn('teacher_bank_details', 'client_id')) {
+        $query = DB::table('bank_details')->where('teacher_id', $teacherOwnerId);
+        if (Schema::hasColumn('bank_details', 'client_id')) {
             $query->where('client_id', $clientId);
         }
         $existing = $query->first();
 
         if (!$hasAnyBankField) {
             if ($existing) {
-                DB::table('teacher_bank_details')->where('id', $existing->id)->delete();
+                DB::table('bank_details')->where('id', $existing->id)->delete();
             }
             return;
         }
 
         $payload = [];
-        if (Schema::hasColumn('teacher_bank_details', 'client_id')) {
+        if (Schema::hasColumn('bank_details', 'client_id')) {
             $payload['client_id'] = $clientId;
         }
-        if (Schema::hasColumn('teacher_bank_details', 'teacher_id')) {
+        if (Schema::hasColumn('bank_details', 'teacher_id')) {
             $payload['teacher_id'] = $teacherOwnerId;
         }
-        if (Schema::hasColumn('teacher_bank_details', 'account_holder_name')) {
+        if (Schema::hasColumn('bank_details', 'account_holder_name')) {
             $payload['account_holder_name'] = trim((string) ($bank['account_holder_name'] ?? ''));
         }
-        if (Schema::hasColumn('teacher_bank_details', 'bank_name')) {
+        if (Schema::hasColumn('bank_details', 'bank_name')) {
             $payload['bank_name'] = trim((string) ($bank['bank_name'] ?? ''));
         }
-        if (Schema::hasColumn('teacher_bank_details', 'account_number')) {
+        if (Schema::hasColumn('bank_details', 'account_number')) {
             $payload['account_number'] = trim((string) ($bank['account_number'] ?? ''));
         }
-        if (Schema::hasColumn('teacher_bank_details', 'ifsc_code')) {
+        if (Schema::hasColumn('bank_details', 'ifsc_code')) {
             $payload['ifsc_code'] = strtoupper(trim((string) ($bank['ifsc_code'] ?? '')));
         }
-        if (Schema::hasColumn('teacher_bank_details', 'branch_name')) {
+        if (Schema::hasColumn('bank_details', 'branch_name')) {
             $payload['branch_name'] = trim((string) ($bank['branch_name'] ?? '')) ?: null;
         }
-        if (Schema::hasColumn('teacher_bank_details', 'upi_id')) {
+        if (Schema::hasColumn('bank_details', 'upi_id')) {
             $payload['upi_id'] = trim((string) ($bank['upi_id'] ?? '')) ?: null;
         }
-        if (Schema::hasColumn('teacher_bank_details', 'active')) {
+        if (Schema::hasColumn('bank_details', 'active')) {
             $payload['active'] = 1;
         }
 
         if ($existing) {
-            $payload = ModelHelper::applyTimestamps('teacher_bank_details', $payload, false);
-            DB::table('teacher_bank_details')->where('id', $existing->id)->update($payload);
+            $payload = ModelHelper::applyTimestamps('bank_details', $payload, false);
+            DB::table('bank_details')->where('id', $existing->id)->update($payload);
             return;
         }
 
-        $payload = ModelHelper::applyTimestamps('teacher_bank_details', $payload, true);
-        DB::table('teacher_bank_details')->insert($payload);
+        $payload = ModelHelper::applyTimestamps('bank_details', $payload, true);
+        DB::table('bank_details')->insert($payload);
     }
 
     private function getTeacherSalaryStructure(int $clientId, int $teacherOwnerId): array
@@ -477,12 +477,12 @@ class SalaryController extends Controller
 
     private function getTeacherBankDetails(int $clientId, int $teacherOwnerId): array
     {
-        if ($teacherOwnerId <= 0 || !Schema::hasTable('teacher_bank_details')) {
+        if ($teacherOwnerId <= 0 || !Schema::hasTable('bank_details')) {
             return [];
         }
 
-        $query = DB::table('teacher_bank_details')->where('teacher_id', $teacherOwnerId);
-        if (Schema::hasColumn('teacher_bank_details', 'client_id')) {
+        $query = DB::table('bank_details')->where('teacher_id', $teacherOwnerId);
+        if (Schema::hasColumn('bank_details', 'client_id')) {
             $query->where('client_id', $clientId);
         }
         $row = $query->first();

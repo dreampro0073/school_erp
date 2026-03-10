@@ -127,6 +127,7 @@ class UserController extends Controller {
     public function logout(Request $request)
     {   
         if(Auth::user()){
+            
             DB::table('user_activities')->insert([
                 "user_id"=>Auth::id(),
                 "activity"=>"Logout",
@@ -136,11 +137,11 @@ class UserController extends Controller {
             ]);
 
             Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
         }
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        
         return redirect()->to('/');
     }
 

@@ -75,6 +75,35 @@ class User extends Authenticatable {
         return (int) $priv === 1;
     }
 
+    public static function getRandPassword(){
+        $string1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $string2 = "abcdefghijklmnopqrstuvwxyz";
+        $string3 = "0123456789";
+        $string4 = "$#@*^%";
+        $string5 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$#@*^%";
+
+        $n = rand(0, strlen($string1) - 1);
+        $rand_pwd =  $string1[$n];
+
+        for ($i=0; $i < 2; $i++) { 
+            $n = rand(0, strlen($string2) - 1);
+            $rand_pwd .=  $string2[$n];
+        }
+
+        $n = rand(0, strlen($string3) - 1);
+        $rand_pwd .=  $string3[$n];
+
+        $n = rand(0, strlen($string4) - 1);
+        $rand_pwd .=  $string4[$n];
+
+        for ($i=0; $i < 3; $i++) { 
+            $n = rand(0, strlen($string5) - 1);
+            $rand_pwd .=  $string5[$n];
+        }
+
+        return $rand_pwd;
+    }
+
 
     public static function clientUsersCount($clientId, $priv, $status = "all"){
         $sql = DB::table("users")->where("users.parent_id", $clientId)->where("users.priv", $priv);
