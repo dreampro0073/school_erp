@@ -105,6 +105,11 @@ class User extends Authenticatable {
     }
 
 
+    public static function selectUsersColumns(){
+        return ['users.id', 'users.org_id', 'users.name', 'users.email', 'users.mobile', 'users.active', 'users.priv', 'users.parent_id', 'users.start_date', 'users.end_date', 'users.last_login', 'users.updated_at', 'users.created_at'];
+    }
+
+
     public static function clientUsersCount($clientId, $priv, $status = "all"){
         $sql = DB::table("users")->where("users.parent_id", $clientId)->where("users.priv", $priv);
 

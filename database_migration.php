@@ -158,4 +158,6 @@ ALTER TABLE `users` ADD `end_date` DATE NULL DEFAULT NULL AFTER `active`;
 ALTER TABLE `users` CHANGE `perent_user_id` `parent_id` INT(11) NOT NULL DEFAULT '0';
 ALTER TABLE `teacher_bank_details` CHANGE `teacher_id` `user_id` INT(11) NOT NULL;
 RENAME TABLE `teacher_bank_details` TO `bank_details`;
+RENAME TABLE `teacher_salary_structures` TO `salary_structures`;
+ALTER TABLE `salary_structures` CHANGE `teacher_id` `user_id` INT NOT NULL;
 

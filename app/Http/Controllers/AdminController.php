@@ -27,17 +27,17 @@ class AdminController extends Controller {
 
         if($user && $user->priv == 2){
 
-            $clientId = $user->parent_id;
+            $parent_id = $user->parent_id;
 
-            $students["active_students"] = User::clientUsersCount($clientId,4, 0)->count();
-            $students["inactive_students"] = User::clientUsersCount($clientId,4, 1)->count();
-            $students["total_students"] = User::clientUsersCount($clientId, 4)->count();
+            $students["active_students"] = User::clientUsersCount($parent_id,4, 0)->count();
+            $students["inactive_students"] = User::clientUsersCount($parent_id,4, 1)->count();
+            $students["total_students"] = User::clientUsersCount($parent_id, 4)->count();
             
-            $teachers["active_teachers"] = User::clientUsersCount($clientId, 3, 0)->count();
-            $teachers["inactive_teachers"] = User::clientUsersCount($clientId, 3, 1)->count();
-            $teachers["total_teachers"] = User::clientUsersCount($clientId, 3)->count();
+            $teachers["active_teachers"] = User::clientUsersCount($parent_id, 3, 0)->count();
+            $teachers["inactive_teachers"] = User::clientUsersCount($parent_id, 3, 1)->count();
+            $teachers["total_teachers"] = User::clientUsersCount($parent_id, 3)->count();
 
-            // $attendance = $this->buildAttendanceStats($clientId);
+            // $attendance = $this->buildAttendanceStats($parent_id);
 
             // $data["attendance"] = $attendance;
             $data["students"] = $students;
@@ -54,33 +54,24 @@ class AdminController extends Controller {
         return view('admin.teachers.index');
     }
 
-    // public function initTeachers(Request $request) {
-    //     $apiToken = $request->header('apiToken');
-    //     $user = User::authUser($apiToken);
-    //     if (!$user || is_string($user)) {
-    //         return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-    //     }
+    public function initTeachers(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
 
-    //     $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
-    //     if ($priv !== 2) {
-    //         return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-    //     }
-    //     if (!$user) {
-    //         return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-    //     }
 
-    //     $teachers = $this->getClientRows('teachers', (int) ($user->client_id ?? 0));
-    //     foreach ($teachers as &$row) {
-    //         if (isset($row['id'])) {
-    //             $row['enc_id'] = Crypt::encryptString((string) $row['id']);
-    //         }
-    //     }
+        $teachers = Teacher::clientTeachersLists($auth_user->parent_id)
+        foreach ($teachers as $teacher) {
+            $teacher->enc_id = Crypt::encryptString($row->teacher_id);
+            $teacher->dob = date("d-m-Y", strtotime($row->dob));
+            $teacher->joining_date = date("d-m-Y", strtotime($row->joining_date));
+            $teacher->resign_date = date("d-m-Y", strtotime($row->resign_date));
+        }
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'teachers' => $teachers,
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true,
+            'teachers' => $teachers,
+        ]);
+    }
 
     public function addTeacherPage(?string $teacher = null) {
         return view('admin.teachers.form', [
@@ -88,58 +79,45 @@ class AdminController extends Controller {
         ]);
     }
 
-    // public function getTeacher(Request $request) {
-    //     $apiToken = $request->header('apiToken');
-    //     $user = User::authUser($apiToken);
-    //     if (!$user || is_string($user)) {
-    //         return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-    //     }
+    public function getTeacher(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+        if($auth_user){
+            if($request->enc_id){
+                $teacherId = $request->enc_id ? Crypt::decryptString($request->enc_id) : "";
+                $teacher = Teacher::find($teacherId);
+                $user = User::find($teacher->user_id);
+                if($user){
+                    if($parent_id != $user->parent_id){
+                        $data['message'] = "Not authorized !";
+                        $data['success'] = false; 
+                        return Response::json($data,200,[]);   
+                    }
+                }
 
-    //     $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
-    //     if ($priv !== 2) {
-    //         return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-    //     }
-    //     if (!$user) {
-    //         return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-    //     }
+                $bank_details = DB::table("bank_details")->where("user_id", $user->id)->first();
+                $salary_structure = DB::table("salary_structures")->where("user_id", $user_id)->get();
 
-    //     $payload = $request->validate([
-    //         'enc_id' => ['required', 'string'],
-    //     ]);
+                $data["bank_details"] = $bank_details;
+                $data["user"] = $user;
+                $data["teacher"] = $teacher;
+            }
+            $data["success"] = true;
 
-    //     try {
-    //         $teacherId = (int) Crypt::decryptString($payload['enc_id']);
-    //     } catch (DecryptException $e) {
-    //         return response()->json(['success' => false, 'message' => 'Invalid teacher id.'], 422);
-    //     }
+        } else {
+            $data["success"] = false;
+            $data["message"] = "Invalid Request";
+        }
 
-    //     if (!Schema::hasTable('teachers')) {
-    //         return response()->json(['success' => false, 'message' => 'teachers table not found.'], 422);
-    //     }
-
-    //     $query = DB::table('teachers')->where('id', $teacherId);
-    //     if (Schema::hasColumn('teachers', 'client_id')) {
-    //         $query->where('client_id', (int) ($user->client_id ?? 0));
-    //     }
-
-    //     $teacher = $query->first();
-    //     if (!$teacher) {
-    //         return response()->json(['success' => false, 'message' => 'Teacher not found.'], 404);
-    //     }
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'teacher' => (array) $teacher,
-    //         'enc_id' => $payload['enc_id'],
-    //     ]);
-    // }
+        return response()->json($data,200,[]);
+    }
 
     public function storeTeacher(Request $request) {
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
         if ($auth_user->priv == 2) {
 
-            $clientId = $admin->parent_id;
+            $parent_id = $admin->parent_id;
             $teacherId = $request->enc_id ? Crypt::decryptString($request->enc_id) : "";
 
             $teacher = Teacher::find($teacherId);
@@ -158,7 +136,7 @@ class AdminController extends Controller {
                 $user_id = $teacher->user_id;
                 $user = User::find($user_id);
                 
-                if($clientId != $user->parent_id){
+                if($parent_id != $user->parent_id){
                     $data['message'] = "Not authorized !";
                     $data['success'] = false; 
                     return Response::json($data,200,[]);   
@@ -190,7 +168,7 @@ class AdminController extends Controller {
                     $password = User::getRandPassword();
                     $user->password = Hash::make($password);
                     $user->start_date = $auth_user->start_date;
-                    $user->parent_id = $clientId;
+                    $user->parent_id = $parent_id;
                     $user->check_password = $password;
                     $user->save(); 
 
@@ -245,8 +223,8 @@ class AdminController extends Controller {
     //         return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
     //     }
 
-    //     $clientId = (int) ($user->client_id ?? 0);
-    //     $rows = $this->getClientRows('students', $clientId);
+    //     $parent_id = (int) ($user->client_id ?? 0);
+    //     $rows = $this->getClientRows('students', $parent_id);
 
     //     foreach ($rows as &$row) {
     //         if (isset($row['id'])) {
@@ -271,7 +249,7 @@ class AdminController extends Controller {
         $auth_user = User::authUser($apiToken);
         if ($auth_user->priv == 2) {
 
-            $clientId = $admin->parent_id;
+            $parent_id = $admin->parent_id;
             $studentId = $request->enc_id ? Crypt::decryptString($request->enc_id) : "";
 
             $student = Student::find($studentId);
@@ -290,7 +268,7 @@ class AdminController extends Controller {
                 $user_id = $student->user_id;
                 $user = User::find($user_id);
                 
-                if($clientId != $user->parent_id){
+                if($parent_id != $user->parent_id){
                     $data['message'] = "Not authorized !";
                     $data['success'] = false; 
                     return Response::json($data,200,[]);   
@@ -322,7 +300,7 @@ class AdminController extends Controller {
                     $password = User::getRandPassword();
                     $user->password = Hash::make($password);
                     $user->start_date = $auth_user->start_date;
-                    $user->parent_id = $clientId;
+                    $user->parent_id = $parent_id;
                     $user->check_password = $password;
                     $user->save(); 
 

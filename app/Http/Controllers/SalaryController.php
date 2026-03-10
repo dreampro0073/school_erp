@@ -337,15 +337,15 @@ class SalaryController extends Controller
     {
         if (
             $teacherOwnerId <= 0
-            || !Schema::hasTable('teacher_salary_structures')
+            || !Schema::hasTable('salary_structures')
             || !array_key_exists('salary_components', $data)
             || !is_array($data['salary_components'])
         ) {
             return;
         }
 
-        $baseQuery = DB::table('teacher_salary_structures')->where('teacher_id', $teacherOwnerId);
-        if (Schema::hasColumn('teacher_salary_structures', 'client_id')) {
+        $baseQuery = DB::table('salary_structures')->where('teacher_id', $teacherOwnerId);
+        if (Schema::hasColumn('salary_structures', 'client_id')) {
             $baseQuery->where('client_id', $clientId);
         }
         $baseQuery->delete();
@@ -358,30 +358,30 @@ class SalaryController extends Controller
             }
 
             $payload = [];
-            if (Schema::hasColumn('teacher_salary_structures', 'client_id')) {
+            if (Schema::hasColumn('salary_structures', 'client_id')) {
                 $payload['client_id'] = $clientId;
             }
-            if (Schema::hasColumn('teacher_salary_structures', 'teacher_id')) {
+            if (Schema::hasColumn('salary_structures', 'teacher_id')) {
                 $payload['teacher_id'] = $teacherOwnerId;
             }
-            if (Schema::hasColumn('teacher_salary_structures', 'component_name')) {
+            if (Schema::hasColumn('salary_structures', 'component_name')) {
                 $payload['component_name'] = $name;
             }
-            if (Schema::hasColumn('teacher_salary_structures', 'component_type')) {
+            if (Schema::hasColumn('salary_structures', 'component_type')) {
                 $payload['component_type'] = ($item['component_type'] ?? 'earning') === 'deduction' ? 'deduction' : 'earning';
             }
-            if (Schema::hasColumn('teacher_salary_structures', 'amount')) {
+            if (Schema::hasColumn('salary_structures', 'amount')) {
                 $payload['amount'] = (float) ($item['amount'] ?? 0);
             }
-            if (Schema::hasColumn('teacher_salary_structures', 'sort_order')) {
+            if (Schema::hasColumn('salary_structures', 'sort_order')) {
                 $payload['sort_order'] = $sort++;
             }
-            if (Schema::hasColumn('teacher_salary_structures', 'active')) {
+            if (Schema::hasColumn('salary_structures', 'active')) {
                 $payload['active'] = (int) (($item['active'] ?? 1) ? 1 : 0);
             }
 
-            $payload = ModelHelper::applyTimestamps('teacher_salary_structures', $payload, true);
-            DB::table('teacher_salary_structures')->insert($payload);
+            $payload = ModelHelper::applyTimestamps('salary_structures', $payload, true);
+            DB::table('salary_structures')->insert($payload);
         }
     }
 
@@ -453,15 +453,15 @@ class SalaryController extends Controller
 
     private function getTeacherSalaryStructure(int $clientId, int $teacherOwnerId): array
     {
-        if ($teacherOwnerId <= 0 || !Schema::hasTable('teacher_salary_structures')) {
+        if ($teacherOwnerId <= 0 || !Schema::hasTable('salary_structures')) {
             return [];
         }
 
-        $query = DB::table('teacher_salary_structures')
+        $query = DB::table('salary_structures')
             ->where('teacher_id', $teacherOwnerId)
             ->orderBy('sort_order')
             ->orderBy('id');
-        if (Schema::hasColumn('teacher_salary_structures', 'client_id')) {
+        if (Schema::hasColumn('salary_structures', 'client_id')) {
             $query->where('client_id', $clientId);
         }
 

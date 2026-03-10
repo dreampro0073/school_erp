@@ -66,11 +66,11 @@ Route::middleware(['api-token-user'])->group(function () {
             // Route::post('/students/init', 'initStudents');
             // Route::post('/students/get', 'getStudent');
             // Route::post('/students/status', 'updateStudentStatus');
-            // Route::post('/teachers/init', 'initTeachers');
             // Route::post('/teachers/get', 'getTeacher');
             
             Route::post('/teachers/store', 'storeTeacher');
             Route::post('/students/store', 'storeStudent');
+            Route::post('/teachers/init', 'initTeachers');
         });
 
         // Route::prefix('teacher-salary')->controller(SalaryController::class)->group(function () {

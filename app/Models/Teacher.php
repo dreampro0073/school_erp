@@ -13,7 +13,10 @@ class Teacher extends Model
 
     protected $guarded = [];
 
-    // public static function clientTeachersLists($clientId){
-    //     return DB::table("teachers")->join('users', "users.id", "=", "students.user_id")->where("users.parent_id", $clientId)->where("users.priv", 3);
-    // }
+    public static function clientTeachersLists($parent_id){
+        $select_column = User::selectUsersColumns();
+        return DB::table("teachers")
+        ->select('teachers.id as teacher_id', "teachers.joining_date", "teachers.dob", "teachers.resign_date",'users.org_id', 'users.name', 'users.email', 'users.mobile', 'users.active', 'users.priv', 'users.parent_id', 'users.start_date', 'users.end_date', 'users.last_login', 'users.updated_at', 'users.created_at')
+        ->join('users', "users.id", "=", "students.user_id")->where("users.parent_id", $parent_id)->where("users.priv", 3);
+    }
 }
