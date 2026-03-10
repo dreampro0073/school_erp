@@ -4,27 +4,6 @@
       <span>Dashboard</span>
    </a>
 </li>
-@if(false)
-<li class="dropdown">
-   <a href="javascript:void(0)">
-      <i class="ri-graduation-cap-line"></i>
-      <span>Students</span>
-   </a>
-   <ul class="sidebar-submenu">
-      <!-- <li>
-         <a href="{{ route('admin.students.index') }}">
-            <i class="ri-circle-fill circle-icon w-auto"></i>
-            Student List
-         </a>
-      </li> -->
-      <li>
-         <a href="{{ route('admin.students.add') }}">
-            <i class="ri-circle-fill circle-icon w-auto"></i>
-            Add Student
-         </a>
-      </li>
-   </ul>
-</li>
 
 <li class="dropdown">
    <a href="javascript:void(0)">
@@ -33,13 +12,13 @@
    </a>
    <ul class="sidebar-submenu">
       <li>
-         <a href="{{ route('admin.teachers.index') }}">
+         <a href="{{ url('/admin/teachers') }}">
             <i class="ri-circle-fill circle-icon w-auto"></i>
             Teacher List
          </a>
       </li>
       <li>
-         <a href="{{ route('admin.teachers.add') }}">
+         <a href="{{ url('/admin/teachers/add') }}">
             <i class="ri-circle-fill circle-icon w-auto"></i>
             Add Teacher
          </a>
@@ -47,6 +26,28 @@
    </ul>
 </li>
 
+<li class="dropdown">
+   <a href="javascript:void(0)">
+      <i class="ri-graduation-cap-line"></i>
+      <span>Students</span>
+   </a>
+   <ul class="sidebar-submenu">
+      <li>
+         <a href="{{ url('/admin/students') }}">
+            <i class="ri-circle-fill circle-icon w-auto"></i>
+            Student List
+         </a>
+      </li>
+      <li>
+         <a href="{{ url('/admin/students/add') }}">
+            <i class="ri-circle-fill circle-icon w-auto"></i>
+            Add Student
+         </a>
+      </li>
+   </ul>
+</li>
+
+@if(false)
 <li>
    <a href="{{ route('admin.attendance.index') }}">
       <i class="ri-calendar-check-line"></i>

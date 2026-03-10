@@ -9,30 +9,53 @@
         </div>
     </div>
 
-<!--     <div class="mt-24">
+    <div class="mt-24">
         <div class="row gy-4">
             <div class="col-xxl-8">
                 <div class="row gy-4">
-                    <div class="col-xxl-4 col-sm-6" ng-repeat="card in cards track by card.key">
-                        <div class="card shadow-1 radius-8 h-100" ng-class="card.gradientClass">
-                            <div class="card-body p-20">
-                                <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
-                                    <div class="w-44-px h-44-px rounded-circle d-flex justify-content-center align-items-center" ng-class="card.iconBgClass">
-                                        <img ng-src="assets/images/icons/@{{card.icon}}" alt="@{{card.label}}">
+                    <div class="col-xxl-4 col-sm-6">
+                        <div class="card shadow-1 radius-8 h-100">
+                            <a href="{{ url('/admin/teachers') }}">
+                                <div class="card-body p-20">
+                                    <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
+                                        <div class="w-44-px h-44-px rounded-circle d-flex justify-content-center align-items-center" >
+                                            <i class="ri-circle-fill circle-icon w-auto"></i>
+                                        </div>
+                                        <p class="fw-medium text-primary-light mb-1">Teachers</p>
                                     </div>
-                                    <p class="fw-medium text-primary-light mb-1">@{{card.label}}</p>
+                                    <h6 class="mb-0">@{{teachers['total_teachers']}}</h6>
+                                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center justify-content-between">
+                                        <span>Active: @{{teachers['active_teachers']}}</span>
+                                        <span>Inactive: @{{teachers.inactive_teachers}}</span>
+                                    </p>
                                 </div>
-                                <h6 class="mb-0">@{{card.mainValue | number}}</h6>
-                                <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center justify-content-between">
-                                    <span>Active: @{{card.active | number}}</span>
-                                    <span>Inactive: @{{card.inactive | number}}</span>
-                                </p>
-                            </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-xxl-4 col-sm-6">
+                        <div class="card shadow-1 radius-8 h-100">
+                            <a href="{{ url('/admin/students') }}">
+                                <div class="card-body p-20">
+                                    <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
+                                        <div class="w-44-px h-44-px rounded-circle d-flex justify-content-center align-items-center" >
+                                            <i class="ri-circle-fill circle-icon w-auto"></i>
+                                        </div>
+                                        <p class="fw-medium text-primary-light mb-1">Students</p>
+                                    </div>
+                                    <h6 class="mb-0">@{{students['total_students']}}</h6>
+                                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center justify-content-between">
+                                        <span>Active: @{{students['active_students']}}</span>
+                                        <span>Inactive: @{{students.inactive_students}}</span>
+                                    </p>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-
+            <!-- *** HOLD *** -->
+            @if(false) 
             <div class="col-xxl-4">
                 <div class="card h-100">
                     <div class="card-body p-0">
@@ -61,7 +84,8 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
-    </div> -->
+    </div>
 </div>
 @endsection

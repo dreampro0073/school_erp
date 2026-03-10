@@ -4,7 +4,7 @@
 <div ng-controller="addTeacherCtrl" ng-init="init('{{ $teacherToken }}');" class="mt-24">
    <div class="d-flex justify-content-between align-items-center mb-16">
       <h5 class="mb-0">@{{formData.enc_id ? 'Edit Teacher' : 'Add Teacher'}}</h5>
-      <a href="{{ route('admin.teachers.index') }}" class="btn btn-outline-secondary">Back to List</a>
+      <a href="{{ url('/admin/teachers') }}" class="btn btn-outline-secondary">Back to List</a>
    </div>
 
    <div class="card">
@@ -146,7 +146,6 @@
                <button type="submit" class="btn btn-primary" ng-disabled="processing">
                   @{{processing ? 'Saving...' : (formData.enc_id ? 'Update Teacher' : 'Save Teacher')}}
                </button>
-               <a href="{{ route('admin.teachers.index') }}" class="btn btn-light">Cancel</a>
             </div>
          </form>
       </div>

@@ -143,4 +143,10 @@ class UserController extends Controller {
         $request->session()->regenerateToken();
         return redirect()->to('/');
     }
+
+    public function studentProfilePage(string $student){
+        return view('admin.students.profile', [
+            'studentToken' => $student,
+        ]);
+    }
 }

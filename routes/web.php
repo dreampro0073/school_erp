@@ -43,23 +43,32 @@ Route::middleware(['auth'])->group(function () {
 
     // Route::middleware(['guardian'])->prefix('gurdian')->controller(GuardianController::class)->group(function () {
     //     Route::get('/dashboard', 'dashboard');
+
     // });
+
+    Route::prefix('users')->controller(UserController::class)->group(function () {
+        Route::get('/profile/{user_id}', 'userProfilePage');
+    });
+
+    
 
     Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('/dashboard', 'dashboard');
-            // Route::get('/students', 'studentsIndex')->name('admin.students.index');
-            // Route::get('/students/add/{student?}', 'addStudentPage')->name('admin.students.add');
-            // Route::get('/students/profile/{student}', 'studentProfilePage')->name('admin.students.profile');
-            // Route::get('/teachers', 'teachersIndex')->name('admin.teachers.index');
-            // Route::get('/teachers/add/{teacher?}', 'addTeacherPage')->name('admin.teachers.add');
+            Route::get('/teachers', 'teachersIndex');
+            Route::get('/teachers/add/{teacher?}', 'addTeacherPage');
+
+            Route::get('/students', 'studentsIndex');
+            Route::get('/students/add/{student?}', 'addStudentPage');
+            
+            
         });
 
         // Route::controller(IncomeController::class)->group(function () {
-        //     Route::get('/incomes', 'incomesPage')->name('admin.incomes.index');
-        //     Route::get('/income-entries', 'incomeEntriesPage')->name('admin.income-entries.index');
-        //     Route::get('/expenses', 'expensesPage')->name('admin.expenses.index');
-        //     Route::get('/expense-entries', 'expenseEntriesPage')->name('admin.expense-entries.index');
+        //     Route::get('/incomes', 'incomesPage');
+        //     Route::get('/income-entries', 'incomeEntriesPage');
+        //     Route::get('/expenses', 'expensesPage');
+        //     Route::get('/expense-entries', 'expenseEntriesPage');
         // });
 
         Route::controller(AttendanceController::class)->group(function () {
@@ -67,7 +76,8 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    // hold 
+    // *** HOLD ***
+
     // if(false){ 
     //     Route::middleware(['super-admin'])->prefix('super-admin')->group(function () {
     //         Route::controller(SuperAdminController::class)->group(function () {

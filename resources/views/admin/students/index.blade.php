@@ -4,7 +4,7 @@
 <div ng-controller="studentCtrl" ng-init="init();" class="mt-24">
    <div class="d-flex justify-content-between align-items-center mb-16">
       <h5 class="mb-0">Students</h5>
-      <a href="{{ route('admin.students.add') }}" class="btn btn-primary">
+      <a href="{{ url('admin/students/add') }}" class="btn btn-primary">
          <i class="ri-add-line"></i> Add Student
       </a>
    </div>

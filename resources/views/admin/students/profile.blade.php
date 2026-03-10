@@ -5,7 +5,7 @@
    <div class="d-flex justify-content-between align-items-center mb-16">
       <h5 class="mb-0">Student Profile</h5>
       <div class="d-flex gap-2">
-         <a href="{{ route('admin.students.index') }}" class="btn btn-outline-secondary">Back to List</a>
+         <a href="{{ user('/admin/students') }}" class="btn btn-outline-secondary">Back to List</a>
          <a ng-if="encId" ng-href="@{{baseUrl + '/admin/students/add/' + encodeURIComponent(encId)}}" class="btn btn-primary">
             <i class="ri-edit-2-line"></i> Edit Student
          </a>

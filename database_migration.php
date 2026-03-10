@@ -151,3 +151,10 @@ WHERE NOT EXISTS (
 );
 
 ALTER TABLE `users` ADD `end_date` DATE NULL DEFAULT NULL AFTER `active`;
+
+
+// Devendra 09MAR2026
+
+ALTER TABLE `users` CHANGE `perent_user_id` `parent_id` INT(11) NOT NULL DEFAULT '0';
+
+

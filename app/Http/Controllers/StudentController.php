@@ -14,24 +14,16 @@ class StudentController extends Controller
     {
         return view('admin.students.index');
     }
+    
+    public function initStudents(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
 
-    public function initStudents(Request $request)
-    {
-        $user = $this->resolveApiUser($request);
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-        }
+        $students = Student::latest()->get();
 
-        $query = Student::query()->latest();
-        $clientId = (int) ($user->client_id ?? 0);
-        if ($clientId > 0 && Schema::hasColumn('students', 'client_id')) {
-            $query->where('client_id', $clientId);
-        }
-
-        return response()->json([
-            'success' => true,
-            'students' => [],
-        ]);
+        $data['success'] = true;
+        $data['students'] = $students;
+        return response()->json($data,200,[]);
     }
 
     // public function index() {

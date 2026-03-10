@@ -4,7 +4,7 @@
 <div ng-controller="teacherCtrl" ng-init="init();" class="mt-24">
    <div class="d-flex justify-content-between align-items-center mb-16">
       <h5 class="mb-0">Teachers</h5>
-      <a href="{{ route('admin.teachers.add') }}" class="btn btn-primary">
+      <a href="{{ url('/admin/teachers/add') }}" class="btn btn-primary">
          <i class="ri-add-line"></i> Add Teacher
       </a>
    </div>
@@ -85,6 +85,7 @@
       </div>
    </div>
 
+   @if(false)
    <div class="card h-100 mt-16">
       <div class="card-header">
          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -198,5 +199,6 @@
          </div>
       </div>
    </div>
+   @endif
 </div>
 @endsection
