@@ -170,3 +170,6 @@ ALTER TABLE `students` ADD `admission_no` INT NOT NULL DEFAULT '0' AFTER `erp_id
 
 ALTER TABLE `users` ADD `start_date` DATE NULL DEFAULT NULL AFTER `last_login`;
 
+// Devendra 11MAR2026
+RENAME TABLE `teacher_salary_logs` TO `r_school_erp`.`salary_logs`;
+ALTER TABLE `salary_logs` CHANGE `teacher_id` `user_id` BIGINT(20) UNSIGNED NOT NULL;

@@ -9,7 +9,7 @@ class Salary extends Model
 {
     use HasFactory;
 
-    protected $table = 'teacher_salary_logs';
+    protected $table = 'salary_logs';
 
     protected $guarded = [];
 }
