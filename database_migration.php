@@ -161,3 +161,12 @@ RENAME TABLE `teacher_bank_details` TO `bank_details`;
 RENAME TABLE `teacher_salary_structures` TO `salary_structures`;
 ALTER TABLE `salary_structures` CHANGE `teacher_id` `user_id` INT NOT NULL;
 
+
+//Dipanshu 11 mrach 2026
+ALTER TABLE `students` ADD `gender` VARCHAR(50) NOT NULL DEFAULT '' AFTER `aadhar_no`;
+
+ALTER TABLE `students` ADD `email` VARCHAR(255) NULL DEFAULT NULL AFTER `mobile`;
+ALTER TABLE `students` ADD `admission_no` INT NOT NULL DEFAULT '0' AFTER `erp_id`;
+
+ALTER TABLE `users` ADD `start_date` DATE NULL DEFAULT NULL AFTER `last_login`;
+

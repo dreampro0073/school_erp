@@ -582,83 +582,136 @@ app.controller('subjectsCtrl', function($scope , DBService){
 });
 
 // *** studentCtrl ***
-app.controller('studentCtrl', function($scope , DBService){
+// app.controller('studentCtrl', function($scope , DBService){
+//     $scope.loading = false;
+//     $scope.allStudents = [];
+//     $scope.students = [];
+//     $scope.baseUrl = base_url;
+//     $scope.filters = {
+//         search: '',
+//         gender: '',
+//         status: ''
+//     };
+
+//     $scope.applyFilters = function() {
+//         var search = ($scope.filters.search || '').toLowerCase().trim();
+//         var gender = ($scope.filters.gender || '').toLowerCase();
+//         var status = $scope.filters.status;
+
+//         $scope.students = ($scope.allStudents || []).filter(function(item) {
+//             var fullName = ((item.first_name || item.name || '') + ' ' + (item.last_name || '')).toLowerCase();
+//             var admissionNo = String(item.admission_no || '').toLowerCase();
+//             var mobile = String(item.mobile || '').toLowerCase();
+//             var email = String(item.email || '').toLowerCase();
+//             var itemGender = String(item.gender || '').toLowerCase();
+//             var itemStatus = (item.active === 0 || item.active === '0') ? '0' : '1';
+
+//             var matchesSearch = !search
+//                 || fullName.indexOf(search) !== -1
+//                 || admissionNo.indexOf(search) !== -1
+//                 || mobile.indexOf(search) !== -1
+//                 || email.indexOf(search) !== -1;
+//             var matchesGender = !gender || itemGender === gender;
+//             var matchesStatus = status === '' || itemStatus === status;
+
+//             return matchesSearch && matchesGender && matchesStatus;
+//         });
+//     };
+
+//     $scope.resetFilters = function() {
+//         $scope.filters = {
+//             search: '',
+//             gender: '',
+//             status: ''
+//         };
+//         $scope.applyFilters();
+//     };
+
+//     $scope.init = function() {
+//         $scope.loading = true;
+//         DBService.postCall({}, '/api/admin/students/init').then(function(data) {
+//             if (data && data.success) {
+//                 $scope.allStudents = data.students || [];
+//             } else {
+//                 $scope.allStudents = [];
+//                 $scope.students = [];
+//             }
+//             $scope.applyFilters();
+//             $scope.loading = false;
+//         });
+//     };
+
+//     $scope.toggleStatus = function(student, nextStatus) {
+//         if (!student || !student.enc_id) {
+//             return;
+//         }
+
+//         var actionLabel = nextStatus === 1 ? 'activate' : 'deactivate';
+//         confirmAction('Confirm Status Change', 'Are you sure you want to ' + actionLabel + ' this student?', function() {
+//             DBService.postCall({
+//                 enc_id: student.enc_id,
+//                 active: String(nextStatus)
+//             }, '/api/admin/students/status').then(function(data) {
+//                 alert((data && data.message) ? data.message : 'Status update failed.');
+//                 if (data && data.success) {
+//                     $scope.init();
+//                 }
+//             });
+//         });
+//     };
+// });
+
+
+app.controller('studentCtrl', function($scope , $http, $timeout , DBService, Upload) {
+
     $scope.loading = false;
-    $scope.allStudents = [];
+
     $scope.students = [];
-    $scope.baseUrl = base_url;
-    $scope.filters = {
-        search: '',
-        gender: '',
-        status: ''
+
+    $scope.currentPage = 1;
+    $scope.totalPages = 1;
+    $scope.totalRecords = 0;
+
+    $scope.filter = {
+        page:1,
+        search:"",
+        limit:10,
     };
+    let searchTimeout = null;
 
-    $scope.applyFilters = function() {
-        var search = ($scope.filters.search || '').toLowerCase().trim();
-        var gender = ($scope.filters.gender || '').toLowerCase();
-        var status = $scope.filters.status;
-
-        $scope.students = ($scope.allStudents || []).filter(function(item) {
-            var fullName = ((item.first_name || item.name || '') + ' ' + (item.last_name || '')).toLowerCase();
-            var admissionNo = String(item.admission_no || '').toLowerCase();
-            var mobile = String(item.mobile || '').toLowerCase();
-            var email = String(item.email || '').toLowerCase();
-            var itemGender = String(item.gender || '').toLowerCase();
-            var itemStatus = (item.active === 0 || item.active === '0') ? '0' : '1';
-
-            var matchesSearch = !search
-                || fullName.indexOf(search) !== -1
-                || admissionNo.indexOf(search) !== -1
-                || mobile.indexOf(search) !== -1
-                || email.indexOf(search) !== -1;
-            var matchesGender = !gender || itemGender === gender;
-            var matchesStatus = status === '' || itemStatus === status;
-
-            return matchesSearch && matchesGender && matchesStatus;
-        });
+    
+    $scope.changePage = function(page){
+        $scope.init(page);
     };
+    $scope.onSearch = function(){
 
-    $scope.resetFilters = function() {
-        $scope.filters = {
-            search: '',
-            gender: '',
-            status: ''
-        };
-        $scope.applyFilters();
-    };
-
-    $scope.init = function() {
-        $scope.loading = true;
-        DBService.postCall({}, '/api/admin/students/init').then(function(data) {
-            if (data && data.success) {
-                $scope.allStudents = data.students || [];
-            } else {
-                $scope.allStudents = [];
-                $scope.students = [];
-            }
-            $scope.applyFilters();
-            $scope.loading = false;
-        });
-    };
-
-    $scope.toggleStatus = function(student, nextStatus) {
-        if (!student || !student.enc_id) {
-            return;
+        if(searchTimeout){
+            $timeout.cancel(searchTimeout);
         }
 
-        var actionLabel = nextStatus === 1 ? 'activate' : 'deactivate';
-        confirmAction('Confirm Status Change', 'Are you sure you want to ' + actionLabel + ' this student?', function() {
-            DBService.postCall({
-                enc_id: student.enc_id,
-                active: String(nextStatus)
-            }, '/api/admin/students/status').then(function(data) {
-                alert((data && data.message) ? data.message : 'Status update failed.');
-                if (data && data.success) {
-                    $scope.init();
-                }
-            });
+        searchTimeout = $timeout(function(){
+
+            $scope.init(1);
+
+        },400); // 400ms delay
+
+    }
+    $scope.init = function(page = 1){
+        $scope.filter.page = page;
+        $scope.loading = true;
+
+        DBService.postCall($scope.filter,'/api/admin/students/init')
+        .then(function(res){
+            if(res.success){
+                $scope.students = res.data.data;
+                $scope.currentPage = res.data.current_page;
+                $scope.totalPages = res.data.last_page;
+                $scope.totalRecords = res.data.total;
+
+            }
+            $scope.loading = false;
         });
-    };
+    }
 });
 
 app.controller('addStudentCtrl', function($scope , DBService){

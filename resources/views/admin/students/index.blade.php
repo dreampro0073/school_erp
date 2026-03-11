@@ -5,16 +5,16 @@
       <div class="">
          <h1 class="fw-semibold mb-4 h6 text-primary-light">Students List </h1>
          <div class="">
-              <a href="index.html" class="text-secondary-light hover-text-primary hover-underline">Dashboard </a>
+              <a href="{{url('admin/students')}}" class="text-secondary-light hover-text-primary hover-underline">Dashboard </a>
               <span class="text-secondary-light">/ Students </span>
          </div>
       </div>
-      <button type="button" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6">
+      <a href="{{url('admin/students/add')}}" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6">
          <span class="d-flex text-md">
               <i class="ri-add-large-line"></i>
          </span>
          Add Student
-      </button>
+      </a>
    </div>
    <div ng-controller="studentCtrl" ng-init="init();">
       <div class="card h-100">

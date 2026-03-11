@@ -55,13 +55,16 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('/dashboard', 'dashboard');
-            Route::get('/teachers', 'teachersIndex');
-            Route::get('/teachers/add/{teacher?}', 'addTeacherPage');
 
-            Route::get('/students', 'studentsIndex');
-            Route::get('/students/add/{student?}', 'addStudentPage');
-            
-            
+            Route::prefix('teachers')->controller(AdminController::class)->group(function () {
+                Route::get('/', 'teachersIndex');
+                Route::get('/teachers/add/{teacher?}', 'addTeacherPage');
+            });
+
+            Route::prefix('students')->controller(AdminController::class)->group(function () {
+                Route::get('/', 'studentsIndex');
+                Route::get('/add/{student?}', 'addStudentPage');
+            });
         });
 
         // Route::controller(IncomeController::class)->group(function () {

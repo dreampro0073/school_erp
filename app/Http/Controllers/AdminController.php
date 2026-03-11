@@ -59,7 +59,7 @@ class AdminController extends Controller {
         $auth_user = User::authUser($apiToken);
 
 
-        $teachers = Teacher::clientTeachersLists($auth_user->parent_id)
+        $teachers = Teacher::clientTeachersLists($auth_user->parent_id);
         foreach ($teachers as $teacher) {
             $teacher->enc_id = Crypt::encryptString($row->teacher_id);
             $teacher->dob = date("d-m-Y", strtotime($row->dob));

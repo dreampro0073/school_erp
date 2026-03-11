@@ -19,13 +19,6 @@ use App\Http\Controllers\SalaryController;
 // Grouped structure for middleware-based organization (no behavior change).
 Route::middleware(['api-token-user'])->group(function () {
 
-    Route::prefix('students')
-        ->controller(StudentController::class)
-        ->group(function () {
-            Route::any('/init', 'initStudents');
-        }
-    );
-
     // Route::prefix('students')->controller(StudentController::class)->group(function () {
     //     Route::post('/init', 'initStudents');
     // });
@@ -68,17 +61,21 @@ Route::middleware(['api-token-user'])->group(function () {
         Route::prefix('dashboard')->controller(AdminController::class)->group(function () {
             Route::post('/init', 'initDashboard');
         });
+        Route::prefix('students')
+            ->controller(StudentController::class)
+            ->group(function () {
+                Route::any('/init', 'initStudents');
+                Route::post('/store', 'storeStudent');
+            }
+        );
 
-        Route::controller(AdminController::class)->group(function () {
-            // Route::post('/students/init', 'initStudents');
-            // Route::post('/students/get', 'getStudent');
-            // Route::post('/students/status', 'updateStudentStatus');
-            // Route::post('/teachers/get', 'getTeacher');
-            
-            Route::post('/teachers/store', 'storeTeacher');
-            Route::post('/students/store', 'storeStudent');
-            Route::post('/teachers/init', 'initTeachers');
-        });
+        Route::prefix('teachers')
+            ->controller(AdminController::class)
+            ->group(function () {
+                Route::any('/init', 'storeTeacher');
+                Route::post('/store', 'initTeachers');
+            }
+        );
 
         // Route::prefix('teacher-salary')->controller(SalaryController::class)->group(function () {
         //     Route::post('/profile/get', 'getTeacherSalaryProfile');
@@ -120,5 +117,5 @@ Route::middleware(['api-token-user'])->group(function () {
     // Route::prefix('gurdian/dashboard')->controller(GuardianController::class)->group(function () {
     //     Route::post('/init', 'initDashboard');
     // });
-});
 
+});

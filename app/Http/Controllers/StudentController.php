@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class StudentController extends Controller
 {
@@ -30,6 +31,7 @@ class StudentController extends Controller
 
         return response()->json([
             "success" => true,
+            'my' => 2,
             "data" => $students
         ]);
 
@@ -40,13 +42,10 @@ class StudentController extends Controller
     //     return response()->json($students);
     // }
 
-    public function store(Request $request)
-    {
-      
-  
-        $user = $this->resolveApiUser($request);
+    public function storeStudent(Request $request){
+        $authUser = $this->resolveApiUser($request);
 
-        if (!$user) {
+        if (!$authUser) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized user.'
@@ -56,21 +55,29 @@ class StudentController extends Controller
         $data = $request->validate([
             'first_name' => ['required','string','max:255'],
             'last_name' => ['nullable','string','max:255'],
-            
             'gender' => ['nullable','string','max:50'],
             'mobile' => ['nullable','string','max:50'],
             'email' => ['nullable','email','max:255'],
-            'address' => ['nullable','string','max:1000'],
+            // 'address' => ['nullable','string','max:1000'],
             'admission_no' => ['nullable','string','max:100'],
             'aadhar_no' => ['nullable','string','max:50'],
-            'active' => ['nullable','in:0,1'],
+            // 'active' => ['nullable','in:0,1'],
         ]);
 
      
+        $user = new User;
+        $password = User::getRandPassword();
+        $user->password = Hash::make($password);
+        $user->name = $data['first_name'].' '.$data['last_name'];
+        $user->start_date = $authUser->start_date;
+        $user->perent_user_id = $authUser->id;
+        $user->password_check = $password;
+        $user->org_id = $authUser->org_id;
+        $user->email = $data['email'] ?? null;
+        $user->save();
 
         $data['name'] = $data['first_name'].' '.$data['last_name'];
-
-        $data['client_id'] = $user->client_id;
+        $data['client_id'] = $authUser->client_id;
         $data['user_id'] = $user->id;
 
         $student = Student::create($data);
@@ -80,6 +87,8 @@ class StudentController extends Controller
             'data' => $student
         ]);
     }
+
+
 
     public function show($id)
     {

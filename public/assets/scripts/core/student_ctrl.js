@@ -41,6 +41,8 @@ app.controller('studentCtrl', function($scope , $http, $timeout , DBService, Upl
             if(res.success){
                 $scope.students = res.data.data;
 
+                console.log($scope.students);
+
                 $scope.currentPage = res.data.current_page;
                 $scope.totalPages = res.data.last_page;
                 $scope.totalRecords = res.data.total;
