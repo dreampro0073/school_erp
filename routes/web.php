@@ -24,8 +24,8 @@ Route::get('/logout', [UserController::class, 'logout']);
 
 Route::middleware(['auth'])->group(function () {
     // Route::prefix('worklog')->controller(WorklogController::class)->group(function () {
-    //     Route::get('/', 'index')->name('worklog.index');
-    //     Route::post('/store', 'store')->name('worklog.store');
+    //     Route::get('/', 'index');
+    //     Route::post('/store', 'store');
     // });
 
     // Route::prefix('students')->controller(StudentController::class)->group(function () {
@@ -33,12 +33,12 @@ Route::middleware(['auth'])->group(function () {
     // });
 
     // Route::prefix('chat')->controller(ChatController::class)->group(function () {
-    //     Route::get('/', 'index')->name('chat.index');
+    //     Route::get('/', 'index');
     // });
 
     // Route::middleware(['teacher'])->prefix('teachers')->controller(TeacherController::class)->group(function () {
     //     Route::get('/dashboard', 'dashboard');
-    //     Route::get('/exam-marks', 'examMarksPage')->name('teachers.exam-marks.index');
+    //     Route::get('/exam-marks', 'examMarksPage');
     // });
 
     // Route::middleware(['guardian'])->prefix('gurdian')->controller(GuardianController::class)->group(function () {
@@ -75,7 +75,7 @@ Route::middleware(['auth'])->group(function () {
         // });
 
         Route::controller(AttendanceController::class)->group(function () {
-            Route::get('/attendance', 'index')->name('admin.attendance.index');
+            Route::get('/attendance', 'index');
         });
     });
 
@@ -85,36 +85,36 @@ Route::middleware(['auth'])->group(function () {
     //     Route::middleware(['super-admin'])->prefix('super-admin')->group(function () {
     //         Route::controller(SuperAdminController::class)->group(function () {
     //             Route::get('/dashboard', 'dashboard');
-    //             Route::get('/users/profile/{id}', 'userProfile')->name('super-admin.users.profile');
-    //             Route::get('/schools/create', 'createSchoolPage')->name('super-admin.schools.create-page');
-    //             Route::get('/schools/{id}/edit', 'editSchoolPage')->name('super-admin.schools.edit-page');
-    //             Route::get('/schools/{id}/services', 'schoolServicesPage')->name('super-admin.schools.services');
-    //             Route::post('/schools/{id}/services', 'saveSchoolServices')->name('super-admin.schools.services.save');
-    //             Route::get('/users', 'usersList')->name('super-admin.users');
-    //             Route::get('/users/{type}', 'usersByType')->name('super-admin.users.type');
-    //             Route::post('/users/{id}/status', 'updateUserStatus')->name('super-admin.users.status');
-    //             Route::post('/schools', 'createSchool')->name('super-admin.schools.create');
-    //             Route::post('/schools/{id}', 'updateSchool')->name('super-admin.schools.update');
+    //             Route::get('/users/profile/{id}', 'userProfile');
+    //             Route::get('/schools/create', 'createSchoolPage');
+    //             Route::get('/schools/{id}/edit', 'editSchoolPage');
+    //             Route::get('/schools/{id}/services', 'schoolServicesPage');
+    //             Route::post('/schools/{id}/services', 'saveSchoolServices');
+    //             Route::get('/users', 'usersList');
+    //             Route::get('/users/{type}', 'usersByType');
+    //             Route::post('/users/{id}/status', 'updateUserStatus');
+    //             Route::post('/schools', 'createSchool');
+    //             Route::post('/schools/{id}', 'updateSchool');
     //         });
 
     //         Route::controller(ServicesController::class)->group(function () {
-    //             Route::get('/services', 'index')->name('super-admin.services.index');
+    //             Route::get('/services', 'index');
     //         });
 
     //         Route::controller(StandardsController::class)->group(function () {
-    //             Route::get('/standards', 'index')->name('super-admin.standards.index');
+    //             Route::get('/standards', 'index');
     //         });
 
     //         Route::controller(SectionsController::class)->group(function () {
-    //             Route::get('/sections', 'index')->name('super-admin.sections.index');
+    //             Route::get('/sections', 'index');
     //         });
 
     //         Route::controller(SubjectsController::class)->group(function () {
-    //             Route::get('/subjects', 'index')->name('super-admin.subjects.index');
+    //             Route::get('/subjects', 'index');
     //         });
 
     //         Route::controller(FeeTypesController::class)->group(function () {
-    //             Route::get('/fee-types', 'index')->name('super-admin.fee-types.index');
+    //             Route::get('/fee-types', 'index');
     //         });
     //     });
     // }
