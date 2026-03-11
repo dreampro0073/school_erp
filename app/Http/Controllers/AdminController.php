@@ -37,9 +37,6 @@ class AdminController extends Controller {
             $teachers["inactive_teachers"] = User::clientUsersCount($parent_id, 3, 1)->count();
             $teachers["total_teachers"] = User::clientUsersCount($parent_id, 3)->count();
 
-            // $attendance = $this->buildAttendanceStats($parent_id);
-
-            // $data["attendance"] = $attendance;
             $data["students"] = $students;
             $data["teachers"] = $teachers;
             $data["success"] = true;
@@ -96,7 +93,8 @@ class AdminController extends Controller {
                 }
 
                 $bank_details = DB::table("bank_details")->where("user_id", $user->id)->first();
-                $salary_structure = DB::table("salary_structures")->where("user_id", $user_id)->get();
+                // *** Hold ***
+                // $salary_structure = DB::table("salary_structures")->where("user_id", $user_id)->get();
 
                 $data["bank_details"] = $bank_details;
                 $data["user"] = $user;
@@ -208,35 +206,13 @@ class AdminController extends Controller {
         return view('admin.students.index');
     }
 
-    // public function initStudents(Request $request) {
-    //     $apiToken = $request->header('apiToken');
-    //     $user = User::authUser($apiToken);
-    //     if (!$user || is_string($user)) {
-    //         return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-    //     }
-
-    //     $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
-    //     if ($priv !== 2) {
-    //         return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-    //     }
-    //     if (!$user) {
-    //         return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-    //     }
-
-    //     $parent_id = (int) ($user->client_id ?? 0);
-    //     $rows = $this->getClientRows('students', $parent_id);
-
-    //     foreach ($rows as &$row) {
-    //         if (isset($row['id'])) {
-    //             $row['enc_id'] = Crypt::encryptString((string) $row['id']);
-    //         }
-    //     }
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'students' => $rows,
-    //     ]);
-    // }
+    public function initStudents(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $data["success"] = true;
+        
+        return response()->json($data,200,[]);
+    }
 
     public function addStudentPage(?string $student = null) {
         return view('admin.students.form', [
@@ -337,64 +313,72 @@ class AdminController extends Controller {
     }
 
 
-    // public function incomesPage()
-    // {
-    //     return view('admin.finance.incomes');
-    // }
+    public function incomesPage()
+    {
+        return view('admin.finance.incomes');
+    }
 
-    // public function incomeEntriesPage()
-    // {
-    //     return view('admin.finance.income_entries');
-    // }
+    public function initIncomes(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $data["success"] = true;
 
-    // public function expensesPage()
-    // {
-    //     return view('admin.finance.expenses');
-    // }
+        return response()->json($data,200,[]);
+    }
 
-    // public function expenseEntriesPage()
-    // {
-    //     return view('admin.finance.expense_entries');
-    // }
+    public function incomeEntriesPage()
+    {
+        return view('admin.finance.income_entries');
+    }
 
-    // public function initIncomes(Request $request)
-    // {
-    //     return $this->initMasterTable($request, 'incomes', ['name', 'income_name', 'title'], 'incomes');
-    // }
+    public function initIncomeEntries(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $data["success"] = true;
 
-    // public function storeIncome(Request $request)
-    // {
-    //     return $this->storeMasterTable($request, 'incomes', ['name', 'income_name', 'title'], 'Income');
-    // }
+        return response()->json($data,200,[]);
+    }
 
-    // public function initExpenses(Request $request)
-    // {
-    //     return $this->initMasterTable($request, 'expenses', ['name', 'expense_name', 'title'], 'expenses');
-    // }
+    public function storeIncome(Request $request)
+    {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $data["success"] = true;
 
-    // public function storeExpense(Request $request)
-    // {
-    //     return $this->storeMasterTable($request, 'expenses', ['name', 'expense_name', 'title'], 'Expense');
-    // }
+        return response()->json($data,200,[]);
+    }
 
-    // public function initIncomeEntries(Request $request)
-    // {
-    //     return $this->initEntryTable($request, 'income_entries', ['income_id', 'incomes_id']);
-    // }
+    public function expensesPage()
+    {
+        return view('admin.finance.expenses');
+    }
 
-    // public function storeIncomeEntry(Request $request)
-    // {
-    //     return $this->storeEntryTable($request, 'income_entries', ['income_id', 'incomes_id'], 'Income entry');
-    // }
+    public function initExpenses(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $data["success"] = true;
 
-    // public function initExpenseEntries(Request $request)
-    // {
-    //     return $this->initEntryTable($request, 'expense_entries', ['expense_id', 'expenses_id']);
-    // }
+        return response()->json($data,200,[]);
+    }
 
-    // public function storeExpenseEntry(Request $request)
-    // {
-    //     return $this->storeEntryTable($request, 'expense_entries', ['expense_id', 'expenses_id'], 'Expense entry');
-    // }
+    public function initExpenseEntries(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $data["success"] = true;
+
+        return response()->json($data,200,[]);
+    }
+
+    public function expenseEntriesPage(){
+        return view('admin.finance.expense_entries');
+    }
+
+    public function storeExpense(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $data["success"] = true;
+
+        return response()->json($data,200,[]);
+    }
 
 }
