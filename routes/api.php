@@ -19,9 +19,9 @@ use App\Http\Controllers\SalaryController;
 // Grouped structure for middleware-based organization (no behavior change).
 Route::middleware(['api-token-user'])->group(function () {
 
-    Route::prefix('students')->controller(StudentController::class)->group(function () {
-        Route::post('/init', 'initStudents');
-    });
+    // Route::prefix('students')->controller(StudentController::class)->group(function () {
+    //     Route::post('/init', 'initStudents');
+    // });
 
     Route::prefix('services')->controller(ServicesController::class)->group(function () {
         Route::post('/init', 'initServices');
@@ -60,7 +60,7 @@ Route::middleware(['api-token-user'])->group(function () {
     });
 
 
-    Route::middleware(['super-admin'])->prefix('admin')->group(function () {
+    Route::prefix('admin')->group(function () {
         Route::prefix('dashboard')->controller(AdminController::class)->group(function () {
             Route::post('/init', 'initDashboard');
         });

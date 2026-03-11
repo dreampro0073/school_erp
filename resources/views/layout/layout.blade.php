@@ -85,7 +85,7 @@
     <script type="text/javascript" src="{{ url('assets/scripts/core/custom.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/scripts/form-submit-validation.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/scripts/core/app.js') }}"></script>
-    <!-- <script type="text/javascript" src="{{ url('assets/scripts/core/services.min.js') }}"></script> -->
+    <script type="text/javascript" src="{{ url('assets/scripts/core/services.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/scripts/core/controller.js') }}"></script>
 
     @yield('footer_scripts')

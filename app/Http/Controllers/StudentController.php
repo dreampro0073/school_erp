@@ -31,7 +31,6 @@ class StudentController extends Controller
 
         return response()->json([
             "success" => true,
-            'my' => 2,
             "data" => $students
         ]);
 
