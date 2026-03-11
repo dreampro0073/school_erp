@@ -1,0 +1,9 @@
+.dt-paging-button {
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+
+.dt-paging-button:disabled {
+  opacity: 0.3; }
+
+/*# sourceMappingURL=custom.css.map */

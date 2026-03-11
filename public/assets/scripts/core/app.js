@@ -29,30 +29,174 @@ app.directive('convertToNumber', function() {
   };
 });
 
-// angular.module('app').directive('dateTimePicker', function() {
-//     var link = function(scope, element, attrs) {
-//       // var modelName = attrs['ngModel'];
-//       var dataobj = attrs["dataobj"];
-//       var dataitem = attrs["dataitem"];
-//       var id = attrs["id"];
+app.directive("modernPagination", function () {
 
-//       $(element).datetimepicker(
-//           {
-//             format: 'HH:mm:ss'
-//           }
-//       );
+   return {
 
-//       $(element).on("dp.change", function() {
+      scope: {
+         currentPage: "=",
+         totalPages: "=",
+         totalRecords: "=",
+         onPageChange: "&"
+      },
 
-//           scope[dataobj][dataitem] = $("#"+id).val();
-//           scope.$apply();
-//           scope.calCheck();
+      template: `
 
-//       });
-//     };
-//     return {
-//         require: 'ngModel',
-//         restrict: 'A',
-//         link: link
-//     }
+<div class="dt-layout-row">
+   <div class="dt-layout-cell dt-start ">
+      <div class="dt-info" aria-live="polite" id="dataTable_info" role="status"Total Records: {{totalRecords}}>Total Records: {{totalRecords}}</div>
+   </div>
+   <div class="dt-layout-cell dt-end ">
+
+      <div class="dt-paging paging_full_numbers">
+
+        <button class="dt-paging-button" ng-click="changePage(1)" ng-disabled="currentPage==1">
+        «
+        </button>
+
+        <button class="dt-paging-button" ng-click="changePage(currentPage-1)" ng-disabled="currentPage==1">
+        ‹
+        </button>
+
+        <button class="dt-paging-button"
+        ng-repeat="p in pages"
+        ng-click="changePage(p)"
+        ng-class="{'current':p==currentPage}">
+        {{p}}
+        </button>
+
+        <button class="dt-paging-button" ng-click="changePage(currentPage+1)" ng-disabled="currentPage==totalPages">
+        ›
+        </button>
+
+        <button class="dt-paging-button" ng-click="changePage(totalPages)" ng-disabled="currentPage==totalPages">
+        »
+        </button>
+
+      </div>
+    </div>
+
+</div>
+`,
+
+      link: function (scope) {
+
+         scope.pages = [];
+
+         scope.$watchGroup(["currentPage", "totalPages"], function () {
+            generatePages();
+         });
+
+         function generatePages() {
+
+            scope.pages = [];
+
+            let start = Math.max(1, scope.currentPage - 2);
+            let end = Math.min(scope.totalPages, start + 4);
+
+            for (let i = start; i <= end; i++) {
+               scope.pages.push(i);
+            }
+
+         }
+
+         scope.changePage = function (page) {
+
+            if (page >= 1 && page <= scope.totalPages) {
+               scope.onPageChange({
+                  page: page
+               });
+            }
+
+         };
+
+      }
+
+   };
+
+});
+
+
+// app.directive("modernPagination",function(){
+
+// return{
+
+// scope:{
+// currentPage:"=",
+// totalPages:"=",
+// totalRecords:"=",
+// onPageChange:"&"
+// },
+
+// template:`
+
+// <div class="pagination-container">
+
+// <div>
+// Total Records: {{totalRecords}}
+// </div>
+
+// <div class="pagination-buttons">
+
+// <button ng-click="changePage(1)" ng-disabled="currentPage==1">
+// First
+// </button>
+
+// <button ng-click="changePage(currentPage-1)" ng-disabled="currentPage==1">
+// Prev
+// </button>
+
+// <button
+// ng-repeat="p in pages"
+// ng-click="changePage(p)"
+// ng-class="{'active':p==currentPage}">
+// {{p}}
+// </button>
+
+// <button ng-click="changePage(currentPage+1)" ng-disabled="currentPage==totalPages">
+// Next
+// </button>
+
+// <button ng-click="changePage(totalPages)" ng-disabled="currentPage==totalPages">
+// Last
+// </button>
+
+// </div>
+
+// </div>
+// `,
+
+// link:function(scope){
+
+// scope.pages=[];
+
+// scope.$watchGroup(["currentPage","totalPages"],function(){
+// generatePages();
+// });
+
+// function generatePages(){
+
+// scope.pages=[];
+
+// let start=Math.max(1,scope.currentPage-2);
+// let end=Math.min(scope.totalPages,start+4);
+
+// for(let i=start;i<=end;i++){
+// scope.pages.push(i);
+// }
+
+// }
+
+// scope.changePage=function(page){
+
+// if(page>=1 && page<=scope.totalPages){
+// scope.onPageChange({page:page});
+// }
+
+// };
+
+// }
+
+// };
+
 // });

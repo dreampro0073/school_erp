@@ -9,6 +9,6 @@ use App\Http\Controllers\StudentController;
 Route::prefix('students')
     ->controller(StudentController::class)
     ->group(function () {
-        Route::post('/init', 'initStudents');
+        Route::any('/init', 'initStudents');
     }
 );

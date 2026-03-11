@@ -19,6 +19,8 @@
     <link rel="stylesheet" type="text/css" href="{{url('assets/css/lib/flatpickr.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url('assets/css/lib/calendar.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url('assets/css/style.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url('assets/css/custom.css')}}">
+
 <body ng-app="app">
     <aside class="sidebar">
         @include('admin.theme_setting')
@@ -27,7 +29,16 @@
   
     <main class="dashboard-main">
         <div class="navbar-header">
-            
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto">
+                  <div class="d-flex flex-wrap align-items-center gap-4">
+                    <button type="button" class="sidebar-mobile-toggle" aria-label="Sidebar Mobile Toggler Button">
+                      <iconify-icon icon="heroicons:bars-3-solid" class="icon"></iconify-icon>
+                    </button>
+                    
+                  </div>
+                </div>
+            </div> 
         </div>
 
         <div class="dashboard-main-body">

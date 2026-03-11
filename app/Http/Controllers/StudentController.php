@@ -10,15 +10,22 @@ class StudentController extends Controller
     public function index(){
         return view('admin.students.index');
     }
-    public function initStudents(Request $request){
-        $apiToken = $request->header('apiToken');
-        $user = User::authUser($apiToken);
+    public function initStudents(Request $request)
+    {
+        $limit = $request->limit;
+        $query = Student::query();
 
-        $students = Student::latest()->get();
+        if($request->search){
+            $query->where('first_name','like','%'.$request->search.'%');
+        }
 
-        $data['success'] = true;
-        $data['students'] = $students;
-        return response()->json($data,200,[]);
+        $students = $query->paginate($limit);
+
+        return response()->json([
+            "success" => true,
+            "data" => $students
+        ]);
+
     }
 
     // public function index() {

@@ -1,60 +1,58 @@
 app.controller('studentCtrl', function($scope , $http, $timeout , DBService, Upload) {
+
     $scope.loading = false;
+
     $scope.students = [];
-    $scope.formData = {};
 
-    $scope.init = function(){
+    $scope.currentPage = 1;
+    $scope.totalPages = 1;
+    $scope.totalRecords = 0;
 
-        $scope.loading = true;
-        DBService.postCall($scope.filter,'/api/students/init').then(function(data){
-            if(data.success){
-                $scope.students = data.students;
-            }
-            $scope.loading = false;
-        }); 
-    }
-    $scope.onSearch = function(){
-        $scope.init();
-    }
-    $scope.filterClear = function(){
-        $scope.filter = { };
-        $scope.init();
-    }
-
-    $scope.edit = function(g_stock_id){
-        DBService.postCall({g_stock_id:g_stock_id},'/api/godowns/edit').then(function(data){
-            if (data.success) {
-                if (data.g_entry) {
-                    $scope.formData = data.g_entry;
-                }
-            }
-        });
-    }
+    $scope.filter = {
+        page:1,
+        search:"",
+        limit:10,
+    };
+    let searchTimeout = null;
 
     
+    $scope.changePage = function(page){
+        $scope.init(page);
+    };
+    $scope.onSearch = function(){
 
-    $scope.onSubmit = function(){
-        $scope.processing = true;
-        console.log($scope.formData);
-        DBService.postCall($scope.formData,'/api/godowns/store').then(function(data){
-            if (data.success) {
-                $scope.init();  
-                $scope.setNull();
+        if(searchTimeout){
+            $timeout.cancel(searchTimeout);
+        }
+
+        searchTimeout = $timeout(function(){
+
+            $scope.init(1);
+
+        },400); // 400ms delay
+
+    }
+    $scope.init = function(page = 1){
+        $scope.filter.page = page;
+        $scope.loading = true;
+
+        DBService.postCall($scope.filter,'/api/students/init')
+        .then(function(res){
+            if(res.success){
+                $scope.students = res.data.data;
+
+                $scope.currentPage = res.data.current_page;
+                $scope.totalPages = res.data.last_page;
+                $scope.totalRecords = res.data.total;
+
             }
-            alert(data.message);
-            $scope.processing = false;
+
+            $scope.loading = false;
+
         });
-    }
-    $scope.setNull = () => {
-        $scope.formData = {
-            stock:'',
-            date:'',
-            barcodevalue:'',
-            id:'',
-        }; 
-        $scope.g_stock_id = 0; 
 
     }
 
+   
 });
 
