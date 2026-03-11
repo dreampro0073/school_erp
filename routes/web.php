@@ -23,28 +23,28 @@ Route::post('/login', [UserController::class, 'postLogin']);
 Route::get('/logout', [UserController::class, 'logout']);
 
 Route::middleware(['auth'])->group(function () {
-    // Route::prefix('worklog')->controller(WorklogController::class)->group(function () {
-    //     Route::get('/', 'index');
-    //     Route::post('/store', 'store');
-    // });
+    Route::prefix('worklog')->controller(WorklogController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::post('/store', 'store');
+    });
 
-    // Route::prefix('students')->controller(StudentController::class)->group(function () {
-    //     Route::get('/', 'index');
-    // });
+    Route::prefix('students')->controller(StudentController::class)->group(function () {
+        Route::get('/', 'index');
+    });
 
-    // Route::prefix('chat')->controller(ChatController::class)->group(function () {
-    //     Route::get('/', 'index');
-    // });
+    Route::prefix('chat')->controller(ChatController::class)->group(function () {
+        Route::get('/', 'index');
+    });
 
-    // Route::middleware(['teacher'])->prefix('teachers')->controller(TeacherController::class)->group(function () {
-    //     Route::get('/dashboard', 'dashboard');
-    //     Route::get('/exam-marks', 'examMarksPage');
-    // });
+    Route::middleware(['teacher'])->prefix('teachers')->controller(TeacherController::class)->group(function () {
+        Route::get('/dashboard', 'dashboard');
+        Route::get('/exam-marks', 'examMarksPage');
+    });
 
-    // Route::middleware(['guardian'])->prefix('gurdian')->controller(GuardianController::class)->group(function () {
-    //     Route::get('/dashboard', 'dashboard');
+    Route::middleware(['guardian'])->prefix('gurdian')->controller(GuardianController::class)->group(function () {
+        Route::get('/dashboard', 'dashboard');
 
-    // });
+    });
 
     Route::prefix('users')->controller(UserController::class)->group(function () {
         Route::get('/profile/{user_id}', 'userProfilePage');
