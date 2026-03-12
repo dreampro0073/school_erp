@@ -82,9 +82,9 @@ Route::middleware(['auth'])->group(function () {
     // *** HOLD ***
 
     // if(false){ 
-    //     Route::middleware(['super-admin'])->prefix('super-admin')->group(function () {
-    //         Route::controller(SuperAdminController::class)->group(function () {
-    //             Route::get('/dashboard', 'dashboard');
+        Route::middleware(['super-admin'])->prefix('super-admin')->group(function () {
+            Route::controller(SuperAdminController::class)->group(function () {
+                Route::get('/dashboard', 'dashboard');
     //             Route::get('/users/profile/{id}', 'userProfile');
     //             Route::get('/schools/create', 'createSchoolPage');
     //             Route::get('/schools/{id}/edit', 'editSchoolPage');
@@ -95,7 +95,7 @@ Route::middleware(['auth'])->group(function () {
     //             Route::post('/users/{id}/status', 'updateUserStatus');
     //             Route::post('/schools', 'createSchool');
     //             Route::post('/schools/{id}', 'updateSchool');
-    //         });
+            });
 
     //         Route::controller(ServicesController::class)->group(function () {
     //             Route::get('/services', 'index');
@@ -116,6 +116,6 @@ Route::middleware(['auth'])->group(function () {
     //         Route::controller(FeeTypesController::class)->group(function () {
     //             Route::get('/fee-types', 'index');
     //         });
-    //     });
+        });
     // }
 });
