@@ -208,7 +208,7 @@ app.controller('sectionsCtrl', function($scope , DBService){
     $scope.formData = {
         id: '',
         name: '',
-        active: '1'
+        status:0
     };
 
     $scope.init = function() {
@@ -220,16 +220,12 @@ app.controller('sectionsCtrl', function($scope , DBService){
     };
 
     $scope.openAddModal = function() {
-        $scope.formData = { id: '', name: '', active: '1' };
+        $scope.formData = { id: '', name: '', status: '1' };
         $('#sectionModal').modal('show');
     };
 
     $scope.openEditModal = function(item) {
-        $scope.formData = {
-            id: item.id,
-            name: item.name,
-            active: (item.active == 1 ? '1' : '0')
-        };
+        $scope.formData = item;
         $('#sectionModal').modal('show');
     };
 
@@ -246,19 +242,6 @@ app.controller('sectionsCtrl', function($scope , DBService){
             }
         });
     };
-
-    $scope.deleteSection = function(item) {
-        confirmAction('Delete Section', 'Do you want to delete section "' + item.name + '"?', function() {
-            DBService.postCall({ id: item.id }, '/api/sections/delete').then(function(data) {
-                if (data.success) {
-                    $scope.init();
-                    alert(data.message || 'Deleted successfully.');
-                } else {
-                    alert((data.message) ? data.message : 'Unable to delete section.');
-                }
-            });
-        });
-    };
 });
 
 // *** servicesCtrl ***
@@ -268,7 +251,7 @@ app.controller('servicesCtrl', function($scope , DBService){
     $scope.formData = {
         id: '',
         name: '',
-        staus: '0'
+        status: 0
     };
 
     $scope.init = function() {
@@ -311,7 +294,7 @@ app.controller('standardsCtrl', function($scope , DBService){
     $scope.formData = {
         id: '',
         name: '',
-        status: '0'
+        status: 0
     };
 
     $scope.init = function() {

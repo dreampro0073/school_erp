@@ -108,9 +108,9 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/standards', 'index');
             });
 
-    //         Route::controller(SectionsController::class)->group(function () {
-    //             Route::get('/sections', 'index');
-    //         });
+            Route::controller(SectionsController::class)->group(function () {
+                Route::get('/sections', 'index');
+            });
 
     //         Route::controller(SubjectsController::class)->group(function () {
     //             Route::get('/subjects', 'index');

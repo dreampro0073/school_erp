@@ -31,25 +31,21 @@ Route::middleware(['api-token-user'])->group(function () {
     Route::prefix('standards')->controller(StandardsController::class)->group(function () {
         Route::post('/init', 'initStandards');
         Route::post('/store', 'storeStandard');
-        Route::post('/delete', 'deleteStandard');
     });
 
     Route::prefix('sections')->controller(SectionsController::class)->group(function () {
         Route::post('/init', 'initSections');
         Route::post('/store', 'storeSection');
-        Route::post('/delete', 'deleteSection');
     });
 
     Route::prefix('subjects')->controller(SubjectsController::class)->group(function () {
         Route::post('/init', 'initSubjects');
         Route::post('/store', 'storeSubject');
-        Route::post('/delete', 'deleteSubject');
     });
 
     Route::prefix('fee-types')->controller(FeeTypesController::class)->group(function () {
         Route::post('/init', 'initFeeTypes');
         Route::post('/store', 'storeFeeType');
-        Route::post('/delete', 'deleteFeeType');
     });
 
     // Route::middleware(['super-admin'])->group(function () {

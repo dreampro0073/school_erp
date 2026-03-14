@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ServicesController extends Controller {
-    public function index()
-    {
+    public function index() {
         return view('admin.services.index');
     }
 

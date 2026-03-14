@@ -46,7 +46,7 @@
    </a>
 </li>
 <li>
-   <a href="{{ url('super-admin/sections/index') }}">
+   <a href="{{ url('super-admin/sections') }}">
       <i class="ri-layout-grid-line"></i>
       <span>Sections</span>
    </a>
