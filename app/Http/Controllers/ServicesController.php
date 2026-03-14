@@ -36,10 +36,10 @@ class ServicesController extends Controller {
         if($validator->passes()){
             if($request->id){
                 $service = Service::find($request->id);
-                $data["message"] = "Successfully Stored";
+                $data["message"] = "Successfully Updated";
             } else {
                 $service = new Service;
-                $data["message"] = "Successfully Added";
+                $data["message"] = "Successfully Stored";
             }
             $service->name = $request->name;
             $service->status = $request->status;

@@ -112,13 +112,13 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/sections', 'index');
             });
 
-    //         Route::controller(SubjectsController::class)->group(function () {
-    //             Route::get('/subjects', 'index');
-    //         });
+            Route::controller(SubjectsController::class)->group(function () {
+                Route::get('/subjects', 'index');
+            });
 
-    //         Route::controller(FeeTypesController::class)->group(function () {
-    //             Route::get('/fee-types', 'index');
-    //         });
+            Route::controller(FeeTypesController::class)->group(function () {
+                Route::get('/fee-types', 'index');
+            });
         });
     // }
 });

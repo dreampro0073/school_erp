@@ -52,13 +52,13 @@
    </a>
 </li>
 <li>
-   <a href="{{ url('super-admin/subjects/index') }}">
+   <a href="{{ url('super-admin/subjects') }}">
       <i class="ri-book-open-line"></i>
       <span>Subjects</span>
    </a>
 </li>
 <li>
-   <a href="{{ url('super-admin/fee/types.index') }}">
+   <a href="{{ url('super-admin/fee-types') }}">
       <i class="ri-money-dollar-circle-line"></i>
       <span>Fee Types</span>
    </a>

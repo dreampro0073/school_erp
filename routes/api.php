@@ -48,17 +48,15 @@ Route::middleware(['api-token-user'])->group(function () {
         Route::post('/store', 'storeFeeType');
     });
 
-    // Route::middleware(['super-admin'])->group(function () {
-        Route::prefix('super-admin')->group(function () {
-            Route::prefix('dashboard')->controller(SuperAdminController::class)->group(function () {
-                Route::post('/init', 'initDashboard');
-            });
-
-            Route::prefix('users')->controller(SuperAdminController::class)->group(function () {
-                Route::post('/init', 'initUsers');
-            });
+    Route::prefix('super-admin')->group(function () {
+        Route::prefix('dashboard')->controller(SuperAdminController::class)->group(function () {
+            Route::post('/init', 'initDashboard');
         });
-    // });
+
+        Route::prefix('users')->controller(SuperAdminController::class)->group(function () {
+            Route::post('/init', 'initUsers');
+        });
+    });
 
 
     Route::prefix('admin')->group(function () {

@@ -37,10 +37,10 @@ class StandardsController extends Controller {
         if($validator->passes()){
             if($request->id){
                 $standard = Standard::find($request->id);
-                $data["message"] = "Successfully Stored";
+                $data["message"] = "Successfully Updated";
             } else {
                 $standard = new Standard;
-                $data["message"] = "Successfully Added";
+                $data["message"] = "Successfully Stored";
             }
             $standard->name = $request->name;
             $standard->status = $request->status;

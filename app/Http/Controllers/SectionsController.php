@@ -39,10 +39,10 @@ class SectionsController extends Controller {
         if($validator->passes()){
             if($request->id){
                 $section = Section::find($request->id);
-                $data["message"] = "Successfully Stored";
+                $data["message"] = "Successfully Updated";
             } else {
                 $section = new Section;
-                $data["message"] = "Successfully Added";
+                $data["message"] = "Successfully Stored";
             }
             $section->name = $request->name;
             $section->status = $request->status;

@@ -178,5 +178,8 @@ ALTER TABLE `standards` ADD `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=
 ALTER TABLE `services` ADD `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `status`;
 ALTER TABLE `services` CHANGE `status` `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=>Active, 1=>Inactive';
 ALTER TABLE `sections` ADD `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=>Active, 1=>Inactive' AFTER `name`;
+ALTER TABLE `subjects` ADD `status` TINYINT(1) NULL DEFAULT '0' COMMENT '0=>active, 1=>Inactive' AFTER `name`;
+ALTER TABLE `fee_types` ADD `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=>Active, 1=>Inactive' AFTER `name`;
+
 
 
