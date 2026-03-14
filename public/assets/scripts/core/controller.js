@@ -36,15 +36,47 @@
 //     }
 // }
 
-app.controller('dashboardCtrl', function($scope , DBService){
+
+// *** Super Admin ***
+app.controller('suparAdminDashboardCtrl', function($scope , DBService){
     $scope.cards = [];
 
     $scope.init = function() {
-        DBService.postCall({}, '/api/dashboard/init').then(function(data) {
+        DBService.postCall({}, '/api/super-admin/dashboard/init').then(function(data) {
             
         });
     };
 });
+
+
+app.controller('superAdminUsersCtrl', function($scope , DBService){
+    $scope.loading = true;
+    $scope.type = "";
+    $scope.dataSet = [];
+    // $scope.today = '';
+    // $scope.children = [];
+
+    $scope.init = function() {
+        DBService.postCall({type : $scope.type}, '/api/super-admin/users/init').then(function(res) {
+            if(res.success){
+                data = res.data;
+                console.log(data);
+                $scope.dataSet = data.dataSet;
+            }
+        });
+    };
+});
+
+// *** Doubt ***
+// app.controller('dashboardCtrl', function($scope , DBService){
+//     $scope.cards = [];
+
+//     $scope.init = function() {
+//         DBService.postCall({}, '/api/dashboard/init').then(function(data) {
+            
+//         });
+//     };
+// });
 
 // *** attendanceCtrl ***
 
@@ -236,7 +268,7 @@ app.controller('servicesCtrl', function($scope , DBService){
     $scope.formData = {
         id: '',
         name: '',
-        active: '1'
+        staus: '0'
     };
 
     $scope.init = function() {
@@ -248,16 +280,12 @@ app.controller('servicesCtrl', function($scope , DBService){
     };
 
     $scope.openAddModal = function() {
-        $scope.formData = { id: '', name: '', active: '1' };
+        $scope.formData = { id: '', name: '', status: '0' };
         $('#serviceModal').modal('show');
     };
 
     $scope.openEditModal = function(item) {
-        $scope.formData = {
-            id: item.id,
-            name: item.name,
-            active: (item.active == 1 ? '1' : '0')
-        };
+        $scope.formData = item;
         $('#serviceModal').modal('show');
     };
 
@@ -283,7 +311,7 @@ app.controller('standardsCtrl', function($scope , DBService){
     $scope.formData = {
         id: '',
         name: '',
-        active: '1'
+        status: '0'
     };
 
     $scope.init = function() {
@@ -295,16 +323,12 @@ app.controller('standardsCtrl', function($scope , DBService){
     };
 
     $scope.openAddModal = function() {
-        $scope.formData = { id: '', name: '', active: '1' };
+        $scope.formData = { id: '', name: '', status: '0' };
         $('#standardModal').modal('show');
     };
 
     $scope.openEditModal = function(item) {
-        $scope.formData = {
-            id: item.id,
-            name: item.name,
-            active: (item.active == 1 ? '1' : '0')
-        };
+        $scope.formData = item;
         $('#standardModal').modal('show');
     };
 

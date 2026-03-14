@@ -111,7 +111,12 @@ class User extends Authenticatable {
 
 
     public static function clientUsersCount($clientId, $priv, $status = "all"){
-        $sql = DB::table("users")->where("users.parent_id", $clientId)->where("users.priv", $priv);
+
+        $sql = DB::table("users")->where("users.priv", $priv);
+
+        if($clientId != 1){
+            $sql = $sql->where("users.parent_id", $clientId);
+        }        
 
         if($status != "all"){
             $sql = $sql->where("users.active", $status);

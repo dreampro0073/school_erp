@@ -5,16 +5,13 @@
    <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
       <div>
          <h6 class="fw-semibold mb-0">Services</h6>
-         <p class="text-neutral-600 mt-4 mb-0">Manage all services and status.</p>
       </div>
       <div class="d-flex align-items-center gap-2">
-         <button type="button" class="btn btn-success-600 d-inline-flex align-items-center gap-2" ng-click="openAddModal()">
+         <button type="button" class="btn btn-sm btn-success" ng-click="openAddModal()">
             <i class="ri-add-line"></i>
-            Add Service
          </button>
-         <a href="{{ url('/super-admin/dashboard') }}" class="btn btn-primary-600 d-inline-flex align-items-center gap-2">
+         <a href="{{ url('/super-admin/dashboard') }}" class="btn btn-sm btn-danger">
             <i class="ri-arrow-left-line"></i>
-            Back
          </a>
       </div>
    </div>
@@ -25,19 +22,19 @@
             <table class="table bordered-table mb-0">
                <thead>
                   <tr>
-                     <th>#</th>
+                     <th>SN.</th>
                      <th>Service</th>
                      <th>Status</th>
                      <th>Action</th>
                   </tr>
                </thead>
                <tbody>
-                  <tr ng-repeat="item in services track by item.id">
+                  <tr ng-repeat="item in services">
                      <td>@{{$index + 1}}</td>
                      <td>@{{item.name}}</td>
                      <td>
-                        <span ng-if="item.active == 1" class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">Active</span>
-                        <span ng-if="item.active != 1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Inactive</span>
+                        <span ng-if="item.status != 1" class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">Active</span>
+                        <span ng-if="item.status == 1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Inactive</span>
                      </td>
                      <td>
                         <button type="button" class="btn btn-sm btn-info-100 text-info-600" ng-click="openEditModal(item)">Edit</button>
@@ -67,9 +64,9 @@
                   </div>
                   <div>
                      <label class="form-label">Status</label>
-                     <select class="form-control" ng-model="formData.active">
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
+                     <select class="form-control" ng-model="formData.status">
+                        <option ng-value="0">Active</option>
+                        <option ng-value="1">Inactive</option>
                      </select>
                   </div>
                </div>

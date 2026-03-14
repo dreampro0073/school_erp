@@ -52,12 +52,17 @@ Route::middleware(['api-token-user'])->group(function () {
         Route::post('/delete', 'deleteFeeType');
     });
 
-    Route::middleware(['super-admin'])->group(function () {
+    // Route::middleware(['super-admin'])->group(function () {
+        Route::prefix('super-admin')->group(function () {
+            Route::prefix('dashboard')->controller(SuperAdminController::class)->group(function () {
+                Route::post('/init', 'initDashboard');
+            });
 
-        Route::prefix('dashboard')->controller(SuperAdminController::class)->group(function () {
-            Route::post('/init', 'initDashboard');
+            Route::prefix('users')->controller(SuperAdminController::class)->group(function () {
+                Route::post('/init', 'initUsers');
+            });
         });
-    });
+    // });
 
 
     Route::prefix('admin')->group(function () {

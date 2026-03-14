@@ -171,5 +171,9 @@ ALTER TABLE `students` ADD `admission_no` INT NOT NULL DEFAULT '0' AFTER `erp_id
 ALTER TABLE `users` ADD `start_date` DATE NULL DEFAULT NULL AFTER `last_login`;
 
 // Devendra 11MAR2026
-RENAME TABLE `teacher_salary_logs` TO `r_school_erp`.`salary_logs`;
+RENAME TABLE `teacher_salary_logs` TO `salary_logs`;
 ALTER TABLE `salary_logs` CHANGE `teacher_id` `user_id` BIGINT(20) UNSIGNED NOT NULL;
+ALTER TABLE `privileges` ADD `plural_name` VARCHAR(50) NULL DEFAULT NULL AFTER `name`;
+ALTER TABLE `standards` ADD `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=>active, 1=>inactive' AFTER `name`;
+ALTER TABLE `services` ADD `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `status`;
+

@@ -1,6 +1,7 @@
 @extends('layout.layout')
 
 @section('main')
+
 <div ng-controller="suparAdminDashboardCtrl" ng-init="init();" class="container-fluid px-0">
     <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
         <div>
