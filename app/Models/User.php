@@ -52,13 +52,13 @@ class User extends Authenticatable {
         $apiToken = $request->header('apiToken');
         $user = self::authUser($apiToken);
         if (!$user || is_string($user)) {
-            return null;
+            return "User not Fount";
         }
 
         if ($requiredPriv !== null) {
             $priv = (int) ($user->priv ?? $user->privillage ?? $user->privilege ?? 0);
             if ($priv !== $requiredPriv) {
-                return null;
+                return "Priv not macth";
             }
         }
 

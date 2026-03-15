@@ -147,13 +147,13 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-lg-end border p-12">
                                        <li>
-                                          <a href="teacher-list.html" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
+                                          <a href="{{url('admin/students/view/')}}/@{{item.unique_id}}" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
                                           <i class="ri-user-3-line"></i>
                                           View
                                           </a>
                                        </li>
                                        <li>
-                                          <a href="edit-student.html" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
+                                          <a href="{{url('admin/students/add/')}}/@{{item.unique_id}}" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
                                           <i class="ri-edit-2-line"></i>
                                              Edit
                                           </a>

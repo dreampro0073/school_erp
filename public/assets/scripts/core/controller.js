@@ -445,102 +445,102 @@ app.controller('subjectsCtrl', function($scope , DBService){
 // });
 
 
-app.controller('studentCtrl', function($scope , $http, $timeout , DBService, Upload) {
+// app.controller('studentCtrl', function($scope , $http, $timeout , DBService, Upload) {
 
-    $scope.loading = false;
+//     $scope.loading = false;
 
-    $scope.students = [];
+//     $scope.students = [];
 
-    $scope.currentPage = 1;
-    $scope.totalPages = 1;
-    $scope.totalRecords = 0;
+//     $scope.currentPage = 1;
+//     $scope.totalPages = 1;
+//     $scope.totalRecords = 0;
 
-    $scope.filter = {
-        page:1,
-        search:"",
-        limit:10,
-    };
-    let searchTimeout = null;
+//     $scope.filter = {
+//         page:1,
+//         search:"",
+//         limit:10,
+//     };
+//     let searchTimeout = null;
 
     
-    $scope.changePage = function(page){
-        $scope.init(page);
-    };
-    $scope.onSearch = function(){
+//     $scope.changePage = function(page){
+//         $scope.init(page);
+//     };
+//     $scope.onSearch = function(){
 
-        if(searchTimeout){
-            $timeout.cancel(searchTimeout);
-        }
+//         if(searchTimeout){
+//             $timeout.cancel(searchTimeout);
+//         }
 
-        searchTimeout = $timeout(function(){
+//         searchTimeout = $timeout(function(){
 
-            $scope.init(1);
+//             $scope.init(1);
 
-        },400); // 400ms delay
+//         },400); // 400ms delay
 
-    }
-    $scope.init = function(page = 1){
-        $scope.filter.page = page;
-        $scope.loading = true;
+//     }
+//     $scope.init = function(page = 1){
+//         $scope.filter.page = page;
+//         $scope.loading = true;
 
-        DBService.postCall($scope.filter,'/api/admin/students/init')
-        .then(function(res){
-            if(res.success){
-                $scope.students = res.data.data;
-                $scope.currentPage = res.data.current_page;
-                $scope.totalPages = res.data.last_page;
-                $scope.totalRecords = res.data.total;
+//         DBService.postCall($scope.filter,'/api/admin/students/init')
+//         .then(function(res){
+//             if(res.success){
+//                 $scope.students = res.data.data;
+//                 $scope.currentPage = res.data.current_page;
+//                 $scope.totalPages = res.data.last_page;
+//                 $scope.totalRecords = res.data.total;
 
-            }
-            $scope.loading = false;
-        });
-    }
-});
+//             }
+//             $scope.loading = false;
+//         });
+//     }
+// });
 
-app.controller('addStudentCtrl', function($scope , DBService){
-    $scope.processing = false;
-    $scope.formData = {
-        enc_id: '',
-        admission_no: '',
-        first_name: '',
-        last_name: '',
-        dob: '',
-        gender: '',
-        mobile: '',
-        email: '',
-        address: '',
-        aadhar_no: '',
-        parent_name: '',
-        parent_mobile: '',
-        parent_email: '',
-        parent_address: '',
-        parent_aadhar_no: '',
-        document_type: 'Aadhar',
-        document_no: '',
-        active: '1'
-    };
+// app.controller('addStudentCtrl', function($scope , DBService){
+//     $scope.processing = false;
+//     $scope.formData = {
+//         enc_id: '',
+//         admission_no: '',
+//         first_name: '',
+//         last_name: '',
+//         dob: '',
+//         gender: '',
+//         mobile: '',
+//         email: '',
+//         address: '',
+//         aadhar_no: '',
+//         parent_name: '',
+//         parent_mobile: '',
+//         parent_email: '',
+//         parent_address: '',
+//         parent_aadhar_no: '',
+//         document_type: 'Aadhar',
+//         document_no: '',
+//         active: '1'
+//     };
 
-    $scope.init = function() {
+//     $scope.init = function() {
 
-        DBService.postCall({ }, '/api/admin/students/get').then(function(data) {
+//         DBService.postCall({ }, '/api/admin/students/get').then(function(data) {
 
-        });
-    };
+//         });
+//     };
 
-    $scope.submit = function() {
-        $scope.processing = true;
+//     $scope.submit = function() {
+//         $scope.processing = true;
 
-        DBService.postCall($scope.formData, '/api/admin/students/store').then(function(data) {
-            alert((data.message) ? data.message : 'Unable to save student.');
-            if (data.success) {
-                window.location.href = base_url + '/admin/students';
-            }
-            $scope.processing = false;
-        }, function() {
-            $scope.processing = false;
-        });
-    };
-});
+//         DBService.postCall($scope.formData, '/api/admin/students/store').then(function(data) {
+//             alert((data.message) ? data.message : 'Unable to save student.');
+//             if (data.success) {
+//                 window.location.href = base_url + '/admin/students';
+//             }
+//             $scope.processing = false;
+//         }, function() {
+//             $scope.processing = false;
+//         });
+//     };
+// });
 
 app.controller('studentProfileCtrl', function($scope , DBService){
     $scope.baseUrl = base_url;

@@ -68,6 +68,7 @@ Route::middleware(['api-token-user'])->group(function () {
             ->group(function () {
                 Route::any('/init', 'initStudents');
                 Route::post('/store', 'storeStudent');
+                Route::post('/init-details', 'initDetails');
             }
         );
 

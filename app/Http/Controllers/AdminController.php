@@ -203,115 +203,118 @@ class AdminController extends Controller {
         return response()->json($data,200,[]);
     }
 
-    public function studentsIndex() {
-        return view('admin.students.index');
-    }
+    // public function studentsIndex() {
+    //     return view('admin.students.index');
+    // }
 
-    public function initStudents(Request $request) {
-        $apiToken = $request->header('apiToken');
-        $user = User::authUser($apiToken);
-        $data["success"] = true;
+    // public function addStudentPage(?string $student = null) {
+    //     return view('admin.students.form', [
+    //         'studentToken' => $student,
+    //     ]);
+    // }
+
+    // public function initStudents(Request $request) {
+    //     $apiToken = $request->header('apiToken');
+    //     $user = User::authUser($apiToken);
+    //     $data["success"] = true;
         
-        return response()->json($data,200,[]);
-    }
+    //     return response()->json($data,200,[]);
+    // }
 
-    public function addStudentPage(?string $student = null) {
-        return view('admin.students.form', [
-            'studentToken' => $student,
-        ]);
-    }
+   
 
-    public function storeStudent(Request $request) {
-        $apiToken = $request->header('apiToken');
-        $auth_user = User::authUser($apiToken);
-        if ($auth_user->priv == 2) {
+    // public function storeStudent(Request $request) {
+    //     $apiToken = $request->header('apiToken');
+    //     $auth_user = User::authUser($apiToken);
+    //     if ($auth_user->priv == 2) {
 
-            $parent_id = $admin->parent_id;
-            $studentId = $request->enc_id ? Crypt::decryptString($request->enc_id) : "";
+    //         $parent_id = $admin->parent_id;
+    //         $studentId = $request->enc_id ? Crypt::decryptString($request->enc_id) : "";
 
-            $student = Student::find($studentId);
+    //         $student = Student::find($studentId);
 
-            $cre = $request->all();
-            $rules = [
-                'name' => 'required',
-                'level' => 'required',
-                'company_admin' => 'required',
-                'user_admin' => 'required',
-            ];
+    //         $cre = $request->all();
+    //         $rules = [
+    //             'name' => 'required',
+    //             'level' => 'required',
+    //             'company_admin' => 'required',
+    //             'user_admin' => 'required',
+    //         ];
 
-            if(!$studentId){
-                $rules['username'] = 'required|email|unique:users';
-            } else {
-                $user_id = $student->user_id;
-                $user = User::find($user_id);
+    //         if(!$studentId){
+    //             $rules['username'] = 'required|email|unique:users';
+    //         } else {
+    //             $user_id = $student->user_id;
+    //             $user = User::find($user_id);
                 
-                if($parent_id != $user->parent_id){
-                    $data['message'] = "Not authorized !";
-                    $data['success'] = false; 
-                    return Response::json($data,200,[]);   
-                }
+    //             if($parent_id != $user->parent_id){
+    //                 $data['message'] = "Not authorized !";
+    //                 $data['success'] = false; 
+    //                 return Response::json($data,200,[]);   
+    //             }
 
-                $rules['username'] = 'required|email|unique:users,username,'.$user_id;
-            } 
+    //             $rules['username'] = 'required|email|unique:users,username,'.$user_id;
+    //         } 
 
-            $validator = Validator::make($cre,$rules);
+    //         $validator = Validator::make($cre,$rules);
 
-            if ($validator->fails()) {
+    //         if ($validator->fails()) {
 
-                $error = "";
-                $messages = $validator->messages();
-                foreach($messages->all() as $message){
-                    $error = $message;
-                    break;
-                }
-                $data["success"] = false;
-                $data["message"] = $error;
+    //             $error = "";
+    //             $messages = $validator->messages();
+    //             foreach($messages->all() as $message){
+    //                 $error = $message;
+    //                 break;
+    //             }
+    //             $data["success"] = false;
+    //             $data["message"] = $error;
 
-            } else {
-                if ($user && $student) {
-                    $data['message'] = "Student details Successfully Updated";
-                } else {
-                    $data['message'] = "Student Successfully Stored";
-                    $student = new Student;
-                    $user = new User;
-                    $password = User::getRandPassword();
-                    $user->password = Hash::make($password);
-                    $user->start_date = $auth_user->start_date;
-                    $user->parent_id = $parent_id;
-                    $user->check_password = $password;
-                    $user->save(); 
+    //         } else {
+    //             if ($user && $student) {
+    //                 $data['message'] = "Student details Successfully Updated";
+    //             } else {
+    //                 $data['message'] = "Student Successfully Stored";
+    //                 $student = new Student;
+    //                 $user = new User;
+    //                 $password = User::getRandPassword();
+    //                 $user->password = Hash::make($password);
+    //                 $user->start_date = $auth_user->start_date;
+    //                 $user->parent_id = $parent_id;
+    //                 $user->check_password = $password;
+    //                 $user->save(); 
 
-                    $student->user_id = $user->id;
-                    $user->org_id = $student->school_id = $auth_user->org_id;
-                    $user->email = $student->email = $auth_user->email;
-                } 
+    //                 $student->user_id = $user->id;
+    //                 $user->org_id = $student->school_id = $auth_user->org_id;
+    //                 $user->email = $student->email = $auth_user->email;
+    //             } 
 
-                $user->priv = 3;
-                $user->name = $student->name = $request->name.' '.$request->last_name;
-                $user->username = $request->username;
-                $user->mobile = $request->mobile; 
-                $user->address = $request->address; 
-                $user->end_date = $auth_user->end_date;
-                $user->active = 0;
-                $user->save(); 
+    //             $user->priv = 3;
+    //             $user->name = $student->name = $request->name.' '.$request->last_name;
+    //             $user->username = $request->username;
+    //             $user->mobile = $request->mobile; 
+    //             $user->address = $request->address; 
+    //             $user->end_date = $auth_user->end_date;
+    //             $user->active = 0;
+    //             $user->save(); 
 
-                $student->user_id = $user->id;
-                $student->school_id = $auth_user->org_id;
-                $student->status = 0;
-                $student->joining_date = date("Y-m-d", strtotime($request->joining_date));
-                $student->dob = date("Y-m-d", strtotime($request->dob));
+    //             $student->user_id = $user->id;
+    //             $student->school_id = $auth_user->org_id;
+    //             $student->status = 0;
+    //             $student->joining_date = date("Y-m-d", strtotime($request->joining_date));
+    //             $student->dob = date("Y-m-d", strtotime($request->dob));
 
 
 
-                $user->save(); 
-                $student->save();
-            } 
-        } else {
-            $data = ['success' => false, 'message' => 'Unauthorized user.'];
-        }
+    //             $user->save(); 
+    //             $student->save();
+    //         } 
+    //     } else {
+    //         $data = ['success' => false, 'message' => 'Unauthorized user.'];
+    //     }
 
-        return response()->json($data,200,[]);
-    }
+    //     return response()->json($data,200,[]);
+    // }
+
 
 
     public function incomesPage()
