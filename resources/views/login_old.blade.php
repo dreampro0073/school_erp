@@ -110,7 +110,47 @@
                     <button type="submit" class="loginBtn btn btn-primary-600 text-sm btn-sm px-12 py-16 w-100 radius-8"> Log In
                     </button>
                 </div>
-                
+                <div class="text-center text-sm text-secondary-light">
+                    or login as
+                </div>
+                <div class="d-grid sm-grid-cols-3 grid-cols-2 gap-16">
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-8 fw-semibold text-sm radius-6 justify-content-center flex-grow-1 bg-success text-white py-10 px-8">
+                        <span class="d-flex">
+                            <img src="assets/images/icons/sheild-icon.png" alt="Icon">
+                        </span>
+                        <span class="">Supper Admin</span>
+                    </a>
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-8 fw-semibold text-sm radius-6 justify-content-center flex-grow-1 bg-info-600 text-white py-10 px-8">
+                        <span class="d-flex">
+                            <img src="assets/images/icons/dashboard-icon.png" alt="Icon">
+                        </span>
+                        <span class="">Admin</span>
+                    </a>
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-8 fw-semibold text-sm radius-6 justify-content-center flex-grow-1 bg-warning-600 text-white py-10 px-8">
+                        <span class="d-flex">
+                            <img src="assets/images/icons/student-icon.png" alt="Icon">
+                        </span>
+                        <span class="">Student</span>
+                    </a>
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-8 fw-semibold text-sm radius-6 justify-content-center flex-grow-1 bg-purple-600 text-white py-10 px-8">
+                        <span class="d-flex">
+                            <img src="assets/images/icons/teacher-icon.png" alt="Icon">
+                        </span>
+                        <span class="">Teacher</span>
+                    </a>
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-8 fw-semibold text-sm radius-6 justify-content-center flex-grow-1 bg-primary-600 text-white py-10 px-8">
+                        <span class="d-flex">
+                            <img src="assets/images/icons/guardian-icon.png" alt="Icon">
+                        </span>
+                        <span class="">Guardians </span>
+                    </a>
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-8 fw-semibold text-sm radius-6 justify-content-center flex-grow-1 bg-pink text-white py-10 px-8">
+                        <span class="d-flex">
+                            <img src="assets/images/icons/library-icon.png" alt="Icon">
+                        </span>
+                        <span class="">Librarian</span>
+                    </a>
+                </div>
             </form>
             
             

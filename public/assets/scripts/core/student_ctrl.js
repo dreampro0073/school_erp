@@ -36,7 +36,7 @@ app.controller('studentCtrl', function($scope , $http, $timeout , DBService, Upl
         $scope.filter.page = page;
         $scope.loading = true;
 
-        DBService.postCall($scope.filter,'/api/students/init')
+        DBService.postCall($scope.filter,'/api/admin/students/init')
         .then(function(res){
             if(res.success){
                 $scope.students = res.data.data;
@@ -48,13 +48,68 @@ app.controller('studentCtrl', function($scope , $http, $timeout , DBService, Upl
                 $scope.totalRecords = res.data.total;
 
             }
-
             $scope.loading = false;
+        });
+    }   
+});
+app.controller('addStudentCtrl', function($scope , DBService){
+    $scope.processing = false;
+    $scope.formData = {
+        enc_id: '',
+        admission_no: '',
+        first_name: '',
+        last_name: '',
+        dob: '',
+        gender: '',
+        mobile: '',
+        email: '',
+        address: '',
+        aadhar_no: '',
+        parent_name: '',
+        parent_mobile: '',
+        parent_email: '',
+        parent_address: '',
+        parent_aadhar_no: '',
+        document_type: 'Aadhar',
+        document_no: '',
+        active: '1'
+    };
+
+    $scope.init = function(student_token) {
+        DBService.postCall({ student_token:student_token }, '/api/admin/students/init-details').then(function(data) {
+
+            if (data.success && data.student) {
+
+                $scope.formData = data.student;
+                
+            }
 
         });
+    };
 
-    }
+    $scope.submit = function() {
+        $scope.processing = true;
 
-   
+        // DBService.postCall($scope.formData, '/api/admin/students/store').then(function(data) {
+        //     alert((data.message) ? data.message : 'Unable to save student.');
+        //     if (data.success) {
+        //         window.location.href = base_url + '/admin/students';
+        //     }
+        //     $scope.processing = false;
+        // }, function() {
+        //     $scope.processing = false;
+        // });
+
+        DBService.postCall($scope.formData,'/api/admin/students/store').then(function(data){
+          
+            $scope.processing = false;
+            
+            if (data.success) {
+                alert(data.message);
+                window.location.href = base_url + '/admin/students';
+            }else{
+                alert(data.message);
+            }
+        });
+    };
 });
-

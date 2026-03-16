@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School ERP Dashboard</title>
     <link rel="icon" type="image/png" href="{{ url('assets/images/favicon.png') }}" sizes="16x16">
-
+    
     <link rel="stylesheet" type="text/css" href="{{ url('assets/css/remixicon.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url('assets/css/lib/bootstrap.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url('assets/css/lib/apexcharts.css') }}">
@@ -47,7 +47,7 @@
                         <i class="ri-menu-line"></i>
                     </button>
                     <div>
-                        <h6 class="mb-0">{{ $panelLabel }}</h6>
+                        <h6 class="mb-0 mb-2 fw-bold text-lg">{{ $panelLabel }}</h6>
                         <p class="mb-0 text-sm text-secondary-light">{{ now()->format('d M, Y') }}</p>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
     <script type="text/javascript" src="{{ url('assets/js/lib/apexcharts.min.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/js/lib/iconify-icon.min.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/js/lib/dataTables.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url('assets/js/lib/jquery-ui.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url('assets/js/flatpickr.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/js/app.js') }}"></script>
 
     <script type="text/javascript" src="{{ url('assets/scripts/selectize.min.js') }}"></script>
@@ -87,6 +87,7 @@
     <script type="text/javascript" src="{{ url('assets/scripts/core/app.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/scripts/core/services.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/scripts/core/controller.js') }}"></script>
+    <script type="text/javascript" src="{{ url('assets/scripts/core/student_ctrl.js') }}"></script>
 
     @yield('footer_scripts')
 

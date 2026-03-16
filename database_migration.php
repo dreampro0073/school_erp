@@ -180,6 +180,26 @@ ALTER TABLE `services` CHANGE `status` `status` TINYINT(1) NOT NULL DEFAULT '0' 
 ALTER TABLE `sections` ADD `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=>Active, 1=>Inactive' AFTER `name`;
 ALTER TABLE `subjects` ADD `status` TINYINT(1) NULL DEFAULT '0' COMMENT '0=>active, 1=>Inactive' AFTER `name`;
 ALTER TABLE `fee_types` ADD `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=>Active, 1=>Inactive' AFTER `name`;
+<<<<<<< HEAD
 ALTER TABLE `worklog` CHANGE `client_id` `hours` DOUBLE UNSIGNED NULL DEFAULT NULL;
+=======
+
+ALTER TABLE `standards` ADD `client_id` INT NOT NULL DEFAULT '0' AFTER `id`;
+
+//Dipanshu 15 mrach 2026
+ALTER TABLE `students` ADD `residential_address` TEXT NULL DEFAULT NULL AFTER `approved`, ADD `permanent_address` TEXT NULL DEFAULT NULL AFTER `residential_address`;
+
+ALTER TABLE `parents` CHANGE `name` `father_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL, CHANGE `mobile` `father_mobile` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL, CHANGE `email` `father_email` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+ALTER TABLE `parents` ADD `father_aadhar_no` VARCHAR(50) NULL DEFAULT NULL AFTER `updated_at`, ADD `mother_name` VARCHAR(255) NULL DEFAULT NULL AFTER `father_aadhar_no`, ADD `mother_mobile` VARCHAR(50) NULL DEFAULT NULL AFTER `mother_name`, ADD `mother_email` VARCHAR(255) NULL DEFAULT NULL AFTER `mother_mobile`, ADD `mother_aadhar_no` VARCHAR(50) NULL DEFAULT NULL AFTER `mother_email`;
+
+ALTER TABLE `students` ADD `dob` DATE NULL DEFAULT NULL AFTER `name`;
+ALTER TABLE `students` CHANGE `admission_no` `admission_no` INT(11) NULL DEFAULT NULL;
+
+ALTER TABLE `parents` ADD `client_id` INT NOT NULL DEFAULT '0' AFTER `id`;
+ALTER TABLE `students` ADD `unique_id` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
+ALTER TABLE `parents` ADD `unique_id` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
+
+>>>>>>> 8ee648eba7f28fff362312853a1b96a3c75db78c
 
 
