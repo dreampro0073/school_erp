@@ -19,7 +19,7 @@ class WorklogController extends Controller {
         $to_date = $request->to_date ? date("Y-m-d", strtotime($request->to_date)) : date("Y-m-d");
         $user_id = $request->user_id ? $request->user_id : $auth_user->id;
 
-        $worklog = Worklog::select("worklog.*", "users.name")->join("users", "users.id", "=", "worklog.user_id")
+        $worklog = Worklog::selectRaw("worklog.*, DATE_FORMAT(worklog.date, '%d-%m-%Y') as date, users.name")->join("users", "users.id", "=", "worklog.user_id")
         ->where("date", ">=", $from_date)
         ->where("date", "<=", $to_date)
         ->where("worklog.user_id", $user_id)->get();

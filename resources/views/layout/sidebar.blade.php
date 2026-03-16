@@ -94,6 +94,13 @@
             <i class="ri-file-list-3-line"></i>
             <span>Worklog</span>
          </a>
+      </li>      
+
+      <li>
+         <a href="{{ url('settings') }}">
+            <i class="ri-settings-3-line"></i>
+            <span>Settings</span>
+         </a>
       </li>
 
       <li class="nav-item">

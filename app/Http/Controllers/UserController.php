@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator, Hash;
 
 class UserController extends Controller {
     public function login(){   
@@ -145,9 +146,56 @@ class UserController extends Controller {
         return redirect()->to('/');
     }
 
-    public function studentProfilePage(string $student){
+    public function studentProfilePage($student){
         return view('admin.students.profile', [
             'studentToken' => $student,
         ]);
+    }    
+
+    public function settings(Request $request){
+
+        return view('admin.settings', []);
+    }
+
+    public function updatePassword(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        if(!$user){
+            return redirect()->to('/');
+        }
+        $auth_user = User::find($user->id);
+
+        $cre = ["old_password"=>$request->old_password,"new_password"=>$request->new_password,"confirm_password"=>$request->confirm_password];
+        $rules = ["old_password"=>'required',"new_password"=>'required|min:5',"confirm_password"=>'required|same:new_password'];
+
+        $old_password = Hash::make($request->old_password);
+        $validator = Validator::make($cre,$rules);
+
+        if ($validator->passes()) { 
+            if (Hash::check($request->old_password, $auth_user->password )) {
+                $password = Hash::make($request->new_password);
+                $user = User::find($auth_user->id);
+                $user->password = $password;
+                $user->password_check = $request->new_password;
+                $user->save();
+
+                DB::table('user_activities')->insert([
+                    "user_id"=>$auth_user->id,
+                    "activity"=>"change-password",
+                    "remark"=>"Change Password",
+                    "updated_at" => date("Y-m-d H:i:s"),
+                    "created_at" => date("Y-m-d H:i:s"),
+                ]);
+                
+                return redirect()->back()->with('success', 'Password changed successfully ');
+                
+            } else {
+                return redirect()->back()->withInput()->with('failure', 'Old password does not match.');
+            }
+        } else {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        return redirect()->back()->withErrors($validator)->withInput()->with('failure','Unauthorised Access or Invalid Password');
     }
 }
