@@ -8,10 +8,24 @@ use Illuminate\Support\Facades\Auth;
 
 class WorklogController extends Controller {
     public function index(Request $request) {
-        $apiToken = $request->header('apiToken');
-        $user = User::authUser($apiToken);
-        $data["success"] = true;
+        return view('worklog.index');
+    }
 
+    public function initWorkLog(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        $from_date = $request->from_date ? date("Y-m-d", strtotime($request->from_date)) : date("Y-m-d", strtotime(" -7 days"));
+        $to_date = $request->to_date ? date("Y-m-d", strtotime($request->to_date)) : date("Y-m-d");
+        $user_id = $request->user_id ? $request->user_id : $auth_user->id;
+
+        $Worklog = Worklog::select("worklog.*")->join("users", "users.id", "=", "worklog.user_id")->whereBetween("date", [$from_date, $to_date])->where("worklog.user_id", $user_id)->get()->keyBy("Worklog.date");
+        
+        $users = User::select("id", "name")->whereIn("users.priv", [2,3])->where("parent_id", $auth_user->parent_id)->get();
+
+        $data["Worklog"] = $Worklog;
+        $data["users"] = $users;
+        $data["success"] = true;
         return response()->json($data,200,[]);
     }
 

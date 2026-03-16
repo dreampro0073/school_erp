@@ -180,6 +180,6 @@ ALTER TABLE `services` CHANGE `status` `status` TINYINT(1) NOT NULL DEFAULT '0' 
 ALTER TABLE `sections` ADD `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=>Active, 1=>Inactive' AFTER `name`;
 ALTER TABLE `subjects` ADD `status` TINYINT(1) NULL DEFAULT '0' COMMENT '0=>active, 1=>Inactive' AFTER `name`;
 ALTER TABLE `fee_types` ADD `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=>Active, 1=>Inactive' AFTER `name`;
-
+ALTER TABLE `worklog` CHANGE `client_id` `hours` DOUBLE UNSIGNED NULL DEFAULT NULL;
 
 

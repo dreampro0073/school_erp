@@ -836,6 +836,7 @@ app.controller('guardianDashboardCtrl', function($scope , DBService){
 // *** chatCtrl ***
 app.controller('chatCtrl', function($scope , DBService, $timeout){
     $scope.users = [];
+    $scope.chat_log = [];
     $scope.messages = [];
     $scope.selectedUser = null;
     $scope.searchUser = '';
@@ -845,46 +846,49 @@ app.controller('chatCtrl', function($scope , DBService, $timeout){
 
     $scope.init = function() {
         DBService.postCall({}, '/api/chat/init').then(function(data) {
-            
+            $scope.chat_log = data.chat_log;
         });
     };
 
     $scope.selectUser = function(user) {
-    };
-
-    $scope.fetchThread = function() {
-        
-        DBService.postCall({ }, '/api/chat/thread').then(function(data) {
-
+        DBService.postCall({user_id : user.user_id}, '/api/chat/get-chat').then(function(data) {
+            $scope.chat = data.chat;
         });
     };
 
-    $scope.sendMessage = function() {
+    // $scope.fetchThread = function() {
         
-        DBService.postCall({ }, '/api/chat/send').then(function(data) {
-            $scope.sending = false;
-            if (data.success) {
-            } else {
-                alert((data.message) ? data.message : 'Unable to send message.');
-            }
-        });
-    };
+    //     DBService.postCall({ }, '/api/chat/thread').then(function(data) {
 
-    $scope.handleEnter = function($event) {
-        if ($event.keyCode === 13 && !$event.shiftKey) {
-            $event.preventDefault();
-            $scope.sendMessage();
-        }
-    };
+    //     });
+    // };
 
-    $scope.scrollBottom = function() {
-        $timeout(function() {
-            var box = document.getElementById('chatThreadBox');
-            if (box) {
-                box.scrollTop = box.scrollHeight;
-            }
-        }, 80);
-    };
+    // $scope.sendMessage = function() {
+        
+    //     DBService.postCall({ }, '/api/chat/send').then(function(data) {
+    //         $scope.sending = false;
+    //         if (data.success) {
+    //         } else {
+    //             alert((data.message) ? data.message : 'Unable to send message.');
+    //         }
+    //     });
+    // };
+
+    // $scope.handleEnter = function($event) {
+    //     if ($event.keyCode === 13 && !$event.shiftKey) {
+    //         $event.preventDefault();
+    //         $scope.sendMessage();
+    //     }
+    // };
+
+    // $scope.scrollBottom = function() {
+    //     $timeout(function() {
+    //         var box = document.getElementById('chatThreadBox');
+    //         if (box) {
+    //             box.scrollTop = box.scrollHeight;
+    //         }
+    //     }, 80);
+    // };
 });
 
 // *** examMarksCtrl ***
@@ -973,4 +977,58 @@ app.controller('examMarksCtrl', function($scope , DBService){
             }
         });
     };
+});
+
+// *** workLogCtrl ***
+app.controller('workLogCtrl', function($scope , DBService){
+    $scope.worklog = [];
+    $scope.users = [];
+    $scope.processing = false;
+    $scope.formData = {
+        id: '',
+    };
+    $scope.filters = {};
+
+    $scope.init = function() {
+        DBService.postCall({}, '/api/worklog/init').then(function(data) {
+            if (data.success) {
+                $scope.subjects = data.subjects ;
+            }
+        });
+    };
+
+    $scope.resetFilter = function(){
+        $scope.filter = {};
+        $scope.init($scope.filter);
+    };
+
+    $scope.openAddModal = function() {
+        $scope.formData = { id: '', name: '', status: '0'};
+        $('#subjectModal').modal('show');
+    };
+
+    $scope.openEditModal = function(item) {
+        $scope.formData = {
+            id: item.id,
+            name: item.name,
+            status: (item.status == 1 ? '1' : '0')
+        };
+        $('#subjectModal').modal('show');
+    };
+
+    $scope.saveSubject = function() {
+
+        $scope.processing = true;
+        DBService.postCall($scope.formData, '/api/subjects/store').then(function(data) {
+            $scope.processing = false;
+            if (data.success) {
+                $('#subjectModal').modal('hide');
+                $scope.init();
+                alert(data.message || 'Saved successfully.');
+            } else {
+                alert((data.message) ? data.message : 'Unable to save subject.');
+            }
+        });
+    };
+
 });

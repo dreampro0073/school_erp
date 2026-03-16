@@ -3,7 +3,7 @@
 @section('main')
 <div ng-controller="chatCtrl" ng-init="init();" class="mt-24">
     <div class="d-flex justify-content-between align-items-center mb-16">
-        <h5 class="mb-0">Chat System</h5>
+        <h5 class="mb-0">Chats</h5>
     </div>
 
     <div class="card">
@@ -21,13 +21,13 @@
                         <button
                             type="button"
                             class="btn w-100 text-start mb-2"
-                            ng-repeat="u in users | filter: {name: searchUser}"
-                            ng-class="selectedUser && selectedUser.id === u.id ? 'btn-primary' : 'btn-outline-secondary'"
-                            ng-click="selectUser(u)">
-                            <div class="fw-semibold">@{{ u.name }}</div>
-                            <div class="small opacity-75">@{{ u.email }}</div>
+                            ng-repeat="user in chat_log | filter: {name: searchUser}"
+                            ng-class="selectedUser && selectedUser.id === user.user_id ? 'btn-primary' : 'btn-outline-secondary'"
+                            ng-click="selectUser(user)">
+                            <div class="fw-semibold">@{{ user.name }}</div>
+                            <div class="small">@{{ user.message }}</div>
                         </button>
-                        <div class="text-secondary text-center py-4" ng-if="!users.length">
+                        <div class="text-secondary text-center py-4" ng-if="!chat_log.length">
                             No users available for chat.
                         </div>
                     </div>

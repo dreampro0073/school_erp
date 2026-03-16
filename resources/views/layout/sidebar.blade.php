@@ -82,21 +82,19 @@
          @include('layout.parents')
       @endif
 
-      @if(false)
       <li>
-         <a href="{{ url('chat/index') }}">
+         <a href="{{ url('chat') }}">
             <i class="ri-message-2-line"></i>
             <span>Chat</span>
          </a>
       </li>
 
       <li>
-         <a href="{{ route('worklog.index') }}">
+         <a href="{{ url('worklog') }}">
             <i class="ri-file-list-3-line"></i>
             <span>Worklog</span>
          </a>
       </li>
-      @endif
 
       <li class="nav-item">
          <a href="{{url('/logout')}}" onclick="return confirm('Are you sure to Logout?');" >
