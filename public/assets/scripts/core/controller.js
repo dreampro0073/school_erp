@@ -988,10 +988,10 @@ app.controller('workLogCtrl', function($scope , DBService){
         date : '',
         day_data : []
     };
-    $scope.filters = {};
+    $scope.filter = {};
 
     $scope.init = function() {
-        DBService.postCall({}, '/api/worklog/init').then(function(data) {
+        DBService.postCall($scope.filter, '/api/worklog/init').then(function(data) {
             if (data.success) {
                 $scope.worklog = data.worklog ;
                 $scope.users = data.users;
@@ -1015,13 +1015,13 @@ app.controller('workLogCtrl', function($scope , DBService){
     }
 
     $scope.removeItem = function(index){
-        bootbox.confirm("Do you want to remove the item?",function(res){
-            if(res){
-                $scope.$apply(() => {
+        // bootbox.confirm("Do you want to remove the item?",function(res){
+            // if(res){
+                // $scope.$apply(() => {
                     $scope.formData.day_data.splice(index,1);
-                });
-            }
-        });
+                // });
+            // }
+        // });
        
     }
 
@@ -1034,7 +1034,7 @@ app.controller('workLogCtrl', function($scope , DBService){
         });
     };
 
-    $scope.saveSubject = function() {
+    $scope.saveWorklog = function() {
 
         $scope.processing = true;
         DBService.postCall($scope.formData, '/api/worklog/store').then(function(data) {

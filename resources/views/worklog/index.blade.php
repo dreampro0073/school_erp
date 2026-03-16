@@ -74,13 +74,13 @@
                <h5 class="modal-title">Worklog</h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form ng-submit="saveStandard()">
+            <form ng-submit="saveWorklog()">
 
                <div class="modal-body">
                   <div class="row">
                      <div class="col-md-7 form-group">
                         <label class="form-label">Date</label>
-                        <input class="flatpickr flatpickr-input form-control" ng-change="getDayData()" type="text" ng-model="formData.from_date" placeholder="Select Date..">
+                        <input class="flatpickr flatpickr-input form-control" ng-change="getDayData()" type="text" ng-model="formData.date" placeholder="Select Date..">
                      </div>
                      <div class="col-md-3" ng-if="formData.date">
                         <button ng-click="addMoreItem()" type="button" class="btn btn-sm btn-primary">Add More</button>

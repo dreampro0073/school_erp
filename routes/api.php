@@ -130,7 +130,7 @@ Route::middleware(['api-token-user'])->group(function () {
     Route::prefix('worklog')->controller(WorklogController::class)->group(function () {
         Route::post('/init', 'initWorkLog');
         Route::post('/edit', 'getDayData');
-        Route::post('/get-chat', 'getChat');
+        Route::post('/store', 'store');
     });  
 
 });
