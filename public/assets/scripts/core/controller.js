@@ -985,44 +985,62 @@ app.controller('workLogCtrl', function($scope , DBService){
     $scope.users = [];
     $scope.processing = false;
     $scope.formData = {
-        id: '',
+        date : '',
+        day_data : []
     };
     $scope.filters = {};
 
     $scope.init = function() {
         DBService.postCall({}, '/api/worklog/init').then(function(data) {
             if (data.success) {
-                $scope.subjects = data.subjects ;
+                $scope.worklog = data.worklog ;
+                $scope.users = data.users;
             }
         });
     };
 
     $scope.resetFilter = function(){
         $scope.filter = {};
-        $scope.init($scope.filter);
+        $scope.init();
     };
 
     $scope.openAddModal = function() {
-        $scope.formData = { id: '', name: '', status: '0'};
-        $('#subjectModal').modal('show');
+        $scope.formData = { date: '', day_data : []};
+        $('#worklogModal').modal('show');
+        $scope.getDayData();
     };
 
-    $scope.openEditModal = function(item) {
-        $scope.formData = {
-            id: item.id,
-            name: item.name,
-            status: (item.status == 1 ? '1' : '0')
-        };
-        $('#subjectModal').modal('show');
+    $scope.addMoreItem = function(){
+        $scope.formData.day_data.push({remark:'', hours:'0'});
+    }
+
+    $scope.removeItem = function(index){
+        bootbox.confirm("Do you want to remove the item?",function(res){
+            if(res){
+                $scope.$apply(() => {
+                    $scope.formData.day_data.splice(index,1);
+                });
+            }
+        });
+       
+    }
+
+
+    $scope.getDayData = function() {
+        DBService.postCall($scope.formData, '/api/worklog/edit').then(function(data) {
+            if (data.success) {
+                $scope.formData.day_data = data.day_data;
+            }
+        });
     };
 
     $scope.saveSubject = function() {
 
         $scope.processing = true;
-        DBService.postCall($scope.formData, '/api/subjects/store').then(function(data) {
+        DBService.postCall($scope.formData, '/api/worklog/store').then(function(data) {
             $scope.processing = false;
             if (data.success) {
-                $('#subjectModal').modal('hide');
+                $('#worklogModal').modal('hide');
                 $scope.init();
                 alert(data.message || 'Saved successfully.');
             } else {

@@ -19,15 +19,26 @@ class WorklogController extends Controller {
         $to_date = $request->to_date ? date("Y-m-d", strtotime($request->to_date)) : date("Y-m-d");
         $user_id = $request->user_id ? $request->user_id : $auth_user->id;
 
-        $Worklog = Worklog::select("worklog.*")->join("users", "users.id", "=", "worklog.user_id")->whereBetween("date", [$from_date, $to_date])->where("worklog.user_id", $user_id)->get()->keyBy("Worklog.date");
+        $worklog = Worklog::select("worklog.*", "users.name")->join("users", "users.id", "=", "worklog.user_id")->whereBetween("date", [$from_date, $to_date])->where("worklog.user_id", $user_id)->get()->keyBy("Worklog.date");
         
         $users = User::select("id", "name")->whereIn("users.priv", [2,3])->where("parent_id", $auth_user->parent_id)->get();
 
-        $data["Worklog"] = $Worklog;
+        $data["worklog"] = $worklog;
         $data["users"] = $users;
         $data["success"] = true;
         return response()->json($data,200,[]);
     }
+
+    public function getDayData(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+
+        $day_data = Worklog::select("worklog.*")->where("date", date("Y-m-d",  strtotime($request->date)))->where("worklog.user_id", $user->id)->get();
+
+        $data["success"] = true;
+        $data["day_data"] = $day_data;
+        return response()->json($data,200,[]);
+    }    
 
     public function store(Request $request) {
         $apiToken = $request->header('apiToken');

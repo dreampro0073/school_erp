@@ -25,6 +25,7 @@ Route::get('/logout', [UserController::class, 'logout']);
 Route::middleware(['auth'])->group(function () {
     Route::prefix('worklog')->controller(WorklogController::class)->group(function () {
         Route::get('/', 'index');
+        Route::post('/edit', 'edit');
         Route::post('/store', 'store');
     });
 
