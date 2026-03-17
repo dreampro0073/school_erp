@@ -155,7 +155,7 @@ ALTER TABLE `users` ADD `end_date` DATE NULL DEFAULT NULL AFTER `active`;
 
 // Devendra 09MAR2026
 
-ALTER TABLE `users` CHANGE `perent_user_id` `parent_id` INT(11) NOT NULL DEFAULT '0';
+ALTER TABLE `users` CHANGE `parent_user_id` `parent_id` INT(11) NOT NULL DEFAULT '0';
 ALTER TABLE `teacher_bank_details` CHANGE `teacher_id` `user_id` INT(11) NOT NULL;
 RENAME TABLE `teacher_bank_details` TO `bank_details`;
 RENAME TABLE `teacher_salary_structures` TO `salary_structures`;
@@ -196,6 +196,9 @@ ALTER TABLE `students` CHANGE `admission_no` `admission_no` INT(11) NULL DEFAULT
 ALTER TABLE `parents` ADD `client_id` INT NOT NULL DEFAULT '0' AFTER `id`;
 ALTER TABLE `students` ADD `unique_id` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
 ALTER TABLE `parents` ADD `unique_id` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
+
+//Dipanshu 16th mrach 2026
+ALTER TABLE `users` CHANGE `parent_user_id` `parent_user_id` INT(11) NOT NULL DEFAULT '0';
 
 
 
