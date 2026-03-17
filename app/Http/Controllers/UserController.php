@@ -152,7 +152,7 @@ class UserController extends Controller {
         ]);
     }    
 
-    public function settings(Request $request){
+    public function settings(){
 
         return view('admin.settings', []);
     }
