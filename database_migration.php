@@ -203,4 +203,12 @@ ALTER TABLE `parents` ADD `unique_id` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
 // Devendra 16Mar2026
 ALTER TABLE `worklog` CHANGE `updated_at` `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
 
+// Devendra 18Mar2026
+ALTER TABLE `years` ADD `start_date` DATE NULL DEFAULT NULL AFTER `period`, ADD `end_date` DATE NULL DEFAULT NULL AFTER `start_date`;
+ALTER TABLE `days` ADD `name1l` VARCHAR(10) NULL DEFAULT NULL AFTER `name`, ADD `name3l` VARCHAR(10) NULL DEFAULT NULL AFTER `name1l`;
+ALTER TABLE `client_standards` CHANGE `client_id` `client_id` INT(11) NULL DEFAULT NULL AFTER `id`;
+ALTER TABLE `client_standards` ADD `status` TINYINT NOT NULL DEFAULT '0' COMMENT '0=>active, 1=>Inactive' AFTER `section_id`;
+ALTER TABLE `client_standards` ADD `is_verified` TINYINT NOT NULL DEFAULT '0' COMMENT '0=>pedding, 1=>verified, -1=>blocked' AFTER `status`;
+
+
 

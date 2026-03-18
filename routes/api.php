@@ -113,6 +113,10 @@ Route::middleware(['api-token-user'])->group(function () {
 
         Route::prefix('school')->controller(SchoolManagementController::class)->group(function () {
             Route::post('/init', 'initSchool');
+            Route::post('/schedule', 'initSchedule');
+            Route::post('/classes', 'initClasses');
+            Route::post('/exams', 'initExams');
+            Route::post('/results', 'initResults');
         });
     });
 
