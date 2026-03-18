@@ -16,6 +16,7 @@ use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\WorklogController;
+use App\Http\Controllers\SchoolManagementController;
 
 // Grouped structure for middleware-based organization (no behavior change).
 Route::middleware(['api-token-user'])->group(function () {
@@ -108,6 +109,10 @@ Route::middleware(['api-token-user'])->group(function () {
             Route::post('/attendance/init', 'init');
             Route::post('/attendance/store', 'store');
             Route::post('/attendance/list', 'list');
+        });        
+
+        Route::prefix('school')->controller(SchoolManagementController::class)->group(function () {
+            Route::post('/init', 'initSchool');
         });
     });
 
