@@ -181,6 +181,9 @@ ALTER TABLE `sections` ADD `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=>
 ALTER TABLE `subjects` ADD `status` TINYINT(1) NULL DEFAULT '0' COMMENT '0=>active, 1=>Inactive' AFTER `name`;
 ALTER TABLE `fee_types` ADD `status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0=>Active, 1=>Inactive' AFTER `name`;
 
+ALTER TABLE `worklog` CHANGE `client_id` `hours` DOUBLE UNSIGNED NULL DEFAULT NULL;
+
+
 ALTER TABLE `standards` ADD `client_id` INT NOT NULL DEFAULT '0' AFTER `id`;
 
 //Dipanshu 15 mrach 2026
@@ -199,6 +202,11 @@ ALTER TABLE `parents` ADD `unique_id` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
 
 //Dipanshu 16th mrach 2026
 ALTER TABLE `users` CHANGE `parent_user_id` `parent_user_id` INT(11) NOT NULL DEFAULT '0';
+
+// Devendra 16Mar2026
+ALTER TABLE `worklog` CHANGE `updated_at` `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `students` ADD `parent_user_id` INT NOT NULL DEFAULT '0' AFTER `user_id`;
 
 
 

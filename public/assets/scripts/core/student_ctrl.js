@@ -100,16 +100,31 @@ app.controller('addStudentCtrl', function($scope , DBService){
         //     $scope.processing = false;
         // });
 
-        DBService.postCall($scope.formData,'/api/admin/students/store').then(function(data){
+        // DBService.postCall($scope.formData,'/api/admin/students/store').then(function(data){
           
-            $scope.processing = false;
+        //     $scope.processing = false;
             
+        //     if (data.success) {
+        //         alert(data.message);
+        //         window.location.href = base_url + '/admin/students';
+        //     }else{
+        //         alert(data.message);
+        //     }
+        // });
+
+        DBService.erpPostCall($scope.formData, '/api/admin/students/store').then(function(data){
+
+            $scope.processing = false;
+
             if (data.success) {
                 alert(data.message);
                 window.location.href = base_url + '/admin/students';
-            }else{
-                alert(data.message);
+            } else {
+                let firstError = Object.values(data.errors)[0][0];
+                alert(firstError);
+                $scope.errors = data.errors;
             }
+
         });
     };
 });

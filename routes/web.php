@@ -25,8 +25,14 @@ Route::get('/logout', [UserController::class, 'logout']);
 Route::middleware(['auth'])->group(function () {
     Route::prefix('worklog')->controller(WorklogController::class)->group(function () {
         Route::get('/', 'index');
+        Route::post('/edit', 'edit');
         Route::post('/store', 'store');
     });
+
+    Route::prefix('settings')->controller(UserController::class)->group(function () {
+        Route::get('/', 'settings');
+        Route::post('/reset-password', 'updatePassword');
+    });   
 
     Route::prefix('students')->controller(StudentController::class)->group(function () {
         Route::get('/', 'index');

@@ -17,7 +17,7 @@
                </div>
                <div class="form-group col-md-4">
                   <label class="form-label">First Name *</label>
-                  <input type="text" class="form-control" ng-model="formData.first_name" required>
+                  <input type="text" class="form-control" ng-model="formData.first_name" >
                </div>
                <div class="form-group col-md-4">
                   <label class="form-label">Last Name</label>
@@ -26,13 +26,13 @@
 
                <div class="form-group col-md-4">
                   <label class="form-label">Date of Birth</label>
-                  <!-- <input type="date" class="form-control" ng-model="formData.dob" required> -->
+                  <!-- <input type="date" class="form-control" ng-model="formData.dob" > -->
 
-                  <input class="flatpickr flatpickr-input form-control" type="text" ng-model="formData.dob" placeholder="Select Date.."  required>
+                  <input class="flatpickr flatpickr-input form-control" type="text" ng-model="formData.dob" placeholder="Select Date.."  >
                </div>
                <div class="form-group col-md-4">
                   <label class="form-label">Gender</label>
-                  <select class="form-select" ng-model="formData.gender" required>
+                  <select class="form-select" ng-model="formData.gender" >
                      <option value="">Select</option>
                      <option value="Male">Male</option>
                      <option value="Female">Female</option>
@@ -41,26 +41,26 @@
                </div>
                <div class="form-group col-md-4">
                   <label class="form-label">Mobile</label>
-                  <input type="number" class="form-control" ng-model="formData.mobile" required >
+                  <input type="number" class="form-control" ng-model="formData.mobile"  >
                </div>
 
                <div class="form-group col-md-6">
                   <label class="form-label">Email</label>
-                  <input type="email" class="form-control" ng-model="formData.email" required>
+                  <input type="email" class="form-control" ng-model="formData.email" >
                </div>
                <div class="form-group col-md-6">
                   <label class="form-label">Aadhar No</label>
-                  <input type="number" class="form-control" ng-model="formData.aadhar_no" required >
+                  <input type="number" class="form-control" ng-model="formData.aadhar_no"  >
                </div>
 
                <div class="form-group col-md-12">
                   <label class="form-label">Residential Address</label>
-                  <textarea class="form-control" rows="2" ng-model="formData.residential_address" required></textarea>
+                  <textarea class="form-control" rows="2" ng-model="formData.residential_address" ></textarea>
                </div>
 
                <div class="form-group col-md-12">
                   <label class="form-label">Permanent Address</label>
-                  <textarea class="form-control" rows="2" ng-model="formData.permanent_address" required></textarea>
+                  <textarea class="form-control" rows="2" ng-model="formData.permanent_address" ></textarea>
                </div>
 
                <div class="col-12 mt-16">
@@ -70,11 +70,11 @@
 
                <div class="form-group col-md-6">
                   <label class="form-label">Father's Name</label>
-                  <input type="text" class="form-control" ng-model="formData.father_name" required>
+                  <input type="text" class="form-control" ng-model="formData.father_name" >
                </div>
                <div class="form-group col-md-6">
                   <label class="form-label">Father's Mobile</label>
-                  <input type="text" class="form-control" ng-model="formData.father_mobile" required >
+                  <input type="text" class="form-control" ng-model="formData.father_mobile"  >
                </div>
                <div class="form-group col-md-6">
                   <label class="form-label">Father's Email</label>
@@ -84,12 +84,12 @@
                
                <div class="form-group col-md-6">
                   <label class="form-label">Father's Aadhar No</label>
-                  <input type="number" class="form-control" ng-model="formData.father_aadhar_no" required >
+                  <input type="number" class="form-control" ng-model="formData.father_aadhar_no"  >
                </div>
 
                <div class="form-group col-md-6">
                   <label class="form-label">Mother's Name</label>
-                  <input type="text" class="form-control" ng-model="formData.mother_name" required>
+                  <input type="text" class="form-control" ng-model="formData.mother_name" >
                </div>
                <div class="form-group col-md-6">
                   <label class="form-label">Mother's Mobile</label>
@@ -103,7 +103,7 @@
                
                <div class="form-group col-md-6">
                   <label class="form-label">Mother's Aadhar No</label>
-                  <input type="text" class="form-control" ng-model="formData.mother_aadhar_no" required >
+                  <input type="text" class="form-control" ng-model="formData.mother_aadhar_no"  >
                </div>
 
                <div class="form-group col-md-4">

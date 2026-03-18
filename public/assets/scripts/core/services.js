@@ -39,4 +39,34 @@ app.service('DBService', function($http, $rootScope){
         });
         return promise;
     }
+
+    this.erpPostCall = function(data, route){
+        return $http({
+            method: 'POST',
+            url: base_url + route,
+            data: data,
+            headers: {
+                'apiToken': api_key
+            }
+        })
+        .then(function(response) {
+            if(response.status == 200){
+                if(response.data.success){
+                    return response.data;
+                } else {
+                    return response.data;
+                }
+            }
+        })
+        .catch(function(error) {
+            if (error.data) {
+                return error.data;
+            } else {
+                return {
+                    success: false,
+                    message: 'Something went wrong'
+                };
+            }
+        });
+    };
 });
