@@ -211,8 +211,10 @@ ALTER TABLE `days` ADD `name1l` VARCHAR(10) NULL DEFAULT NULL AFTER `name`, ADD 
 ALTER TABLE `client_standards` CHANGE `client_id` `client_id` INT(11) NULL DEFAULT NULL AFTER `id`;
 ALTER TABLE `client_standards` ADD `status` TINYINT NOT NULL DEFAULT '0' COMMENT '0=>active, 1=>Inactive' AFTER `section_id`;
 ALTER TABLE `client_standards` ADD `is_verified` TINYINT NOT NULL DEFAULT '0' COMMENT '0=>pedding, 1=>verified, -1=>blocked' AFTER `status`;
+ALTER TABLE `users` CHANGE `erp_id` `erp_id` VARCHAR(30) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
 
 ALTER TABLE `students` ADD `parent_user_id` INT NOT NULL DEFAULT '0' AFTER `user_id`;
+
 
 
 
