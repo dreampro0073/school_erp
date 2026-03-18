@@ -48,10 +48,25 @@ class StudentController extends Controller
         $user = User::authUser($apiToken);
         $student_token = $request->student_token;
 
-        $student = Student::where('unique_id',$student_token)->first();
+        // $student = Student::where('unique_id',$student_token)->first();
+
+        $student = Student::with(['parentUser'])
+        ->where('unique_id',$student_token)
+        ->first();
+
+        $data = $student->toArray();
+        if(isset($data['parent_user'])){
+            foreach($data['parent_user'] as $key => $value){
+                if(!array_key_exists($key, $data)){
+                    $data[$key] = $value;
+                }
+            }
+
+            unset($data['parent_user']);
+        }
         return response()->json([
             "success" => true,
-            "student" => $student
+            "student" => $data
         ]); 
         
 
@@ -70,8 +85,6 @@ class StudentController extends Controller
             'gender' => ['required'],
             'dob' => ['required'],
             'mobile' => ['required','digits:10'],
-            // 'email' => ['required','email','max:255'],
-            // 'email' => ['required','email','unique:users,email'],
             'email' => 'required|email|unique:users,email,'.$user_id,
             'admission_no' => ['nullable','string','max:100'],
             'aadhar_no'=> ['required','digits:12'], 
@@ -140,6 +153,9 @@ class StudentController extends Controller
                 $parentUser->client_id = $authUser->client_id;
                 $parentUser->priv = 5;
                 $parentUser->save();
+            }else{ 
+                $parentUser->name = $parent_data['father_name'];
+                $parentUser->save();
             }
 
             $parent = StudentParent::where('user_id',$parentUser->id)->first();
@@ -148,11 +164,13 @@ class StudentController extends Controller
                 $parent_data['user_id'] = $parentUser->id;
                 $parent_data['client_id'] = $authUser->client_id;
                 $parent_data['unique_id'] = time().$authUser->client_id.$authUser->id.$parentUser->id;
-
                 $parent = StudentParent::create($parent_data);
+            }else{
+                $parent->update($parent_data);
             }
 
-            if(!$e_student){
+            $user = User::where('email',$request->email)->first();
+            if(!$user){
                 $user = new User;
                 $password = User::getRandPassword();
                 $user->password = Hash::make($password);
@@ -170,6 +188,9 @@ class StudentController extends Controller
                 $data['user_id'] = $user->id;
                 $data['parent_user_id'] = $parent->id;
                 $data['unique_id'] = time().$authUser->client_id.$authUser->id;
+            }else{
+                $user->name = $data['first_name'].' '.$data['last_name'];
+                $user->save();
             }
 
             $data['name'] = $data['first_name'].' '.$data['last_name'];

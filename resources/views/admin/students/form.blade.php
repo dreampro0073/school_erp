@@ -41,16 +41,16 @@
                </div>
                <div class="form-group col-md-4">
                   <label class="form-label">Mobile</label>
-                  <input type="number" class="form-control" ng-model="formData.mobile"  >
+                  <input type="text" class="form-control" ng-model="formData.mobile"  >
                </div>
 
                <div class="form-group col-md-6">
                   <label class="form-label">Email</label>
-                  <input type="email" class="form-control" ng-model="formData.email" >
+                  <input type="email" class="form-control" ng-model="formData.email" ng-readonly="formData.id">
                </div>
                <div class="form-group col-md-6">
                   <label class="form-label">Aadhar No</label>
-                  <input type="number" class="form-control" ng-model="formData.aadhar_no"  >
+                  <input type="text" class="form-control" ng-model="formData.aadhar_no"  >
                </div>
 
                <div class="form-group col-md-12">
@@ -78,13 +78,13 @@
                </div>
                <div class="form-group col-md-6">
                   <label class="form-label">Father's Email</label>
-                  <input type="email" class="form-control" ng-model="formData.father_email">
+                  <input type="email" class="form-control" ng-model="formData.father_email" ng-readonly="formData.id">
                </div>
 
                
                <div class="form-group col-md-6">
                   <label class="form-label">Father's Aadhar No</label>
-                  <input type="number" class="form-control" ng-model="formData.father_aadhar_no"  >
+                  <input type="text" class="form-control" ng-model="formData.father_aadhar_no"  >
                </div>
 
                <div class="form-group col-md-6">
@@ -99,8 +99,6 @@
                   <label class="form-label">Mother's Email</label>
                   <input type="email" class="form-control" ng-model="formData.mother_email">
                </div>
-
-               
                <div class="form-group col-md-6">
                   <label class="form-label">Mother's Aadhar No</label>
                   <input type="text" class="form-control" ng-model="formData.mother_aadhar_no"  >
