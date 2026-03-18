@@ -24,7 +24,7 @@ class WorklogController extends Controller {
         ->where("date", "<=", $to_date)
         ->where("worklog.user_id", $user_id)->get();
 
-        $users = User::select("id", "name")->whereIn("users.priv", [2,3])->where("parent_id", $auth_user->parent_id)->get();
+        $users = User::select("id", "name")->whereIn("users.priv", [2,3])->where("parent_user_id", $auth_user->parent_user_id)->get();
 
         $data["worklog"] = $worklog;
         $data["users"] = $users;

@@ -155,7 +155,6 @@ ALTER TABLE `users` ADD `end_date` DATE NULL DEFAULT NULL AFTER `active`;
 
 // Devendra 09MAR2026
 
-ALTER TABLE `users` CHANGE `perent_user_id` `parent_id` INT(11) NOT NULL DEFAULT '0';
 ALTER TABLE `teacher_bank_details` CHANGE `teacher_id` `user_id` INT(11) NOT NULL;
 RENAME TABLE `teacher_bank_details` TO `bank_details`;
 RENAME TABLE `teacher_salary_structures` TO `salary_structures`;
@@ -200,6 +199,9 @@ ALTER TABLE `parents` ADD `client_id` INT NOT NULL DEFAULT '0' AFTER `id`;
 ALTER TABLE `students` ADD `unique_id` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
 ALTER TABLE `parents` ADD `unique_id` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
 
+//Dipanshu 16th mrach 2026
+ALTER TABLE `users` CHANGE `parent_user_id` `parent_user_id` INT(11) NOT NULL DEFAULT '0';
+
 // Devendra 16Mar2026
 ALTER TABLE `worklog` CHANGE `updated_at` `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
 
@@ -209,6 +211,9 @@ ALTER TABLE `days` ADD `name1l` VARCHAR(10) NULL DEFAULT NULL AFTER `name`, ADD 
 ALTER TABLE `client_standards` CHANGE `client_id` `client_id` INT(11) NULL DEFAULT NULL AFTER `id`;
 ALTER TABLE `client_standards` ADD `status` TINYINT NOT NULL DEFAULT '0' COMMENT '0=>active, 1=>Inactive' AFTER `section_id`;
 ALTER TABLE `client_standards` ADD `is_verified` TINYINT NOT NULL DEFAULT '0' COMMENT '0=>pedding, 1=>verified, -1=>blocked' AFTER `status`;
+
+ALTER TABLE `students` ADD `parent_user_id` INT NOT NULL DEFAULT '0' AFTER `user_id`;
+
 
 
 

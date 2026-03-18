@@ -106,7 +106,7 @@ class User extends Authenticatable {
 
 
     public static function selectUsersColumns(){
-        return ['users.id', 'users.org_id', 'users.name', 'users.email', 'users.mobile', 'users.active', 'users.priv', 'users.parent_id', 'users.start_date', 'users.end_date', 'users.last_login', 'users.updated_at', 'users.created_at'];
+        return ['users.id', 'users.org_id', 'users.name', 'users.email', 'users.mobile', 'users.active', 'users.priv', 'users.parent_user_id', 'users.start_date', 'users.end_date', 'users.last_login', 'users.updated_at', 'users.created_at'];
     }
 
 
@@ -115,7 +115,7 @@ class User extends Authenticatable {
         $sql = DB::table("users")->where("users.priv", $priv);
 
         if($clientId != 1){
-            $sql = $sql->where("users.parent_id", $clientId);
+            $sql = $sql->where("users.parent_user_id", $clientId);
         }        
 
         if($status != "all"){

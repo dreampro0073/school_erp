@@ -28,15 +28,15 @@ class AdminController extends Controller {
 
         if($user && $user->priv == 2){
 
-            $parent_id = $user->parent_id;
+            $parent_user_id = $user->parent_user_id;
 
-            $students["active_students"] = User::clientUsersCount($parent_id,4, 0)->count();
-            $students["inactive_students"] = User::clientUsersCount($parent_id,4, 1)->count();
-            $students["total_students"] = User::clientUsersCount($parent_id, 4)->count();
+            $students["active_students"] = User::clientUsersCount($parent_user_id,4, 0)->count();
+            $students["inactive_students"] = User::clientUsersCount($parent_user_id,4, 1)->count();
+            $students["total_students"] = User::clientUsersCount($parent_user_id, 4)->count();
             
-            $teachers["active_teachers"] = User::clientUsersCount($parent_id, 3, 0)->count();
-            $teachers["inactive_teachers"] = User::clientUsersCount($parent_id, 3, 1)->count();
-            $teachers["total_teachers"] = User::clientUsersCount($parent_id, 3)->count();
+            $teachers["active_teachers"] = User::clientUsersCount($parent_user_id, 3, 0)->count();
+            $teachers["inactive_teachers"] = User::clientUsersCount($parent_user_id, 3, 1)->count();
+            $teachers["total_teachers"] = User::clientUsersCount($parent_user_id, 3)->count();
 
             $data["students"] = $students;
             $data["teachers"] = $teachers;
@@ -57,7 +57,7 @@ class AdminController extends Controller {
         $auth_user = User::authUser($apiToken);
 
 
-        $teachers = Teacher::clientTeachersLists($auth_user->parent_id);
+        $teachers = Teacher::clientTeachersLists($auth_user->parent_user_id);
         foreach ($teachers as $teacher) {
             $teacher->enc_id = Crypt::encryptString($row->teacher_id);
             $teacher->dob = date("d-m-Y", strtotime($row->dob));
@@ -86,7 +86,7 @@ class AdminController extends Controller {
                 $teacher = Teacher::find($teacherId);
                 $user = User::find($teacher->user_id);
                 if($user){
-                    if($parent_id != $user->parent_id){
+                    if($parent_user_id != $user->parent_user_id){
                         $data['message'] = "Not authorized !";
                         $data['success'] = false; 
                         return Response::json($data,200,[]);   
@@ -116,7 +116,7 @@ class AdminController extends Controller {
         $auth_user = User::authUser($apiToken);
         if ($auth_user->priv == 2) {
 
-            $parent_id = $admin->parent_id;
+            $parent_user_id = $admin->parent_user_id;
             $teacherId = $request->enc_id ? Crypt::decryptString($request->enc_id) : "";
 
             $teacher = Teacher::find($teacherId);
@@ -135,7 +135,7 @@ class AdminController extends Controller {
                 $user_id = $teacher->user_id;
                 $user = User::find($user_id);
                 
-                if($parent_id != $user->parent_id){
+                if($parent_user_id != $user->parent_user_id){
                     $data['message'] = "Not authorized !";
                     $data['success'] = false; 
                     return Response::json($data,200,[]);   
@@ -167,7 +167,7 @@ class AdminController extends Controller {
                     $password = User::getRandPassword();
                     $user->password = Hash::make($password);
                     $user->start_date = $auth_user->start_date;
-                    $user->parent_id = $parent_id;
+                    $user->parent_user_id = $parent_user_id;
                     $user->check_password = $password;
                     $user->save(); 
 
@@ -228,7 +228,7 @@ class AdminController extends Controller {
     //     $auth_user = User::authUser($apiToken);
     //     if ($auth_user->priv == 2) {
 
-    //         $parent_id = $admin->parent_id;
+    //         $parent_user_id = $admin->parent_user_id;
     //         $studentId = $request->enc_id ? Crypt::decryptString($request->enc_id) : "";
 
     //         $student = Student::find($studentId);
@@ -247,7 +247,7 @@ class AdminController extends Controller {
     //             $user_id = $student->user_id;
     //             $user = User::find($user_id);
                 
-    //             if($parent_id != $user->parent_id){
+    //             if($parent_user_id != $user->parent_user_id){
     //                 $data['message'] = "Not authorized !";
     //                 $data['success'] = false; 
     //                 return Response::json($data,200,[]);   
@@ -279,7 +279,7 @@ class AdminController extends Controller {
     //                 $password = User::getRandPassword();
     //                 $user->password = Hash::make($password);
     //                 $user->start_date = $auth_user->start_date;
-    //                 $user->parent_id = $parent_id;
+    //                 $user->parent_user_id = $parent_user_id;
     //                 $user->check_password = $password;
     //                 $user->save(); 
 
