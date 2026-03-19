@@ -212,6 +212,8 @@ ALTER TABLE `client_standards` CHANGE `client_id` `client_id` INT(11) NULL DEFAU
 ALTER TABLE `client_standards` ADD `status` TINYINT NOT NULL DEFAULT '0' COMMENT '0=>active, 1=>Inactive' AFTER `section_id`;
 ALTER TABLE `client_standards` ADD `is_verified` TINYINT NOT NULL DEFAULT '0' COMMENT '0=>pedding, 1=>verified, -1=>blocked' AFTER `status`;
 ALTER TABLE `users` CHANGE `erp_id` `erp_id` VARCHAR(30) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+ALTER TABLE `students` ADD `client_id` INT NULL DEFAULT NULL AFTER `parent_user_id`;
+ALTER TABLE `students` CHANGE `admission_no` `admission_no` VARCHAR(50) NULL DEFAULT NULL;
 
 ALTER TABLE `students` ADD `parent_user_id` INT NOT NULL DEFAULT '0' AFTER `user_id`;
 
