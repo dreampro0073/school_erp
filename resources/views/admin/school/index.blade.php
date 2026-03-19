@@ -30,38 +30,25 @@
       
    </div>
    <div class="tab-content" id="pills-tabContent">
-      <div class="tab-pane fade show" role="tabpanel" ng-if="type == 'schedule'" ng-class="{'active': type == 'schedule'}">
-        <div class="card">
-            @include('admin.school.schedule')
-        </div>
-      </div>
-      <div class="tab-pane fade show" role="tabpanel" ng-if="type == 'classes'" ng-class="{'active': type == 'classes'}">
-         @include('admin.school.classes')
-      </div>
-      <div class="tab-pane fade show" role="tabpanel" ng-if="type == 'exams'" ng-class="{'active': type == 'exams'}">
-         @include('admin.school.exams')
-      </div>
-      <div class="tab-pane fade show" role="tabpanel" ng-if="type == 'results'" ng-class="{'active': type == 'results'}">
-         @include('admin.school.results')
-      </div>
-   </div>
-  <!--  <div class="card">
-      <div class="card-body p-0">
-         <div ng-if="type == 'schedule'">
-            @include('admin.school.schedule')
-         </div>         
-         <div ng-if="type == 'classes'">
+
+      <div ng-show="!loading">
+         <div class="tab-pane fade show" role="tabpanel" ng-if="type == 'schedule'" ng-class="{'active': type == 'schedule'}">
+           <div class="card">
+               @include('admin.school.schedule')
+           </div>
+         </div>
+         <div class="tab-pane fade show" role="tabpanel" ng-if="type == 'classes'" ng-class="{'active': type == 'classes'}">
             @include('admin.school.classes')
-         </div>         
-         <div ng-if="type == 'exams'">
+         </div>
+         <div class="tab-pane fade show" role="tabpanel" ng-if="type == 'exams'" ng-class="{'active': type == 'exams'}">
             @include('admin.school.exams')
-         </div>         
-         <div ng-if="type == 'results'">
+         </div>
+         <div class="tab-pane fade show" role="tabpanel" ng-if="type == 'results'" ng-class="{'active': type == 'results'}">
             @include('admin.school.results')
          </div>
       </div>
-   </div> -->
 
+   </div>
       
    @include('admin.school.models')
 

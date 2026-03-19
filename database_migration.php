@@ -240,5 +240,8 @@ ALTER TABLE `students` ADD `height` VARCHAR(20) NULL DEFAULT NULL AFTER `blood_g
 
 ALTER TABLE `students` ADD `previous_school` VARCHAR(255) NULL DEFAULT NULL AFTER `approved`, ADD `previous_school_address` VARCHAR(255) NULL DEFAULT NULL AFTER `previous_school`;
 
+// Devendra 19Mar2026
+ALTER TABLE `students` CHANGE `client_id` `school_id` INT(11) NULL DEFAULT NULL;
+ALTER TABLE `students` ADD `added_by` INT NULL DEFAULT NULL AFTER `section_id`;
 
 
