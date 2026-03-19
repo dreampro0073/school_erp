@@ -47,6 +47,13 @@
    </ul>
 </li>
 
+<li>
+   <a href="{{ url('/admin/school/index') }}">
+      <i class="ri-settings-3-line animate-spin"></i>
+      <span>School</span>
+   </a>
+</li>
+
 @if(false)
 <li>
    <a href="{{ route('admin.attendance.index') }}">

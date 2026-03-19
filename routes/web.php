@@ -16,6 +16,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\SchoolManagementController;
 
 Route::get('/', [UserController::class, 'login'])->name('login');
 Route::get('/login/captcha', [UserController::class, 'captcha'])->name('login.captcha');
@@ -71,6 +72,10 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/', 'index');
                 Route::get('/add/{student_token?}', 'addStudentPage');
             });
+        });
+
+        Route::prefix('school')->controller(SchoolManagementController::class)->group(function () {
+            Route::get('/index', 'index');
         });
 
         // Route::controller(IncomeController::class)->group(function () {

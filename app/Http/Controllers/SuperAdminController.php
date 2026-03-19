@@ -27,15 +27,15 @@ class SuperAdminController extends Controller {
 
         if($user && $user->priv == 2){
 
-            $parent_id = $user->parent_id;
+            $parent_user_id = $user->parent_user_id;
 
-            $students["active_students"] = User::clientUsersCount($parent_id,4, 0)->count();
-            $students["inactive_students"] = User::clientUsersCount($parent_id,4, 1)->count();
-            $students["total_students"] = User::clientUsersCount($parent_id, 4)->count();
+            $students["active_students"] = User::clientUsersCount($parent_user_id,4, 0)->count();
+            $students["inactive_students"] = User::clientUsersCount($parent_user_id,4, 1)->count();
+            $students["total_students"] = User::clientUsersCount($parent_user_id, 4)->count();
             
-            $teachers["active_teachers"] = User::clientUsersCount($parent_id, 3, 0)->count();
-            $teachers["inactive_teachers"] = User::clientUsersCount($parent_id, 3, 1)->count();
-            $teachers["total_teachers"] = User::clientUsersCount($parent_id, 3)->count();
+            $teachers["active_teachers"] = User::clientUsersCount($parent_user_id, 3, 0)->count();
+            $teachers["inactive_teachers"] = User::clientUsersCount($parent_user_id, 3, 1)->count();
+            $teachers["total_teachers"] = User::clientUsersCount($parent_user_id, 3)->count();
 
             $data["students"] = $students;
             $data["teachers"] = $teachers;

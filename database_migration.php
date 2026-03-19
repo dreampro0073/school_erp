@@ -155,7 +155,6 @@ ALTER TABLE `users` ADD `end_date` DATE NULL DEFAULT NULL AFTER `active`;
 
 // Devendra 09MAR2026
 
-ALTER TABLE `users` CHANGE `parent_user_id` `parent_id` INT(11) NOT NULL DEFAULT '0';
 ALTER TABLE `teacher_bank_details` CHANGE `teacher_id` `user_id` INT(11) NOT NULL;
 RENAME TABLE `teacher_bank_details` TO `bank_details`;
 RENAME TABLE `teacher_salary_structures` TO `salary_structures`;
@@ -206,11 +205,20 @@ ALTER TABLE `users` CHANGE `parent_user_id` `parent_user_id` INT(11) NOT NULL DE
 // Devendra 16Mar2026
 ALTER TABLE `worklog` CHANGE `updated_at` `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
 
+// Devendra 18Mar2026
+ALTER TABLE `years` ADD `start_date` DATE NULL DEFAULT NULL AFTER `period`, ADD `end_date` DATE NULL DEFAULT NULL AFTER `start_date`;
+ALTER TABLE `days` ADD `name1l` VARCHAR(10) NULL DEFAULT NULL AFTER `name`, ADD `name3l` VARCHAR(10) NULL DEFAULT NULL AFTER `name1l`;
+ALTER TABLE `client_standards` CHANGE `client_id` `client_id` INT(11) NULL DEFAULT NULL AFTER `id`;
+ALTER TABLE `client_standards` ADD `status` TINYINT NOT NULL DEFAULT '0' COMMENT '0=>active, 1=>Inactive' AFTER `section_id`;
+ALTER TABLE `client_standards` ADD `is_verified` TINYINT NOT NULL DEFAULT '0' COMMENT '0=>pedding, 1=>verified, -1=>blocked' AFTER `status`;
+ALTER TABLE `users` CHANGE `erp_id` `erp_id` VARCHAR(30) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
 ALTER TABLE `students` ADD `parent_user_id` INT NOT NULL DEFAULT '0' AFTER `user_id`;
 
 
 CREATE TABLE `shri_erp`.`master_data` ( `master_id` INT NOT NULL , `name` VARCHAR(255) NOT NULL , `type` INT NOT NULL DEFAULT '0' COMMENT '1-->Category ,2--> Blood Group , 3-->gender-->' , `status` TINYINT NOT NULL DEFAULT '0' COMMENT '0-->active, 1-->inactive' ) ENGINE = InnoDB;
 
+<<<<<<< HEAD
 ALTER TABLE `master_data` ADD PRIMARY KEY( `master_id`);
 ALTER TABLE `master_data` CHANGE `master_id` `master_id` INT(11) NOT NULL AUTO_INCREMENT;
 
@@ -229,3 +237,7 @@ ALTER TABLE `students` ADD `standard_id` INT NOT NULL DEFAULT '0' AFTER `erp_id`
 ALTER TABLE `students` ADD `height` VARCHAR(20) NULL DEFAULT NULL AFTER `blood_group_id`, ADD `weight` VARCHAR(20) NULL DEFAULT NULL AFTER `height`;
 
 ALTER TABLE `students` ADD `previous_school` VARCHAR(255) NULL DEFAULT NULL AFTER `approved`, ADD `previous_school_address` VARCHAR(255) NULL DEFAULT NULL AFTER `previous_school`;
+=======
+
+
+>>>>>>> 6c97d384ac92adf1ce60c2d918be11d75fcb9b73

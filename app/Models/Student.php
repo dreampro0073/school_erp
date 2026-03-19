@@ -16,7 +16,7 @@ class Student extends Model
     protected $guarded = [];
 
     public static function clientStudentsLists($clientId){
-        return DB::table("students")->join('users', "users.id", "=", "students.user_id")->where("users.parent_id", $clientId)->where("users.priv", 4);
+        return DB::table("students")->join('users', "users.id", "=", "students.user_id")->where("users.parent_user_id", $clientId)->where("users.priv", 4);
     }
 
     public function user(){

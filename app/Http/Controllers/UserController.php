@@ -158,12 +158,11 @@ class UserController extends Controller {
     }
 
     public function updatePassword(Request $request){
-        $apiToken = $request->header('apiToken');
-        $user = User::authUser($apiToken);
-        if(!$user){
+        
+        $auth_user = User::find(Auth::id());
+        if(!$auth_user){
             return redirect()->to('/');
         }
-        $auth_user = User::find($user->id);
 
         $cre = ["old_password"=>$request->old_password,"new_password"=>$request->new_password,"confirm_password"=>$request->confirm_password];
         $rules = ["old_password"=>'required',"new_password"=>'required|min:5',"confirm_password"=>'required|same:new_password'];

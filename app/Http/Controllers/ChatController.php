@@ -33,10 +33,10 @@ class ChatController extends Controller {
             });
 
         if($user->priv != 1 && $user->priv != 2) {
-            $senders = $senders->where("parent_id", $user->parent_id);
+            $senders = $senders->where("parent_user_id", $user->parent_user_id);
         } else if($user->priv == 2){
             $senders = $senders->where(function($query) use ($user){
-                $query->where("users.parent_id", $user->parent_id)->orWhere("users.priv", 1);
+                $query->where("users.parent_user_id", $user->parent_user_id)->orWhere("users.priv", 1);
             });
         }
 
@@ -48,10 +48,10 @@ class ChatController extends Controller {
         });
 
         if($user->priv != 1 && $user->priv != 2) {
-            $recivers = $recivers->where("parent_id", $user->parent_id);
+            $recivers = $recivers->where("parent_user_id", $user->parent_user_id);
         } else if($user->priv == 2){
             $recivers = $recivers->where(function($query) use ($user){
-                $query->where("users.parent_id", $user->parent_id)->orWhere("users.priv", 1);
+                $query->where("users.parent_user_id", $user->parent_user_id)->orWhere("users.priv", 1);
             });
         }
 

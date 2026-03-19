@@ -16,7 +16,7 @@
                 </div>
             @endif
             @if(Session::has('success'))
-                <div class="alert alert-danger">
+                <div class="alert alert-success">
                     <i class="fa fa-ban-circle"></i><strong>Success!</strong> {{Session::get('success')}}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <img src="{{url('front-end/images/cancel.svg')}}" width="15px" height="15px" style="margin-top: -12px;">
