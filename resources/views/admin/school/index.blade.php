@@ -9,13 +9,14 @@
       <div class="d-flex align-items-center gap-2">
          <ul class="p-12 nav nav-pills bordered-tab">
             <li class="nav-item">
-               <a href="javascript:;" ng-click="type = 'schedule'; typeSchedule()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'schedule'}" >  <i class="ri-calendar-check-line"></i>Schedule</a>
-               
-            </li>
-            <li class="nav-item">
                <a href="javascript:;" ng-click="type = 'classes'; typeClasses()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'classes'}">  <i class="ri-group-line"></i>Classes</a>
                
             </li>
+            <li class="nav-item">
+               <a href="javascript:;" ng-click="type = 'schedule'; typeSchedule()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'schedule'}" >  <i class="ri-calendar-check-line"></i>Schedule</a>
+               
+            </li>
+            
             <li class="nav-item">
                <a href="javascript:;" ng-click="type = 'exams'; typeExams()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'exams'}">  <i class="ri-file-edit-line"></i>Exams</a>
               
