@@ -12,7 +12,7 @@ use App\Models\User;
 class Student extends Model
 {
     use HasFactory;
-
+    // protected $appends = ['blood_group_name'];
     protected $guarded = [];
 
     public static function clientStudentsLists($clientId){
@@ -26,4 +26,12 @@ class Student extends Model
     public function parentUser(){
         return $this->belongsTo(StudentParent::class, 'parent_user_id');
     }
+
+    // public function bloodGroup(){
+    //     return $this->belongsTo(MasterData::class, 'blood_group_id');
+    // }
+
+    // public function getBloodGroupNameAttribute(){
+    //     return $this->bloodGroup->master_name ?? null;
+    // }
 }

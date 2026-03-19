@@ -218,6 +218,28 @@ ALTER TABLE `students` CHANGE `admission_no` `admission_no` VARCHAR(50) NULL DEF
 ALTER TABLE `students` ADD `parent_user_id` INT NOT NULL DEFAULT '0' AFTER `user_id`;
 
 
+CREATE TABLE `shri_erp`.`master_data` ( `master_id` INT NOT NULL , `name` VARCHAR(255) NOT NULL , `type` INT NOT NULL DEFAULT '0' COMMENT '1-->Category ,2--> Blood Group , 3-->gender-->' , `status` TINYINT NOT NULL DEFAULT '0' COMMENT '0-->active, 1-->inactive' ) ENGINE = InnoDB;
+
+<<<<<<< HEAD
+ALTER TABLE `master_data` ADD PRIMARY KEY( `master_id`);
+ALTER TABLE `master_data` CHANGE `master_id` `master_id` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `master_data` ADD `parent_master_id` INT NOT NULL DEFAULT '0' AFTER `master_id`;
+
+ALTER TABLE `master_data` CHANGE `type` `type` INT(11) NOT NULL DEFAULT '0' COMMENT '1-->Religion ,2-->Caste,3--->gender, 4-->Blood Group';
 
 
+ALTER TABLE `students` ADD `blood_group_id` INT NOT NULL DEFAULT '0' AFTER `permanent_address`;
 
+ALTER TABLE `students` ADD `religion_id` INT NOT NULL DEFAULT '0' AFTER `blood_group_id`, ADD `cast_id` INT NOT NULL DEFAULT '0' AFTER `religion_id`;
+
+ALTER TABLE `students` ADD `standard_id` INT NOT NULL DEFAULT '0' AFTER `erp_id`, ADD `section_id` INT NOT NULL DEFAULT '0' AFTER `standard_id`;
+
+
+ALTER TABLE `students` ADD `height` VARCHAR(20) NULL DEFAULT NULL AFTER `blood_group_id`, ADD `weight` VARCHAR(20) NULL DEFAULT NULL AFTER `height`;
+
+ALTER TABLE `students` ADD `previous_school` VARCHAR(255) NULL DEFAULT NULL AFTER `approved`, ADD `previous_school_address` VARCHAR(255) NULL DEFAULT NULL AFTER `previous_school`;
+=======
+
+
+>>>>>>> 6c97d384ac92adf1ce60c2d918be11d75fcb9b73

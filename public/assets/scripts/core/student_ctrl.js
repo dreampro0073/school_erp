@@ -75,13 +75,22 @@ app.controller('addStudentCtrl', function($scope , DBService){
         active: '1'
     };
 
+    $scope.blood_groups = [];
+    $scope.religions = [];
+    $scope.casts = [];
+    $scope.standards = [];
+
     $scope.init = function(student_token) {
         DBService.postCall({ student_token:student_token }, '/api/admin/students/init-details').then(function(data) {
+            if (data.success) {
+                if(data.student){
+                    $scope.formData = data.student;                
+                }
 
-            if (data.success && data.student) {
-
-                $scope.formData = data.student;
-                
+                $scope.blood_groups = data.blood_groups;
+                $scope.religions = data.religions;
+                $scope.casts = data.casts;
+                $scope.standards = data.standards;
             }
 
         });
