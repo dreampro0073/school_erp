@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student;
-use App\Models\StudentParent;
-use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Student,App\Models\StudentParent,App\Models\MasterData, App\Models\User,App\Models\ClientStandard;
 use DB;
 
 class StudentController extends Controller
@@ -50,23 +49,31 @@ class StudentController extends Controller
 
         // $student = Student::where('unique_id',$student_token)->first();
 
-        $student = Student::with(['parentUser'])
-        ->where('unique_id',$student_token)
-        ->first();
+        // $student = Student::with(['parentUser'])
+        // ->where('unique_id',$student_token)
+        // ->first();
 
-        $data = $student->toArray();
-        if(isset($data['parent_user'])){
-            foreach($data['parent_user'] as $key => $value){
-                if(!array_key_exists($key, $data)){
-                    $data[$key] = $value;
+        $student = Student::with(['parentUser'])->where('unique_id',$request->student_token)->first();
+        $data = null;
+        if($student){
+            $data = $student->toArray();
+            if(isset($data['parent_user'])){
+                foreach($data['parent_user'] as $key => $value){
+                    if(!array_key_exists($key, $data)){
+                        $data[$key] = $value;
+                    }
                 }
+                unset($data['parent_user']);
             }
-
-            unset($data['parent_user']);
         }
+
         return response()->json([
             "success" => true,
-            "student" => $data
+            "student" => $data,
+            "blood_groups" => MasterData::getMasterData(4),
+            "religions" => MasterData::getMasterData(1),
+            "casts" => MasterData::getMasterData(2),
+            "standards" => ClientStandard::getClientStandardsDrop($user->client_id),
         ]); 
         
 
@@ -77,7 +84,7 @@ class StudentController extends Controller
         $e_student = Student::where('unique_id',$request->unique_id)->first(); 
 
         $user_id = $e_student ? $e_student->user_id : 'NULL';
-
+        $message = "Student details Successfully saved!";
 
         $validator = Validator::make($request->all(), [
             'first_name' => ['required','string','max:255'],
@@ -96,6 +103,7 @@ class StudentController extends Controller
             'father_aadhar_no' => ['required','digits:12'],
             'mother_name' => ['required','string','max:255'],
             'mother_aadhar_no' => ['required','digits:12'],
+            'religion_id' => ['required'],
         ]);
 
         $validator->after(function ($validator) use ($request) {
@@ -122,6 +130,15 @@ class StudentController extends Controller
             'aadhar_no', 
             'residential_address',
             'permanent_address',
+            'religion_id',
+            'cast_id',
+            'blood_group_id',
+            'standard_id',
+            'section_id',
+            'height',
+            'weight',
+            'previous_school',
+            'previous_school_address',
         ]);
 
         $parent_data = $request->only([
@@ -208,7 +225,7 @@ class StudentController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "Successfully added",
+                'message' => $message,
                 'student' => $student
             ]);
 
@@ -221,98 +238,6 @@ class StudentController extends Controller
             ],500);
         }
     }
-    public function storeStudentOld(Request $request){
-        $authUser = User::resolveApiUser($request);
-
-        $validator = $request->validate([
-            'first_name' => ['required','string','max:255'],
-            'last_name' => ['nullable','string','max:255'],
-            'gender' => ['required'],
-            'dob' => ['required'],
-            'mobile' => ['required','digits:10'],
-            'email' => ['required','email','max:255'],
-            'admission_no' => ['nullable','string','max:100'],
-            'aadhar_no'=> ['required','digits:12'], 
-            'residential_address' => ['required'],
-            'permanent_address' => ['required'],
-
-            'father_name' => ['required','string','max:255'],
-            'father_email' => ['required','email','max:255'],
-            'father_mobile' => ['required','digits:10'],
-            'father_aadhar_no' => ['required','digits:12'],
-            'mother_name' => ['required','string','max:255'],
-            'mother_aadhar_no' => ['required','digits:12'],
-        ]);
-
-        if($validator->fails()){
-            return response()->json([
-                'success'=>false,
-                'errors'=>$validator->errors()
-            ],422);
-        }
-
-        $parent_data = $request->only([
-            'father_name',
-            'father_email',
-            'father_mobile',
-            'father_aadhar_no',
-            'mother_name',
-            'mother_aadhar_no',
-            'father_occupation',
-            'mother_mobile',
-            'mother_email',
-            'guardian_name'
-        ]);
-
-        $user = new User;
-        $password = User::getRandPassword();
-        $user->password = Hash::make($password);
-        $user->name = $data['first_name'].' '.$data['last_name'];
-        $user->start_date = $authUser->start_date;
-        $user->parent_user_id = $authUser->id;
-        $user->password_check = $password;
-        $user->org_id = $authUser->org_id;
-        $user->client_id = $authUser->client_id;
-        $user->priv = 4;
-        $user->email = $data['email'] ?? null;
-        $user->save();
-
-        $parentUser = new User;
-        $parentPassword = User::getRandPassword();
-        $parentUser->name = $parent_data['father_name'];
-        $parentUser->email = $parent_data['father_email'];
-        $parentUser->password = Hash::make($parentPassword);
-        $parentUser->password_check = $parentPassword;
-        $parentUser->parent_user_id = $authUser->id;
-        $parentUser->org_id = $authUser->org_id;
-        $parentUser->client_id = $authUser->client_id;
-
-        $parentUser->priv = 5;
-        $parentUser->save();
-
-        $data['name'] = $data['first_name'].' '.$data['last_name'];
-        $data['dob'] = date("Y-m-d",strtotime($request->dob));
-        $data['client_id'] = $parent_data['client_id'] = $authUser->client_id;
-        $data['user_id'] = $user->id;
-
-        $data['unique_id'] = strtotime('now').$authUser->client_id.$authUser->id;
-
-        $student = Student::create($data);
-
-        $parent_data['student_id'] = $student->id;
-        $parent_data['user_id'] = $parentUser->id;
-
-        $parent_data['unique_id'] = strtotime('now').$authUser->client_id.$authUser->id.$student->id;
-
-        $parent = StudentParent::create($parent_data);
-
-        return response()->json([
-            'success' => true,
-            'message' => "Successfully added",
-            'student' => $student
-        ]);
-    }
-
     public function show($id)
     {
         return Student::findOrFail($id);
