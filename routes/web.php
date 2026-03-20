@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
             Route::prefix('students')->controller(StudentController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::get('/add/{student_token?}', 'addStudentPage');
+                Route::get('/details/{student_token?}', 'studentDetails');
             });
         });
 

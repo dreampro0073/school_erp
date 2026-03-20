@@ -137,3 +137,43 @@ app.controller('addStudentCtrl', function($scope , DBService){
         });
     };
 });
+
+app.controller('studentDetailsCtrl', function($scope , DBService){
+    $scope.processing = false;
+    
+    $scope.student = null;
+    $scope.tab = 1;
+    $scope.student_token = "";
+
+    $scope.changeTab = (tab) => {
+        $scope.tab = tab;
+        console.log($scope.tab);
+        if(tab == 1){
+            $scope.getDetails();
+        }else if(tab == 2){
+            $scope.getAttendance();
+        }
+    }
+
+   
+
+    $scope.getDetails = function() {
+        DBService.postCall({ student_token:$scope.student_token }, '/api/admin/students/view-details').then(function(data) {
+            if (data.success) {
+                if(data.student){
+                    $scope.student = data.student;                
+                }
+            }
+        });
+    };
+
+    $scope.getAttendance = function() {
+        DBService.postCall({ student_token:$scope.student_token }, '/api/admin/students/view-details').then(function(data) {
+            if (data.success) {
+                if(data.student){
+                    $scope.student = data.student;                
+                }
+            }
+        });
+    };
+});
