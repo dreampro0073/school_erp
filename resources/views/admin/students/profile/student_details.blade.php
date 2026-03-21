@@ -9,12 +9,7 @@
 	       	<div class="row g-4">
 	          	<div class="col-sm-3">
 	             	<div class="d-flex align-items-center gap-12">
-		               <!--  <figure
-		                   class="w-48-px h-48-px rounded-circle overflow-hidden mb-0">
-	                   			<img src="assets/images/thumbs/guardian-img1.png"
-	                      alt="Guardian Image"
-	                      class="flex-shrink-0 w-100 h-100 object-fit-cover">
-	                	</figure> -->
+		              
 		                <div class="">
 		                   <h6 class="text-md mb-2 fw-medium flex-grow-1">		@{{student.father_name}}
 		                   </h6>
@@ -46,9 +41,7 @@
 	       	<div class="row g-4">
 				<div class="col-sm-3">
 					<div class="d-flex align-items-center gap-12">
-						<!-- <figure class="w-48-px h-48-px rounded-circle overflow-hidden mb-0">
-							<img src="assets/images/thumbs/guardian-img2.png" alt="Guardian Image" class="flex-shrink-0 w-100 h-100 object-fit-cover">
-						</figure> -->
+					
 						<div class="">
 							<h6 class="text-md mb-2 fw-medium flex-grow-1">
 								@{{student.mother_name}}

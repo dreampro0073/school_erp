@@ -15,6 +15,11 @@ class Student extends Model
     // protected $appends = ['blood_group_name'];
     protected $guarded = [];
 
+    public function studentId($student_token){
+        $studentId = Student::where('unique_id', $student_token)->value('id');
+        return $studentId ? $studentId : 0;
+    }
+
     public static function clientStudentsLists($clientId){
         return DB::table("students")->join('users', "users.id", "=", "students.user_id")->where("users.parent_user_id", $clientId)->where("users.priv", 4);
     }

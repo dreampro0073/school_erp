@@ -1,3 +1,15 @@
+.sidebar-logo{
+	height: auto;
+	padding: 5px 1rem;
+	border-inline-end:none;
+    border-block-end:none;
+	img{
+		height: 40px !important;
+	}
+}
+.ng-cloak{
+	display: none;
+}
 .dt-paging-button{
 	display: flex;
 	align-items: center;
@@ -32,4 +44,26 @@
         opacity: 1;
         scale:1;
     }
+}
+.loader-div{
+	width: 100%;
+	height: calc(100vh - 300px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.loader-256 {
+	border: 12px solid #a9a9a9; 
+	border-top: 12px solid #006400;
+	border-radius: 50%;
+	width: 128px; 
+	height: 128px; 
+	animation: spin 1s linear infinite;
+	margin: auto; 
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
 }

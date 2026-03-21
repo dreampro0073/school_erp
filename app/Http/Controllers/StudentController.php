@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Student,App\Models\StudentParent,App\Models\MasterData, App\Models\User,App\Models\ClientStandard;
 use DB;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class StudentController extends Controller
 {
     public function index(){
@@ -26,14 +28,15 @@ class StudentController extends Controller
     public function initStudents(Request $request){
         $apiToken = $request->header('apiToken');
         $user = User::authUser($apiToken);
-        $limit = $request->limit;
-        $query = Student::query();
 
+        $limit = $request->has('limit')?$request->limit:10;
+
+        $query = Student::where('client_id', $user->client_id);
         if($request->search){
-            $query->where('first_name','like','%'.$request->search.'%');
+            $query->where('first_name', 'like', '%'.$request->search.'%');
         }
 
-        $students = $query->orderBy('id','DESC')->paginate($limit);
+        $students = $query->orderBy('id', 'DESC')->paginate($limit);
 
         return response()->json([
             "success" => true,
@@ -130,7 +133,8 @@ class StudentController extends Controller
                 $parentUser->email = $parent_data['father_email'];
                 $parentUser->password = Hash::make($parentPassword);
                 $parentUser->password_check = $parentPassword;
-                $parentUser->parent_user_id = $authUser->id;
+                $parentUser->parent_user_id =0;
+                $parentUser->added_by = $authUser->id;
                 $parentUser->org_id = $authUser->org_id;
                 $parentUser->client_id = $authUser->client_id;
                 $parentUser->priv = 5;
@@ -144,7 +148,7 @@ class StudentController extends Controller
 
             if(!$parent){
                 $parent_data['user_id'] = $parentUser->id;
-                $parent_data['client_id'] = $authUser->client_id;
+                $parent_data['school_id'] = $authUser->client_id;
                 $parent_data['unique_id'] = time().$authUser->client_id.$authUser->id.$parentUser->id;
                 $parent = StudentParent::create($parent_data);
             }else{
@@ -158,7 +162,8 @@ class StudentController extends Controller
                 $user->password = Hash::make($password);
                 $user->name = $data['first_name'].' '.$data['last_name'];
                 $user->start_date = $authUser->start_date;
-                $user->parent_user_id = $authUser->id;
+                $user->parent_user_id = $parentUser->id;
+                $user->added_by = $authUser->id;
                 $user->password_check = $password;
                 $user->org_id = $authUser->org_id;
                 $user->client_id = $authUser->client_id;
@@ -166,9 +171,9 @@ class StudentController extends Controller
                 $user->email = $data['email'] ?? null;
                 $user->save();
 
-                $data['client_id'] = $authUser->client_id;
+                $data['school_id'] = $authUser->client_id;
                 $data['user_id'] = $user->id;
-                $data['parent_user_id'] = $parent->id;
+                $data['parent_id'] = $parent->id;
                 $data['unique_id'] = time().$authUser->client_id.$authUser->id;
             }else{
                 $user->name = $data['first_name'].' '.$data['last_name'];
@@ -204,13 +209,13 @@ class StudentController extends Controller
         }
     }
 
-    public function studentDetails($student_token){
-        return view('admin.students.details', [
+    public function studentProfile($student_token){
+        return view('admin.students.profile', [
             'student_token' => $student_token,
         ]);  
     }
 
-     public function viewDetails(Request $request){
+    public function getProfileDetails(Request $request){
         $apiToken = $request->header('apiToken');
         $user = User::authUser($apiToken);
         $student_token = $request->student_token;
@@ -233,54 +238,72 @@ class StudentController extends Controller
         return response()->json([
             "success" => true,
             "student" => $data,
-            "blood_groups" => MasterData::getMasterData(4),
-            "religions" => MasterData::getMasterData(1),
-            "casts" => MasterData::getMasterData(2),
-            "standards" => ClientStandard::getClientStandardsDrop($user->client_id),
         ]); 
         
 
     }
-    public function show($id)
-    {
-        return Student::findOrFail($id);
-    }
+    public function getAttendance(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $student_token = $request->student_token;
 
-    public function update(Request $request, $id)
-    {
-        $user = $this->resolveApiUser($request);
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Unauthorized user.'], 401);
-        }
-
-        $student = Student::findOrFail($id);
-
-        $data = $request->validate([
-            'first_name' => ['sometimes', 'required', 'string', 'max:255'],
-            'last_name' => ['sometimes', 'nullable', 'string', 'max:255'],
-            // 'dob' => ['sometimes', 'nullable', 'date'],
-            'gender' => ['sometimes', 'nullable', 'string', 'max:50'],
-            'mobile' => ['sometimes', 'nullable', 'string', 'max:50'],
-            'email' => ['sometimes', 'nullable', 'email', 'max:255'],
-            'address' => ['sometimes', 'nullable', 'string', 'max:1000'],
-            'admission_no' => ['sometimes', 'nullable', 'string', 'max:100'],
-            'aadhar_no' => ['sometimes', 'nullable', 'string', 'max:50'],
-            'active' => ['sometimes', 'nullable', 'in:0,1'],
-        ]);
-        if (array_key_exists('active', $data)) {
-            $data['active'] = (int) $data['active'];
-        }
-
-        $student->update($data);
+        $student_id = Student::studentId($student_token);
+        $data = [];
 
         return response()->json([
-            'status' => true,
-            'data' => $student
-        ]);
+            "success" => true,
+            "attendance_data" => $data,
+        ]); 
+
     }
 
-    public function destroy($id)
-    {
+    public function getLeaves(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $student_token = $request->student_token;
+
+        $student_id = Student::studentId($student_token);
+        $data = [];
+
+        return response()->json([
+            "success" => true,
+            "leaves" => $data,
+        ]); 
+
+    }
+
+    public function getExams(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $student_token = $request->student_token;
+
+        $student_id = Student::studentId($student_token);
+        $data = [];
+
+        return response()->json([
+            "success" => true,
+            "exams" => $data,
+        ]); 
+
+    }
+
+    public function getFees(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $student_token = $request->student_token;
+
+        $student_id = Student::studentId($student_token);
+
+        $payments = [];
+
+        return response()->json([
+            "success" => true,
+            "payments" => $data,
+        ]); 
+
+    }    
+
+    public function destroy($id){
         Student::findOrFail($id)->delete();
 
         return response()->json([

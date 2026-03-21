@@ -22,6 +22,7 @@ Route::get('/', [UserController::class, 'login'])->name('login');
 Route::get('/login/captcha', [UserController::class, 'captcha'])->name('login.captcha');
 Route::post('/login', [UserController::class, 'postLogin']);
 Route::get('/logout', [UserController::class, 'logout']);
+// Route::get('/receipt/{payment_id?}', [StudentController::class, 'generateReceipt']);
 
 Route::middleware(['auth'])->group(function () {
     Route::prefix('worklog')->controller(WorklogController::class)->group(function () {
@@ -71,7 +72,8 @@ Route::middleware(['auth'])->group(function () {
             Route::prefix('students')->controller(StudentController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::get('/add/{student_token?}', 'addStudentPage');
-                Route::get('/details/{student_token?}', 'studentDetails');
+                Route::get('/profile/{student_token?}', 'studentProfile');
+                Route::get('/receipt/{payment_id?}', 'generateReceipt');
             });
         });
 

@@ -242,6 +242,111 @@ ALTER TABLE `students` ADD `previous_school` VARCHAR(255) NULL DEFAULT NULL AFTE
 
 // Devendra 19Mar2026
 ALTER TABLE `students` CHANGE `client_id` `school_id` INT(11) NULL DEFAULT NULL;
+
+//Dipanshu 20th Mar 2026
+
 ALTER TABLE `students` ADD `added_by` INT NULL DEFAULT NULL AFTER `section_id`;
+
+
+ALTER TABLE `users` ADD `added_by` INT NOT NULL DEFAULT '0' AFTER `last_login`;
+
+ALTER TABLE `students` ADD `added_by` INT NOT NULL DEFAULT '0' AFTER `cast_id`;
+ALTER TABLE `parents` ADD `added_by` INT NOT NULL DEFAULT '0' AFTER `mother_aadhar_no`;
+
+ALTER TABLE `students` CHANGE `parent_user_id` `parent_id` INT(11) NOT NULL DEFAULT '0';
+
+ALTER TABLE `parents` CHANGE `client_id` `school_id` INT(11) NOT NULL DEFAULT '0';
+
+ALTER TABLE `fees` ADD `school_id` INT NOT NULL DEFAULT '0' AFTER `id`, ADD `student_id` INT NOT NULL DEFAULT '0' AFTER `school_id`;
+
+
+ALTER TABLE `fees` ADD INDEX( `school_id`, `student_id`, `standard_id`, `section_id`, `fee_type_id`,`added_by`);
+
+
+ALTER TABLE `students` ADD INDEX( `school_id`, `user_id`, `parent_id`, `erp_id`, `standard_id`, `section_id`, `blood_group_id`, `religion_id`, `cast_id`, `added_by`);
+
+ALTER TABLE `parents` ADD INDEX( `school_id`, `user_id`, `erp_id`, `added_by`);
+
+CREATE TABLE fee_structures (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    class_id BIGINT UNSIGNED NOT NULL,
+    fee_type_id BIGINT UNSIGNED NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    frequency ENUM('monthly','yearly','one_time') NOT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    UNIQUE KEY unique_class_fee (class_id, fee_type_id)
+);
+
+CREATE TABLE fee_installments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    start_date DATE NULL,
+    due_date DATE NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+
+CREATE TABLE student_fees (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    student_id BIGINT UNSIGNED NOT NULL,
+    fee_structure_id BIGINT UNSIGNED NOT NULL,
+    installment_id BIGINT UNSIGNED NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    discount DECIMAL(10,2) DEFAULT 0,
+    final_amount DECIMAL(10,2) NOT NULL,
+    status ENUM('pending','partial','paid') DEFAULT 'pending',
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+
+CREATE TABLE payments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    student_id BIGINT UNSIGNED NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+    paid_amount DECIMAL(10,2) NOT NULL,
+    payment_date DATE NOT NULL,
+    payment_mode ENUM('cash','online','cheque') NOT NULL,
+    transaction_id VARCHAR(255) NULL,
+    remarks TEXT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+
+CREATE TABLE payment_details (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    payment_id BIGINT UNSIGNED NOT NULL,
+    student_fee_id BIGINT UNSIGNED NOT NULL,
+    paid_amount DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+
+CREATE TABLE receipts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    payment_id BIGINT UNSIGNED NOT NULL,
+    receipt_no VARCHAR(255) NOT NULL UNIQUE,
+    generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+
+CREATE TABLE discounts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    type ENUM('percentage','fixed') NOT NULL,
+    value DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+
+CREATE TABLE fines (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    student_fee_id BIGINT UNSIGNED NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    reason VARCHAR(255) NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
 
 
