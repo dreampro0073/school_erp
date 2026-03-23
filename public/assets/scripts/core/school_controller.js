@@ -33,7 +33,6 @@ app.controller('schoolManagementCtrl', function($scope , DBService){
         $scope.list_loading = true;
         DBService.postCall({type : 'schedule'}, '/api/admin/school/schedule').then(function(data) {
             if(data.success){
-                $
                 $scope.list_loading = false;
             }
         });
@@ -119,6 +118,7 @@ app.controller('schoolManagementCtrl', function($scope , DBService){
             alert(data.message);
             if(data.success){
                 $scope.formData = {};
+                $scope.resetForm();
                 $scope.typeClasses();
             }
         });

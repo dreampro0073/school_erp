@@ -22,7 +22,7 @@
                         <th>Class</th>
                         <th>Session</th>
                         <th>Verifed</th>
-                        <th>#</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,19 +36,37 @@
                             <span ng-if="item.is_verified == 1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Verified</span>
                         </td>
                         <td>
-                            <span ng-if="item.is_verified == 0 || item.is_verified == -1">
-                                <button type="button" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6" ng-click="openEditModal(item)"> Edit </button>
 
-                                <button type="button" class="btn btn-sm btn-danger-100 text-info-600 me-8" ng-click="deleteClass(item)"> Delete </button>
+                            <div class="btn-group">
+                                <button type="button" class="text-primary-light text-xl" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                                   <iconify-icon icon="tabler:dots-vertical"></iconify-icon>
+                                </button>
 
-                                <button ng-if="item.status == 0 && item.is_verified == 0" type="button" class="btn btn-sm btn-info-100 text-info-600 me-8" ng-click="changeClassStatus(item, 1)"> Verify </button>
-                            </span>
+                                <ul class="dropdown-menu dropdown-menu-lg-end border p-12">
+                                    <span ng-if="item.is_verified == 0 || item.is_verified == -1">
 
-                            <button ng-if="item.is_verified > -1" type="button" class="btn btn-sm btn-danger-100 text-info-600 me-8" ng-click="changeClassStatus(item, -1)"> Deactivate </button>
+                                        <li>
+                                            <button type="button" ng-click="openEditModal(item)"class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6"> <i class="ri-edit-2-line"></i>Edit</button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" ng-click="deleteClass(item)"><i class="ri-delete-bin-6-line"></i>Delete</button>
+                                        </li>
+                                        <li>
+                                            <button ng-if="item.status == 0 && item.is_verified == 0" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" ng-click="changeClassStatus(item, 1)"><i class="ri-error-warning-line"></i>Verify</button>
+                                        </li>
+                                    </span>
 
-                            <button ng-if="item.is_verified < 0" type="button" class="btn btn-sm btn-info-100 text-info-600 me-8" ng-click="changeClassStatus(item, 0)"> Activate </button>
-
-                            <a href="{{ url('/admin/school/class-manage') }}/@{{item.id}}" class="btn btn-sm btn-info-100 text-info-600 me-8" >Manage</a>
+                                    <li>
+                                        <button ng-if="item.is_verified > -1" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" ng-click="changeClassStatus(item, -1)"><i class="ri-error-warning-line"></i>Deactivate</button>
+                                    </li>                                        
+                                    <li>
+                                        <button ng-if="item.is_verified < 0" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" ng-click="changeClassStatus(item, 0)"><i class="ri-error-warning-line"></i>Activate</button>
+                                    </li>
+                                    <li>
+                                        <a ng-if="item.is_verified == 1" href="{{ url('/admin/school/class-manage') }}/@{{item.id}}" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6"><i class="ri-user-3-line"></i>Manage</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
 
