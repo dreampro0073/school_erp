@@ -29,35 +29,57 @@ class SchoolManagementController extends Controller {
     }
 
     public function initSchedule($request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        $schedule = [];
         $data["success"] = true;
-        return $data;
+        $data["schedule"] = $schedule;
+        return response()->json($data,200,[]);
     } 
 
+    public function editSchedule(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        $formData = [];
+        
+        if($formData){
+            $data["success"] = true;
+            $data["formData"] = $formData;
+        } else {
+            $data["success"] = true;
+            $data["message"] = "Data not found";
+        }
+
+        return response()->json($data,200,[]);
+    }
+
     public function scheduleStore(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
         $request->validate([
-            'class_name'   => 'required',
-            'standard_id'  => 'required',
-            'section_id'   => 'required',
             'session_id'   => 'required',
-            'status'       => 'required'
         ]);
 
-        $class = \App\Models\MyClass::updateOrCreate(
-            ['id' => $request->id], // if id exists → update
-            [
-                'class_name'  => $request->class_name,
-                'standard_id' => $request->standard_id,
-                'section_id'  => $request->section_id,
-                'session_id'  => $request->session_id,
-                'status'      => $request->status,
-            ]
-        );
+        foreach ($variable as $item) {
+            if(true){ 
+                DB::table('schedule')->update([
+                    "updated_at" => date("Y-m-d H:i:s"),
+                ]);
+            } else {
+                DB::table('schedule')->insert([
+                    "updated_at" => date("Y-m-d H:i:s"),
+                    "created_at" => date("Y-m-d H:i:s"),
+                ]);
+            }   
+        }
 
-        return response()->json([
-            'status' => true,
-            'message' => $request->id ? 'Updated Successfully' : 'Created Successfully',
-            'data' => $class
-        ]);
+        $data["success"] = true;
+        $data["message"] = "Updated Successfully";
+
+        return response()->json($data,200,[]);
     }   
 
     public function initClasses(Request $request){
@@ -210,67 +232,107 @@ class SchoolManagementController extends Controller {
     }
 
     public function initExams($request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        $exams = [];
         $data["success"] = true;
+        $data["exams"] = $exams;
         return $data;
     } 
 
+    public function editExams(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        $formData = [];
+        
+        if($formData){
+            $data["success"] = true;
+            $data["formData"] = $formData;
+        } else {
+            $data["success"] = true;
+            $data["message"] = "Data not found";
+        }
+
+        return response()->json($data,200,[]);
+    }
+
     public function examsStore(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
         $request->validate([
-            'class_name'   => 'required',
-            'standard_id'  => 'required',
-            'section_id'   => 'required',
             'session_id'   => 'required',
-            'status'       => 'required'
         ]);
 
-        $class = \App\Models\MyClass::updateOrCreate(
-            ['id' => $request->id], // if id exists → update
-            [
-                'class_name'  => $request->class_name,
-                'standard_id' => $request->standard_id,
-                'section_id'  => $request->section_id,
-                'session_id'  => $request->session_id,
-                'status'      => $request->status,
-            ]
-        );
+        foreach ($variable as $item) {
+            if(true){ 
+                DB::table('exams')->update([
+                    "updated_at" => date("Y-m-d H:i:s"),
+                ]);
+            } else {
+                DB::table('exams')->insert([
+                    "updated_at" => date("Y-m-d H:i:s"),
+                    "created_at" => date("Y-m-d H:i:s"),
+                ]);
+            }   
+        }
 
-        return response()->json([
-            'status' => true,
-            'message' => $request->id ? 'Updated Successfully' : 'Created Successfully',
-            'data' => $class
-        ]);  
+        $data["success"] = true;
+        $data["message"] = "Updated Successfully"; 
     } 
 
     public function initResults($request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        $results = [];
         $data["success"] = true;
+        $data["results"] = $results;
         return $data;
     }
 
+    public function editResult(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        $formData = [];
+        
+        if($formData){
+            $data["success"] = true;
+            $data["formData"] = $formData;
+        } else {
+            $data["success"] = true;
+            $data["message"] = "Data not found";
+        }
+
+        return response()->json($data,200,[]);
+    }
+
     public function resultsStore(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
         $request->validate([
-            'class_name'   => 'required',
-            'standard_id'  => 'required',
-            'section_id'   => 'required',
             'session_id'   => 'required',
-            'status'       => 'required'
         ]);
 
-        $class = \App\Models\MyClass::updateOrCreate(
-            ['id' => $request->id], // if id exists → update
-            [
-                'class_name'  => $request->class_name,
-                'standard_id' => $request->standard_id,
-                'section_id'  => $request->section_id,
-                'session_id'  => $request->session_id,
-                'status'      => $request->status,
-            ]
-        );
+        foreach ($variable as $item) {
+            if(true){ 
+                DB::table('exams')->update([
+                    "updated_at" => date("Y-m-d H:i:s"),
+                ]);
+            } else {
+                DB::table('exams')->insert([
+                    "updated_at" => date("Y-m-d H:i:s"),
+                    "created_at" => date("Y-m-d H:i:s"),
+                ]);
+            }   
+        }
 
-        return response()->json([
-            'status' => true,
-            'message' => $request->id ? 'Updated Successfully' : 'Created Successfully',
-            'data' => $class
-        ]);
+        $data["success"] = true;
+        $data["message"] = "Updated Successfully"; 
     }
 
 
