@@ -222,7 +222,6 @@ class SchoolManagementController extends Controller {
 
             $data["success"] = true;
             $data["message"] = "Deleted Successfully";
-            $data["status"] = $status;
         } else {
             $data["success"] = false;
             $data["message"] = "Data not found";
