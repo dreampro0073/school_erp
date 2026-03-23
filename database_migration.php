@@ -350,3 +350,9 @@ CREATE TABLE fines (
 );
 
 
+// Devendra 22MAr2026
+
+ALTER TABLE `client_standards` ADD `session_id` INT NULL DEFAULT NULL AFTER `section_id`;
+ALTER TABLE `client_standards` CHANGE `is_verified` `is_verified` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '0=>pedding, 1=>verified, -1=>blocked, -2 block after verified';
+ALTER TABLE `client_standards` ADD `added_by` INT NULL DEFAULT NULL AFTER `is_verified`;
+

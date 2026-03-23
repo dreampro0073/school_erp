@@ -9,6 +9,7 @@ use App\Models\Standard, App\Models\Section, App\Models\Teacher, App\Models\Stud
 
 class SchoolManagementController extends Controller {
     public function index(Request $request) {
+
         return view('admin.school.index');
     }
 
@@ -23,7 +24,7 @@ class SchoolManagementController extends Controller {
         $data["students"] = Student::where("school_id", $auth_user->parent_user_id)->pluck("name", "id")->toArray();
         $data["days"] = DB::table("days")->get();
 
-        $data["success"] = false;
+        $data["success"] = true;
         return response()->json($data,200,[]);
     }
 
@@ -63,41 +64,149 @@ class SchoolManagementController extends Controller {
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
-        $classes = DB::table("client_standards")->select("client_standards.*", "standards.name as standard_name", "sections.name as section_name")
+        $classes = DB::table("client_standards")->select("client_standards.*", "standards.name as standard_name", "sections.name as section_name", "years.period")
         ->join("standards", "standards.id", "=", "client_standards.standard_id")
         ->leftJoin("sections", "sections.id", "=", "client_standards.section_id")
+        ->leftJoin("years", "years.year", "=", "client_standards.session_id")
         ->where("client_id", $auth_user["client_id"])->where("client_standards.status", 0)->get();
         
         $data["success"] = true;
         $data["classes"] = $classes;
-        return $data;
+        return response()->json($data,200,[]);
+    }
+
+    public function editClass(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        $formData = DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->parent_user_id)->first();
+        
+        if($formData){
+            $data["success"] = true;
+            $data["formData"] = $formData;
+        } else {
+            $data["success"] = true;
+            $data["message"] = "Data not found";
+        }
+
+        return response()->json($data,200,[]);
     }
 
     public function classStore(Request $request){
+
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
         $request->validate([
-            'class_name'   => 'required',
             'standard_id'  => 'required',
-            'section_id'   => 'required',
             'session_id'   => 'required',
-            'status'       => 'required'
         ]);
 
-        $class = \App\Models\MyClass::updateOrCreate(
-            ['id' => $request->id], // if id exists → update
-            [
-                'class_name'  => $request->class_name,
-                'standard_id' => $request->standard_id,
-                'section_id'  => $request->section_id,
-                'session_id'  => $request->session_id,
-                'status'      => $request->status,
-            ]
-        );
+        $check = DB::table('client_standards')
+        ->where("client_id", $auth_user->parent_user_id)
+        ->where("standard_id", $request->standard_id)
+        ->where("session_id", $request->session_id)
+        ->where("section_id", $request->section_id);
 
-        return response()->json([
-            'status' => true,
-            'message' => $request->id ? 'Updated Successfully' : 'Created Successfully',
-            'data' => $class
-        ]);
+        if($request->id){
+            
+            $check = $check->where("id", "!=", $request->id)->first();
+            
+            if($check){
+                $data["success"] = false;
+                $data["message"] = "This class already exists for the selected session.";
+                return response()->json($data,200,[]);
+
+            } else {
+                DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->parent_user_id)->where("is_verified", "!=", 1)->update([
+                    'standard_id' => $request->standard_id,
+                    'section_id' => $request->section_id,
+                    'session_id' => $request->session_id,
+                    "status" => 0
+                ]);
+
+                $data["success"] = true;
+                $data["message"] = "Updated Successfully";
+            }
+
+        } else {
+
+            $check = $check->first();
+            if($check){
+                DB::table("client_standards")->where("id", $check->id)->update([
+                    "status" => 0,
+                    "added_by" => $auth_user->id,
+                ]);
+
+                $data["success"] = true;
+                $data["message"] = 'Created Successfully';
+            } else {
+                $id = DB::table('client_standards')->insertGetId([
+                    'standard_id'  => $request->standard_id,
+                    'section_id'   => $request->section_id,
+                    'session_id'   => $request->session_id,
+                    'status'       => 0,
+                    "is_verified"  => 0,
+                    "client_id"  => $auth_user->parent_user_id,
+                    "added_by"  => $auth_user->id,
+                    "created_at" => date("Y-m-d H:i:s")
+                ]);
+                
+
+                $data["success"] = true;
+                $data["message"] = "Created Successfully";
+            }
+        }
+        return response()->json($data,200,[]);
+    }
+
+    public function changeClassStatus(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+        $check = DB::table('client_standards')->where('id', $request->entry_id)->where("client_id", $auth_user->parent_user_id)->first();
+
+        if($check){
+            $status = $request->status;
+            if($check->is_verified == 1 && $request->status == -1){
+                $status = -2;
+            } else if($check->is_verified == -2 && $request->status == 0){
+                $status = 1;
+            }
+
+            DB::table('client_standards')->where('id', $check->id)->update([
+                "is_verified" => $status,
+            ]);
+
+            $data["success"] = true;
+            $data["message"] = "Successfully Updated";
+            $data["status"] = $status;
+        } else {
+            $data["success"] = true;
+            $data["message"] = "Data not found";
+        }
+        
+        return response()->json($data,200,[]);
+    }
+
+    public function deleteClass(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+        $check = DB::table('client_standards')->where('id', $request->entry_id)->where("client_id", $auth_user->parent_user_id)->first();
+
+        if($check){
+            DB::table('client_standards')->where('id', $check->id)->update([
+                "status" => 1,
+            ]);
+
+            $data["success"] = true;
+            $data["message"] = "Deleted Successfully";
+            $data["status"] = $status;
+        } else {
+            $data["success"] = true;
+            $data["message"] = "Data not found";
+        }
+        
+        return response()->json($data,200,[]);
     }
 
     public function initExams($request){
