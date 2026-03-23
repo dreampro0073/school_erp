@@ -47,11 +47,11 @@ app.controller('schoolManagementCtrl', function($scope , DBService){
     };   
 
     $scope.typeClasses = function() {
-        $scope.list_loading = false;
+        $scope.list_loading = true;
         DBService.postCall({type : 'classes'}, '/api/admin/school/classes').then(function(data) {
             if(data.success){
                 $scope.dataSet = data.classes;
-                $scope.list_loading = true;
+                $scope.list_loading = false;
             }
         });
     };
@@ -125,11 +125,11 @@ app.controller('schoolManagementCtrl', function($scope , DBService){
   
 
     $scope.typeExams = function() {
-        $scope.list_loading = false;
+        $scope.list_loading = true;
         DBService.postCall({type : 'exams'}, '/api/admin/school/exams').then(function(data) {
             if(data.success){
                 $scope.sections
-                $scope.list_loading = true;
+                $scope.list_loading = false;
             }
         });
     };
@@ -142,11 +142,11 @@ app.controller('schoolManagementCtrl', function($scope , DBService){
     };    
 
     $scope.typeResults = function() {
-        $scope.list_loading = false;
+        $scope.list_loading = true;
         DBService.postCall({type : 'results'}, '/api/admin/school/results').then(function(data) {
             if(data.success){
                 $scope.sections
-                $scope.list_loading = true;
+                $scope.list_loading = false;
             }
         });
     };
@@ -177,4 +177,18 @@ app.controller('schoolManagementCtrl', function($scope , DBService){
         $scope.typeResults();
     }
 
+});
+
+app.controller('classManagementCtrl', function($scope , DBService){
+    $scope.class_id = 0;
+    $scope.list_loading = false;
+    $scope.initClass = function() {
+        $scope.list_loading = true;
+        DBService.postCall({type : '', class_id : $scope.class_id}, '/api/admin/school/class-manage').then(function(data) {
+            if(data.success){
+                $scope.dataSet = data.classes;
+                $scope.list_loading = false;
+            }
+        });
+    };
 });

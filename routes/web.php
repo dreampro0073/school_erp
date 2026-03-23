@@ -77,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::prefix('school')->controller(SchoolManagementController::class)->group(function () {
             Route::get('/index', 'index');
+            Route::get('/class-manage/{id}', 'classManage');
         });
 
         // Route::controller(IncomeController::class)->group(function () {

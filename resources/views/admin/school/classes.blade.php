@@ -47,8 +47,8 @@
                             <button ng-if="item.is_verified > -1" type="button" class="btn btn-sm btn-danger-100 text-info-600 me-8" ng-click="changeClassStatus(item, -1)"> Deactivate </button>
 
                             <button ng-if="item.is_verified < 0" type="button" class="btn btn-sm btn-info-100 text-info-600 me-8" ng-click="changeClassStatus(item, 0)"> Activate </button>
-                            <a href=""></a>
-                            <a href=""></a>
+
+                            <a href="{{ url('/admin/school/class-manage') }}/@{{item.id}}" class="btn btn-sm btn-info-100 text-info-600 me-8" >Manage</a>
                         </td>
                     </tr>
 

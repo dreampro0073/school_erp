@@ -28,6 +28,7 @@ class SchoolManagementController extends Controller {
         return response()->json($data,200,[]);
     }
 
+    // ** Schedule **
     public function initSchedule($request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
@@ -82,6 +83,7 @@ class SchoolManagementController extends Controller {
         return response()->json($data,200,[]);
     }   
 
+    // ** Classes **
     public function initClasses(Request $request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
@@ -230,6 +232,21 @@ class SchoolManagementController extends Controller {
         return response()->json($data,200,[]);
     }
 
+    public function studentsManage($class_id) {
+
+        return view('admin.school.class_manage', ["class_id"=>$class_id]);
+    }
+
+    public function classManage($request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+
+        $data["success"] = true;
+        return $data;
+    } 
+
+    // ** Exams **
     public function initExams($request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
@@ -282,6 +299,7 @@ class SchoolManagementController extends Controller {
         $data["message"] = "Updated Successfully"; 
     } 
 
+    // ** Result **
     public function initResults($request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
