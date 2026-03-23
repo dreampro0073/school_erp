@@ -58,8 +58,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/profile/{user_id}', 'userProfilePage');
     });
 
-    
-
     Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('/dashboard', 'dashboard');

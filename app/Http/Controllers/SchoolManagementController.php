@@ -213,7 +213,7 @@ class SchoolManagementController extends Controller {
     public function deleteClass(Request $request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
-        $check = DB::table('client_standards')->where('id', $request->entry_id)->where("client_id", $auth_user->parent_user_id)->first();
+        $check = DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->parent_user_id)->first();
 
         if($check){
             DB::table('client_standards')->where('id', $check->id)->update([
@@ -224,7 +224,7 @@ class SchoolManagementController extends Controller {
             $data["message"] = "Deleted Successfully";
             $data["status"] = $status;
         } else {
-            $data["success"] = true;
+            $data["success"] = false;
             $data["message"] = "Data not found";
         }
         
