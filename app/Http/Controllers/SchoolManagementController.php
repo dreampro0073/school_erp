@@ -92,7 +92,7 @@ class SchoolManagementController extends Controller {
         ->join("standards", "standards.id", "=", "client_standards.standard_id")
         ->leftJoin("sections", "sections.id", "=", "client_standards.section_id")
         ->leftJoin("years", "years.year", "=", "client_standards.session_id")
-        ->where("client_id", $auth_user["client_id"])->where("client_standards.status", 0)->get();
+        ->where("client_standards.client_id", $auth_user->client_id)->where("client_standards.status", 0)->get();
         
         $data["success"] = true;
         $data["classes"] = $classes;
@@ -103,7 +103,7 @@ class SchoolManagementController extends Controller {
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
-        $formData = DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->parent_user_id)->first();
+        $formData = DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)->first();
         
         if($formData){
             $data["success"] = true;

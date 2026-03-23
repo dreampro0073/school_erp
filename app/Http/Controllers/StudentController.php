@@ -31,7 +31,7 @@ class StudentController extends Controller
 
         $limit = $request->has('limit')?$request->limit:10;
 
-        $query = Student::where('client_id', $user->client_id);
+        $query = Student::where('school_id', $user->client_id);
         if($request->search){
             $query->where('first_name', 'like', '%'.$request->search.'%');
         }

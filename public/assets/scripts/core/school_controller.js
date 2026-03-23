@@ -95,12 +95,13 @@ app.controller('schoolManagementCtrl', function($scope , DBService){
     };
 
     $scope.openEditModal = function(item) {
-        $scope.isSidebarOpen = true;
+        $scope.isSidebarOpen = false;
         DBService.postCall({id : item.id}, '/api/admin/school/class-edit').then(function(data) {
             if(data.success){
                 $scope.isEditMode = true;
                 $scope.formData = data.formData;
                 $scope.isSidebarOpen = true;
+                
             } else {
                 alert(data.message);
             }

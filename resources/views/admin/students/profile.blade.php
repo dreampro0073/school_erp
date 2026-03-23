@@ -158,21 +158,21 @@
                 </div>
 
                 <div class="tab-content" id="pills-tabContent">
-                    <div class="tab-pane fade" role="tabpanel" ng-show="tab == 1 " ng-class="{'active show': tab == 1}">
+                    <div class="tab-pane fade" role="tabpanel" ng-show="tab == 1 " ng-class="{'active show tab-pane-animate': tab == 1}">
                         @include('admin.students.profile.student_details')
                     </div>
-                    <div class="tab-pane fade" role="tabpanel" ng-show="tab == 2 " ng-class="{'active show': tab == 2}">
+                    <div class="tab-pane fade" role="tabpanel" ng-show="tab == 2 " ng-class="{'active show tab-pane-animate': tab == 2}">
                         @include('admin.students.profile.attendance')
                     </div>
-                    <div class="tab-pane fade" role="tabpanel" ng-show="tab == 3 " ng-class="{'active show': tab == 3}">
+                    <div class="tab-pane fade" role="tabpanel" ng-show="tab == 3 " ng-class="{'active show tab-pane-animate': tab == 3}">
                         @include('admin.students.profile.leave')
                         
                     </div>
-                    <div class="tab-pane fade" role="tabpanel" ng-show="tab == 4 " ng-class="{'active show': tab == 4}">
+                    <div class="tab-pane fade" role="tabpanel" ng-show="tab == 4 " ng-class="{'active show tab-pane-animate': tab == 4}">
                         @include('admin.students.profile.fees')
                         
                     </div>
-                    <div class="tab-pane fade" role="tabpanel" ng-show="tab == 5 " ng-class="{'active show': tab == 5}">
+                    <div class="tab-pane fade" role="tabpanel" ng-show="tab == 5 " ng-class="{'active show tab-pane-animate': tab == 5}">
                         @include('admin.students.profile.exam')
                     </div>
                 </div>

@@ -29,20 +29,20 @@
 	margin-top: 1rem;
 }
 .tab-pane {
-    // overflow: hidden;
+    overflow: hidden;
 }
 .tab-pane-animate {
-    animation: fadeInTab 0.35s ease;
+    animation: fadeInTab 0.50s ease;
 }
 
 @keyframes fadeInTab {
     from {
         opacity: 0;
-        scale:0.90;
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
-        scale:1;
+       	transform: translateY(0);
     }
 }
 .loader-div{
