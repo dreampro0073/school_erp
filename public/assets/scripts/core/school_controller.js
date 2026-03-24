@@ -68,24 +68,23 @@ app.controller('schoolManagementCtrl', function($scope , DBService){
             }
         // });
     }
-
     $scope.deleteClass = function (item) {
-        // Confirm("Are you sure?", function(result){ 
-        var result = true;
-    
-            if (result) {
-                DBService.postCall({ id: item.id },'/api/admin/school/class-delete').then(function (data) {
-                    alert(data.message);
-                    if (data.success) {
-                        var index = $scope.dataSet.indexOf(item);
-                        if (index !== -1) {
-                            $scope.dataSet.splice(index, 1);
-                        }
+        var result = confirm("Are you sure?");
+
+        if (result) {
+            DBService.postCall({ id: item.id }, '/api/admin/school/class-delete')
+            .then(function (data) {
+                alert(data.message);
+
+                if (data.success) {
+                    var index = $scope.dataSet.indexOf(item);
+                    if (index !== -1) {
+                        $scope.dataSet.splice(index, 1);
                     }
-                });
-            }
-        // }
-    };  
+                }
+            });
+        }
+    }; 
 
     $scope.openAddModal = function () {
         $scope.isEditMode = false;
