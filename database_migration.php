@@ -350,9 +350,15 @@ CREATE TABLE fines (
 );
 
 
-// Devendra 22MAr2026
+// Devendra 22Mar2026
 
 ALTER TABLE `client_standards` ADD `session_id` INT NULL DEFAULT NULL AFTER `section_id`;
 ALTER TABLE `client_standards` CHANGE `is_verified` `is_verified` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '0=>pedding, 1=>verified, -1=>blocked, -2 block after verified';
 ALTER TABLE `client_standards` ADD `added_by` INT NULL DEFAULT NULL AFTER `is_verified`;
+
+// Devendra 24Mar2026
+
+CREATE TABLE `class_students` ( `id` INT NOT NULL AUTO_INCREMENT , `class_id` INT NULL DEFAULT NULL , `student_id` INT NULL DEFAULT NULL , `added_by` INT NULL DEFAULT NULL , `school_id` INT NULL DEFAULT NULL , `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+CREATE TABLE `class_subjects` ( `id` INT NOT NULL AUTO_INCREMENT , `class_id` INT NULL DEFAULT NULL , `subject_id` INT NULL DEFAULT NULL , `added_by` INT NULL DEFAULT NULL , `school_id` INT NULL DEFAULT NULL , `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
 

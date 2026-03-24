@@ -57,6 +57,7 @@ class SchoolManagementController extends Controller {
     }
 
     public function scheduleStore(Request $request){
+        dd("Pending....");
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
@@ -232,16 +233,33 @@ class SchoolManagementController extends Controller {
         return response()->json($data,200,[]);
     }
 
-    public function studentsManage($class_id) {
+    public function classManage($class_id) {
 
         return view('admin.school.class_manage', ["class_id"=>$class_id]);
     }
 
-    public function classManage($request){
+    public function classManageInit(Request $request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
+        $standard = DB::table("client_standards")->select("client_standards.*", "standards.name as standard_name", "sections.name as section_name", "years.period")
+        ->join("standards", "standards.id", "=", "client_standards.standard_id")
+        ->leftJoin("sections", "sections.id", "=", "client_standards.section_id")
+        ->leftJoin("years", "years.year", "=", "client_standards.session_id")
+        ->where("client_standards.id", $request->class_id)
+        ->where("client_standards.client_id", $auth_user->client_id)->where("client_standards.status", 0)->first();
 
+        if($request->type == "students"){
+            $dataList = DB::table("class_students")->where("school_id", $auth_user->client_id)->where("class_id", $request->class_id)->get();
+            $data["dataList"] = $dataList;
+        }
+
+        if($request->type == "subjects"){
+            $dataList = DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("class_id", $request->class_id)->get();
+            $data["dataList"] = $dataList;
+        }
+
+        $data["standard"] = $standard;
         $data["success"] = true;
         return $data;
     } 
@@ -275,6 +293,7 @@ class SchoolManagementController extends Controller {
     }
 
     public function examsStore(Request $request){
+        dd("Pending....");
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
@@ -328,6 +347,7 @@ class SchoolManagementController extends Controller {
     }
 
     public function resultsStore(Request $request){
+        dd("Pending....");
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
@@ -337,11 +357,11 @@ class SchoolManagementController extends Controller {
 
         foreach ($variable as $item) {
             if(true){ 
-                DB::table('exams')->update([
+                DB::table('results')->update([
                     "updated_at" => date("Y-m-d H:i:s"),
                 ]);
             } else {
-                DB::table('exams')->insert([
+                DB::table('results')->insert([
                     "updated_at" => date("Y-m-d H:i:s"),
                     "created_at" => date("Y-m-d H:i:s"),
                 ]);

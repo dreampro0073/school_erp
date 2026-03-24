@@ -132,7 +132,6 @@
                                     </div>
                                  </div>
                               </td>
-                              <td>Class 1 (A)</td>
                               <td>@{{item.dob}}</td>
                               <td>Male</td>
                               <td>@{{item.mobile}}</td>
@@ -152,26 +151,12 @@
                                           View
                                           </a>
                                        </li>
-                                       <li>
-                                          <a href="{{url('admin/students/add/')}}/@{{item.unique_id}}" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
-                                          <i class="ri-edit-2-line"></i>
-                                             Edit
-                                          </a>
-                                       </li>
+
                                        <li>
                                           <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
                                           <i class="ri-money-dollar-box-line"></i>
                                              Collect Fees
                                           </button>
-                                       </li>
-                                       <li>
-                                          <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
-                                          <i class="ri-error-warning-line"></i>
-                                          Inactive
-                                          </button>
-                                       </li>
-                                       <li>
-                                          <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" data-bs-toggle="modal" data-bs-target="#exampleModalDelete"><i class="ri-delete-bin-6-line"></i>Delete</button>
                                        </li>
                                     </ul>
                                  </div>

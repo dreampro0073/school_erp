@@ -129,7 +129,7 @@ Route::middleware(['api-token-user'])->group(function () {
             Route::post('/class-edit', 'editClass');
             Route::post('/class-delete', 'deleteClass');
             
-            Route::post('/class-manage', 'classManage');
+            Route::post('/class-manage-init', 'classManageInit');
             
             Route::post('/exams', 'initExams');
             Route::post('/exams-edit', 'editExams');

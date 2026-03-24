@@ -179,12 +179,16 @@ app.controller('schoolManagementCtrl', function($scope , DBService){
 
 app.controller('classManagementCtrl', function($scope , DBService){
     $scope.class_id = 0;
+    $scope.standard = {};
+    $scope.dataList = [];
+    $scope.type = "students";
     $scope.list_loading = false;
     $scope.initClass = function() {
         $scope.list_loading = true;
-        DBService.postCall({type : '', class_id : $scope.class_id}, '/api/admin/school/class-manage').then(function(data) {
+        DBService.postCall({type : $scope.type, class_id : $scope.class_id}, '/api/admin/school/class-manage-init').then(function(data) {
             if(data.success){
-                $scope.dataSet = data.classes;
+                $scope.standard = data.standard; 
+                $scope.dataList = data.dataList;
                 $scope.list_loading = false;
             }
         });
