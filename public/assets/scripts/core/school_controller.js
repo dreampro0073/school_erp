@@ -56,17 +56,15 @@ app.controller('schoolManagementCtrl', function($scope , DBService){
     };
 
     $scope.changeClassStatus = function (item, status) {
-        // Confirm("Are you sure?", function(result){ 
-        var result = true;
-            if(result){
-                DBService.postCall({entry_id : item.id, status : status}, '/api/admin/school/change-class-status').then(function(data) {
-                    alert(data.message);
-                    if(data.success){
-                        item.is_verified = data.status;
-                    }
-                });
-            }
-        // });
+        var result = confirm("Are you sure?");
+        if(result){
+            DBService.postCall({entry_id : item.id, status : status}, '/api/admin/school/change-class-status').then(function(data) {
+                alert(data.message);
+                if(data.success){
+                    item.is_verified = data.status;
+                }
+            });
+        }
     }
     $scope.deleteClass = function (item) {
         var result = confirm("Are you sure?");

@@ -20,8 +20,8 @@ class SchoolManagementController extends Controller {
         $data["standards"] = Standard::where("standards.status", 0)->pluck("name", "id")->toArray();
         $data["sections"] = Section::where("sections.status", 0)->pluck("name", "id")->toArray();
         $data["sessions"] = DB::table('years')->pluck("period", "year")->toArray();
-        $data["teachers"] = Teacher::where("school_id", $auth_user->parent_user_id)->pluck("teachers.name", "teachers.id")->toArray();
-        $data["students"] = Student::where("school_id", $auth_user->parent_user_id)->pluck("name", "id")->toArray();
+        $data["teachers"] = Teacher::where("school_id", $auth_user->client_id)->pluck("teachers.name", "teachers.id")->toArray();
+        $data["students"] = Student::where("school_id", $auth_user->client_id)->pluck("name", "id")->toArray();
         $data["days"] = DB::table("days")->get();
 
         $data["success"] = true;
@@ -127,7 +127,7 @@ class SchoolManagementController extends Controller {
         ]);
 
         $check = DB::table('client_standards')
-        ->where("client_id", $auth_user->parent_user_id)
+        ->where("client_id", $auth_user->client_id)
         ->where("standard_id", $request->standard_id)
         ->where("session_id", $request->session_id)
         ->where("section_id", $request->section_id);
@@ -142,7 +142,7 @@ class SchoolManagementController extends Controller {
                 return response()->json($data,200,[]);
 
             } else {
-                DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->parent_user_id)->where("is_verified", "!=", 1)->update([
+                DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)->where("is_verified", "!=", 1)->update([
                     'standard_id' => $request->standard_id,
                     'section_id' => $request->section_id,
                     'session_id' => $request->session_id,
@@ -171,7 +171,7 @@ class SchoolManagementController extends Controller {
                     'session_id'   => $request->session_id,
                     'status'       => 0,
                     "is_verified"  => 0,
-                    "client_id"  => $auth_user->parent_user_id,
+                    "client_id"  => $auth_user->client_id,
                     "added_by"  => $auth_user->id,
                     "created_at" => date("Y-m-d H:i:s")
                 ]);
@@ -187,7 +187,7 @@ class SchoolManagementController extends Controller {
     public function changeClassStatus(Request $request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
-        $check = DB::table('client_standards')->where('id', $request->entry_id)->where("client_id", $auth_user->parent_user_id)->first();
+        $check = DB::table('client_standards')->where('id', $request->entry_id)->where("client_id", $auth_user->client_id)->first();
 
         if($check){
             $status = $request->status;
@@ -215,7 +215,7 @@ class SchoolManagementController extends Controller {
     public function deleteClass(Request $request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
-        $check = DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->parent_user_id)->first();
+        $check = DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)->first();
 
         if($check){
             DB::table('client_standards')->where('id', $check->id)->update([
