@@ -31,9 +31,9 @@
                         <td>@{{item.standard_name}} <span ng-if="item.section_name">(@{{item.section_name}})</span></td>
                         <td>@{{item.period}}</td>
                         <td>
-                            <span ng-if="item.is_verified == 0" class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">Pending</span>
+                            <span ng-if="item.is_verified == 0" class="bg-primary-100 text-primary-600 px-24 py-4 radius-4 fw-medium text-sm">Pending</span>
                             <span ng-if="item.is_verified == -1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Deactivate</span>
-                            <span ng-if="item.is_verified == 1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Verified</span>
+                            <span ng-if="item.is_verified == 1" class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">Verified</span>
                         </td>
                         <td>
 
