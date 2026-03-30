@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @section('main')
-<div ng-controller="addTeacherCtrl" ng-init="init('{{ $teacherToken }}');" class="mt-24">
+<div ng-controller="addTeacherCtrl" ng-init="init('{{ $teacher_token }}');" class="mt-24">
    <div class="d-flex justify-content-between align-items-center mb-16">
       <h5 class="mb-0">@{{formData.enc_id ? 'Edit Teacher' : 'Add Teacher'}}</h5>
       <a href="{{ url('/admin/teachers') }}" class="btn btn-outline-secondary">Back to List</a>

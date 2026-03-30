@@ -665,109 +665,6 @@ app.controller('teacherCtrl', function($scope , DBService){
     };
 });
 
-app.controller('addTeacherCtrl', function($scope , DBService){
-    $scope.processing = false;
-    $scope.formData = {
-        enc_id: '',
-        first_name: '',
-        last_name: '',
-        dob: '',
-        gender: '',
-        mobile: '',
-        email: '',
-        address: '',
-        aadhar_no: '',
-        document_type: 'Aadhar',
-        document_no: '',
-        active: '1',
-        salary_components: [
-            { component_name: 'Basic Salary', component_type: 'earning', amount: '' }
-        ],
-        bank_details: {
-            account_holder_name: '',
-            bank_name: '',
-            account_number: '',
-            ifsc_code: '',
-            branch_name: '',
-            upi_id: ''
-        }
-    };
-
-    $scope.addSalaryComponent = function() {
-        $scope.formData.salary_components.push({
-            component_name: '',
-            component_type: 'earning',
-            amount: ''
-        });
-    };
-
-    $scope.removeSalaryComponent = function(index) {
-
-        $scope.formData.salary_components.splice(index, 1);
-    };
-
-    $scope.totalEarning = function() {
-        var total = 0;
-        angular.forEach($scope.formData.salary_components || [], function(item) {
-            if ((item.component_type || 'earning') !== 'deduction') {
-                total += parseFloat(item.amount || 0);
-            }
-        });
-        return total;
-    };
-
-    $scope.totalDeduction = function() {
-        var total = 0;
-        angular.forEach($scope.formData.salary_components || [], function(item) {
-            if ((item.component_type || 'earning') === 'deduction') {
-                total += parseFloat(item.amount || 0);
-            }
-        });
-        return total;
-    };
-
-    $scope.totalNet = function() {
-        return Math.max(0, $scope.totalEarning() - $scope.totalDeduction());
-    };
-
-    $scope.init = function(encId) {
-
-
-        DBService.postCall({ }, '/api/admin/teachers/get').then(function(data) {
-
-            DBService.postCall({ enc_id: $scope.formData.enc_id }, '/api/admin/teacher-salary/profile/get').then(function(salaryData) {
-                
-            });
-        });
-    };
-
-    $scope.submit = function() {
-
-
-        $scope.processing = true;
-
-        DBService.postCall($scope.formData, '/api/admin/teachers/store').then(function(data) {
-            if (!(data.success)) {
-                alert((data.message) ? data.message : 'Unable to save teacher.');
-                $scope.processing = false;
-                return;
-            }
-
-            DBService.postCall({ }, '/api/admin/teacher-salary/profile/store').then(function(salaryResponse) {
-                alert((salaryResponse && salaryResponse.message) ? salaryResponse.message : 'Teacher saved, but salary profile failed.');
-                if (salaryResponse && salaryResponse.success) {
-                    window.location.href = base_url + '/admin/teachers';
-                }
-                $scope.processing = false;
-            }, function() {
-                $scope.processing = false;
-            });
-        }, function() {
-            $scope.processing = false;
-        });
-    };
-});
-
 // *** adminDashboardCtrl ***
 app.controller('adminDashboardCtrl', function($scope , DBService){
     // $scope.cards = [];
@@ -1049,4 +946,112 @@ app.controller('workLogCtrl', function($scope , DBService){
         });
     };
 
+});
+
+app.controller('addTeacherCtrl', function($scope , DBService){
+    $scope.processing = false;
+    $scope.formData = {
+        enc_id: '',
+        first_name: '',
+        last_name: '',
+        dob: '',
+        gender: '',
+        mobile: '',
+        email: '',
+        address: '',
+        aadhar_no: '',
+        document_type: 'Aadhar',
+        document_no: '',
+        active: '1',
+        salary_components: [
+            { component_name: 'Basic Salary', component_type: 'earning', amount: '' }
+        ],
+        bank_details: {
+            account_holder_name: '',
+            bank_name: '',
+            account_number: '',
+            ifsc_code: '',
+            branch_name: '',
+            upi_id: ''
+        }
+    };
+
+    $scope.blood_groups = [];
+    $scope.religions = [];
+    $scope.casts = [];
+    $scope.standards = [];
+
+    $scope.init = function(teacher_token) {
+
+
+        DBService.postCall({ teacher_token:teacher_token}, '/api/admin/teachers/init-details').then(function(data) {
+            if (data.success) {
+                if(data.teacher){
+                    $scope.formData = data.teacher;                
+                }
+
+                $scope.blood_groups = data.blood_groups;
+                $scope.religions = data.religions;
+                $scope.casts = data.casts;
+            }
+            
+        });
+    };
+
+    $scope.submit = function() {
+
+        $scope.processing = true;
+
+        DBService.erpPostCall($scope.formData, '/api/admin/teachers/store').then(function(data){
+
+            $scope.processing = false;
+
+            if (data.success) {
+                alert(data.message);
+                window.location.href = base_url + '/admin/teachers';
+            } else {
+                let firstError = Object.values(data.errors)[0][0];
+                alert(firstError);
+                $scope.errors = data.errors;
+            }
+
+        });
+    };
+    
+    $scope.addSalaryComponent = function() {
+        $scope.formData.salary_components.push({
+            component_name: '',
+            component_type: 'earning',
+            amount: ''
+        });
+    };
+
+    $scope.removeSalaryComponent = function(index) {
+
+        $scope.formData.salary_components.splice(index, 1);
+    };
+
+    $scope.totalEarning = function() {
+        var total = 0;
+        angular.forEach($scope.formData.salary_components || [], function(item) {
+            if ((item.component_type || 'earning') !== 'deduction') {
+                total += parseFloat(item.amount || 0);
+            }
+        });
+        return total;
+    };
+
+    $scope.totalDeduction = function() {
+        var total = 0;
+        angular.forEach($scope.formData.salary_components || [], function(item) {
+            if ((item.component_type || 'earning') === 'deduction') {
+                total += parseFloat(item.amount || 0);
+            }
+        });
+        return total;
+    };
+
+    $scope.totalNet = function() {
+        return Math.max(0, $scope.totalEarning() - $scope.totalDeduction());
+    };
 });

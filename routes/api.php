@@ -85,10 +85,15 @@ Route::middleware(['api-token-user'])->group(function () {
         );
 
         Route::prefix('teachers')
-            ->controller(AdminController::class)
+            ->controller(TeacherController::class)
             ->group(function () {
-                Route::any('/init', 'storeTeacher');
-                Route::post('/store', 'initTeachers');
+                Route::any('/init', 'initTeachers');
+                Route::post('/store', 'storeTeacher');
+                Route::post('/init-details', 'initDetails');
+                Route::post('/get-profile-details', 'getProfileDetails');
+                Route::post('/get-attendance', 'getAttendance');
+                Route::post('/get-leaves', 'getLeaves');
+                Route::post('/get-fees', 'getFees');
             }
         );
 

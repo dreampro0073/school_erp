@@ -62,9 +62,13 @@ Route::middleware(['auth'])->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('/dashboard', 'dashboard');
 
-            Route::prefix('teachers')->controller(AdminController::class)->group(function () {
-                Route::get('/', 'teachersIndex');
-                Route::get('/teachers/add/{teacher?}', 'addTeacherPage');
+            Route::prefix('teachers')->controller(TeacherController::class)->group(function () {
+                // Route::get('/', 'teachersIndex');
+                // Route::get('/teachers/add/{teacher?}', 'addTeacherPage');
+
+                Route::get('/', 'index');
+                Route::get('/add/{teacher_token?}', 'addTeacherPage');
+                Route::get('/profile/{teacher_token?}', 'teacherProfile');
             });
 
             Route::prefix('students')->controller(StudentController::class)->group(function () {
