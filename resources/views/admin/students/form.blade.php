@@ -34,7 +34,7 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Section <span class="text-danger-600">* </span> </label>
-                        <select class="form-select" ng-model="formData.section_id">
+                        <select class="form-select" ng-model="formData.section_id" convert-to-number>
                             <option value="1">A</option>
                             <option value="2">B</option>
                         </select>

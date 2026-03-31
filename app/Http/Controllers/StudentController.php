@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Student,App\Models\StudentParent,App\Models\MasterData, App\Models\User,App\Models\ClientStandard;
+use App\Models\Student,App\Models\StudentParent,App\Models\MasterData, App\Models\User,App\Models\Standard;
 use DB;
 
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -238,6 +238,38 @@ class StudentController extends Controller
         return response()->json([
             "success" => true,
             "student" => $data,
+        ]); 
+        
+
+    }
+
+    public function viewDetails(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $student_token = $request->student_token;
+
+        $student = Student::with(['parentUser'])->where('unique_id',$request->student_token)->first();
+        
+        $data = null;
+        if($student){
+            $data = $student->toArray();
+            if(isset($data['parent_user'])){
+                foreach($data['parent_user'] as $key => $value){
+                    if(!array_key_exists($key, $data)){
+                        $data[$key] = $value;
+                    }
+                }
+                unset($data['parent_user']);
+            }
+        }
+
+        return response()->json([
+            "success" => true,
+            "student" => $data,
+            "blood_groups" => MasterData::getMasterData(4),
+            "religions" => MasterData::getMasterData(1),
+            "casts" => MasterData::getMasterData(2),
+            "standards" => Standard::getClientStandardsDrop($user->client_id),
         ]); 
         
 

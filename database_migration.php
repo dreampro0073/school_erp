@@ -362,3 +362,6 @@ CREATE TABLE `class_students` ( `id` INT NOT NULL AUTO_INCREMENT , `class_id` IN
 CREATE TABLE `class_subjects` ( `id` INT NOT NULL AUTO_INCREMENT , `class_id` INT NULL DEFAULT NULL , `subject_id` INT NULL DEFAULT NULL , `added_by` INT NULL DEFAULT NULL , `school_id` INT NULL DEFAULT NULL , `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
 
 
+ALTER TABLE `sections` ADD `client_id` INT NOT NULL DEFAULT '0' AFTER `id`;
+
+

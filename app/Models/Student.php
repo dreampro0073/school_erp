@@ -29,7 +29,7 @@ class Student extends Model
     }
 
     public function parentUser(){
-        return $this->belongsTo(StudentParent::class, 'parent_user_id');
+        return $this->belongsTo(StudentParent::class, 'parent_id');
     }
 
     // public function bloodGroup(){
