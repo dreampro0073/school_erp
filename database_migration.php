@@ -365,3 +365,19 @@ CREATE TABLE `class_subjects` ( `id` INT NOT NULL AUTO_INCREMENT , `class_id` IN
 ALTER TABLE `sections` ADD `client_id` INT NOT NULL DEFAULT '0' AFTER `id`;
 
 
+// Devendra 31Mar2026
+ALTER TABLE `teachers` ADD `unique_id` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
+ALTER TABLE `teachers` ADD `added_by` INT NULL DEFAULT NULL AFTER `email`, ADD `first_name` VARCHAR(255) NULL DEFAULT NULL AFTER `added_by`, ADD `last_name` VARCHAR(255) NULL DEFAULT NULL AFTER `first_name`, ADD `aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER `last_name`, ADD `gender` TINYINT(2) NULL DEFAULT NULL AFTER `aadhar_no`, ADD `mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `gender`, ADD `pravious_school` VARCHAR(255) NULL DEFAULT NULL AFTER `mobile`, ADD `pravios_school_address` VARCHAR(255) NULL DEFAULT NULL AFTER `pravious_school`, ADD `residential_address` VARCHAR(255) NULL DEFAULT NULL AFTER `pravios_school_address`, ADD `permanent_address` VARCHAR(255) NULL DEFAULT NULL AFTER `residential_address`, ADD `blood_group_id` INT(4) NULL DEFAULT NULL AFTER `permanent_address`, ADD `height` VARCHAR(20) NULL DEFAULT NULL AFTER `blood_group_id`, ADD `weight` VARCHAR(20) NULL DEFAULT NULL AFTER `height`, ADD `religion_id` INT NULL DEFAULT NULL AFTER `weight`, ADD `cast_id` INT NULL DEFAULT NULL AFTER `religion_id`;
+
+ALTER TABLE `teachers` ADD INDEX(`unique_id`);
+ALTER TABLE `teachers` ADD INDEX(`user_id`);
+ALTER TABLE `teachers` ADD INDEX(`school_id`);
+ALTER TABLE `teachers` ADD INDEX(`added_by`);
+ALTER TABLE `teachers` ADD INDEX(`blood_group_id`);
+ALTER TABLE `teachers` ADD INDEX(`religion_id`);
+ALTER TABLE `teachers` ADD INDEX(`cast_id`);
+
+ALTER TABLE `teachers` ADD `father_name` VARCHAR(255) NULL DEFAULT NULL AFTER `resign_date`, ADD `father_mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `father_name`, ADD `father_email` VARCHAR(255) NULL DEFAULT NULL AFTER `father_mobile`, ADD `father_aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER `father_email`, ADD `mother_name` VARCHAR(255) NULL DEFAULT NULL AFTER `father_aadhar_no`, ADD `mother_mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `mother_name`, ADD `mother_email` VARCHAR(100) NULL DEFAULT NULL AFTER `mother_mobile`, ADD `mother_aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER `mother_email
+
+ALTER TABLE `teachers` ADD `active` TINYINT(2) NOT NULL DEFAULT '0' AFTER `mother_aadhar_no`;
+ALTER TABLE `teachers` CHANGE `gender` `gender` VARCHAR(22) NULL DEFAULT NULL;

@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 use App\Models\AttendanceStatus;
 use App\Models\ModelHelper;
 use App\Models\User;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class TeacherController extends Controller {
     public function dashboard() {
@@ -83,13 +86,10 @@ class TeacherController extends Controller {
         ]);
     }
 
-    public function storeTeacher(Request $request){
+    public function storeTeacher(Request $request)
+    {
         $authUser = User::resolveApiUser($request);
-
         $e_teacher = Teacher::where('unique_id',$request->unique_id)->first(); 
-
-        $user_id = $e_teacher ? $e_teacher->user_id : 'NULL';
-        $message = "Teacher details Successfully saved!";
 
         $validator = Validator::make($request->all(), [
             'first_name' => ['required','string','max:255'],
@@ -97,25 +97,14 @@ class TeacherController extends Controller {
             'gender' => ['required'],
             'dob' => ['required'],
             'mobile' => ['required','digits:10'],
-            'email' => 'required|email|unique:users,email,'.$user_id,
-            'admission_no' => ['nullable','string','max:100'],
+            'email' => 'required|email|unique:users,email',
             'aadhar_no'=> ['required','digits:12'], 
             'residential_address' => ['required'],
             'permanent_address' => ['required'],
-            'father_name' => ['required','string','max:255'],
-            'father_email' => ['required','email','max:255'],
-            'father_mobile' => ['required','digits:10'],
-            'father_aadhar_no' => ['required','digits:12'],
-            'mother_name' => ['required','string','max:255'],
-            'mother_aadhar_no' => ['required','digits:12'],
-            'religion_id' => ['required'],
-        ]);
 
-        $validator->after(function ($validator) use ($request) {
-            if ($request->email === $request->father_email) {
-                $validator->errors()->add('father_email', 'Parent email cannot be same as teacher email');
-            }
-        });
+            'father_name' => ['required','string','max:255'],
+            'mother_name' => ['required','string','max:255'],
+        ]);
 
         if($validator->fails()){
             return response()->json([
@@ -124,119 +113,104 @@ class TeacherController extends Controller {
             ],422);
         }
 
-        $data = $request->only([
-            'first_name',
-            'last_name',
-            'gender',
-            'dob',
-            'mobile',
-            'email',
-            'admission_no',
-            'aadhar_no', 
-            'residential_address',
-            'permanent_address',
-            'religion_id',
-            'cast_id',
-            'blood_group_id',
-            'standard_id',
-            'section_id',
-            'height',
-            'weight',
-            'previous_school',
-            'previous_school_address',
-        ]);
-
-        $parent_data = $request->only([
-            'father_name',
-            'father_email',
-            'father_mobile',
-            'father_aadhar_no',
-            'mother_name',
-            'mother_aadhar_no',
-            'father_occupation',
-            'mother_mobile',
-            'mother_email',
-            'guardian_name'
-        ]);
-
         DB::beginTransaction();
+
         try {
-            $parentUser = User::where('email',$parent_data['father_email'])->first();
-           
-            if(!$parentUser){
-                $parentPassword = User::getRandPassword();
-                $parentUser = new User;
-                $parentUser->name = $parent_data['father_name'];
-                $parentUser->email = $parent_data['father_email'];
-                $parentUser->password = Hash::make($parentPassword);
-                $parentUser->password_check = $parentPassword;
-                $parentUser->parent_user_id =0;
-                $parentUser->added_by = $authUser->id;
-                $parentUser->org_id = $authUser->org_id;
-                $parentUser->client_id = $authUser->client_id;
-                $parentUser->priv = 5;
-                $parentUser->save();
-            }else{ 
-                $parentUser->name = $parent_data['father_name'];
-                $parentUser->save();
-            }
-
-            $parent = StudentParent::where('user_id',$parentUser->id)->first();
-
-            if(!$parent){
-                $parent_data['user_id'] = $parentUser->id;
-                $parent_data['school_id'] = $authUser->client_id;
-                $parent_data['unique_id'] = time().$authUser->client_id.$authUser->id.$parentUser->id;
-                $parent = StudentParent::create($parent_data);
-            }else{
-                $parent->update($parent_data);
-            }
 
             $user = User::where('email',$request->email)->first();
             if(!$user){
-                $user = new User;
+
                 $password = User::getRandPassword();
+
+                $user = new User;
+                $user->name = $request->first_name.' '.$request->last_name;
+                $user->email = $request->email;
                 $user->password = Hash::make($password);
-                $user->name = $data['first_name'].' '.$data['last_name'];
-                $user->start_date = $authUser->start_date;
-                $user->parent_user_id = $parentUser->id;
-                $user->added_by = $authUser->id;
                 $user->password_check = $password;
+                $user->priv = 3; 
+                $user->added_by = $authUser->id;
                 $user->org_id = $authUser->org_id;
                 $user->client_id = $authUser->client_id;
-                $user->priv = 4;
-                $user->email = $data['email'] ?? null;
                 $user->save();
 
-                $data['school_id'] = $authUser->client_id;
-                $data['user_id'] = $user->id;
-                $data['parent_id'] = $parent->id;
-                $data['unique_id'] = time().$authUser->client_id.$authUser->id;
             }else{
                 $user->name = $data['first_name'].' '.$data['last_name'];
                 $user->save();
             }
 
-            $data['name'] = $data['first_name'].' '.$data['last_name'];
-            $data['dob'] = date("Y-m-d",strtotime($request->dob));
+            $teacherData = [
+                'user_id' => $user->id,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'name' => $request->first_name.' '.$request->last_name,
+                'email' => $request->email,
+                'mobile' => $request->mobile,
+                'gender' => $request->gender,
+                'dob' => date("Y-m-d", strtotime($request->dob)),
+                'aadhar_no' => $request->aadhar_no,
+
+
+                'residential_address' => $request->residential_address,
+                'permanent_address' => $request->permanent_address,
+
+                'father_name' => $request->father_name,
+                'father_mobile' => $request->father_mobile,
+                'father_aadhar_no' => $request->father_aadhar_no,
+
+                'mother_name' => $request->mother_name,
+                'mother_mobile' => $request->mother_mobile,
+                'mother_aadhar_no' => $request->mother_aadhar_no,
+
+                'active' => $request->active ?? 1,
+                'school_id' => $authUser->client_id,
+            ];
+
 
             if(!$e_teacher){
-                $student = Student::create($data);
+                $teacher = Teacher::create($teacherData);
 
             }else{
-                $e_teacher->update($data);
-                $student = $e_teacher;
+                $e_teacher->update($teacherData);
+                $teacher = $e_teacher;
+            }
+
+            $check = DB::table("bank_details")->where("user_id", $user->id)->first();
+            if($check){
+                DB::table("bank_details")->where("id", $check->id)->update([
+                    'account_holder_name' => $request->bank_details['account_holder_name'] ?? null,
+                    'bank_name' => $request->bank_details['bank_name'] ?? null,
+                    'account_number' => $request->bank_details['account_number'] ?? null,
+                    'ifsc_code' => $request->bank_details['ifsc_code'] ?? null,
+                    'branch_name' => $request->bank_details['branch_name'] ?? null,
+                    'upi_id' => $request->bank_details['upi_id'] ?? null,
+                ]);
+
+            } else {
+                DB::table("bank_details")->insert([
+                    "client_id" => $authUser->client_id,
+                    "user_id" => $user->id,
+                    'account_holder_name' => $request->bank_details['account_holder_name'] ?? null,
+                    'bank_name' => $request->bank_details['bank_name'] ?? null,
+                    'account_number' => $request->bank_details['account_number'] ?? null,
+                    'ifsc_code' => $request->bank_details['ifsc_code'] ?? null,
+                    'branch_name' => $request->bank_details['branch_name'] ?? null,
+                    'upi_id' => $request->bank_details['upi_id'] ?? null,
+                    "active" => 1,
+                    "created_at" => date("Y-m-d H:i:s"),
+                ]);
             }
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => $message,
-                'student' => $student
+                'message' => 'Teacher created successfully',
+                'teacher' => $teacher,
+                'login_password' => $password
             ]);
 
         } catch (\Exception $e){
+
             DB::rollback();
 
             return response()->json([
@@ -247,7 +221,7 @@ class TeacherController extends Controller {
     }
 
     public function teacherProfile($teacher_token){
-        return view('admin.students.profile', [
+        return view('admin.teachers.profile', [
             'teacher_token' => $teacher_token,
         ]);  
     }
@@ -257,11 +231,11 @@ class TeacherController extends Controller {
         $user = User::authUser($apiToken);
         $teacher_token = $request->teacher_token;
 
-        $student = Teacher::with(['parentUser'])->where('unique_id',$request->teacher_token)->first();
+        $teacher = Teacher::with(['parentUser'])->where('unique_id',$request->teacher_token)->first();
         
         $data = null;
-        if($student){
-            $data = $student->toArray();
+        if($teacher){
+            $data = $teacher->toArray();
             if(isset($data['parent_user'])){
                 foreach($data['parent_user'] as $key => $value){
                     if(!array_key_exists($key, $data)){
@@ -274,7 +248,7 @@ class TeacherController extends Controller {
 
         return response()->json([
             "success" => true,
-            "student" => $data,
+            "teacher" => $data,
         ]); 
         
     }
