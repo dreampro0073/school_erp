@@ -187,9 +187,13 @@ class StudentController extends Controller
             $data['dob'] = date("Y-m-d",strtotime($request->dob));
 
             if(!$e_student){
+                $data['admission_no'] = $this->generateAdmissionNumber($authUser->client_id);
+
                 $student = Student::create($data);
 
             }else{
+                $data['admission_no'] = $this->generateAdmissionNumber($authUser->client_id);
+                
                 $e_student->update($data);
                 $student = $e_student;
             }
@@ -406,5 +410,26 @@ class StudentController extends Controller
         }
         
 
+    }
+
+    public function generateAdmissionNumber($clientId){
+        $year = date('y');
+        $prefix = $year . $clientId;
+
+        $remainingLength = 8 - strlen($prefix);
+
+        $lastStudent = Student::where('admission_no', 'LIKE', $prefix . '%')
+            ->orderBy('admission_no', 'desc')
+            ->first();
+
+        if ($lastStudent) {
+            $lastNumber = substr($lastStudent->admission_no, strlen($prefix));
+            $nextNumber = (int)$lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        $sequence = str_pad($nextNumber, $remainingLength, '0', STR_PAD_LEFT);
+        return $prefix . $sequence;
     }
 }

@@ -19,11 +19,11 @@
             </div>
             <div class="card-body p-20">
                 <div class="row g-3">
-                    <div class="form-group col-md-4">
+                   <!--  <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Admission No  <span class="text-danger-600">* </span> </label>
                        
                         <input type="text" class="form-control" ng-model="formData.admission_no">
-                    </div>
+                    </div> -->
 
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Class  <span class="text-danger-600">* </span> </label>

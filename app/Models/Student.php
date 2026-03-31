@@ -45,4 +45,6 @@ class Student extends Model
     // public function getBloodGroupNameAttribute(){
     //     return $this->bloodGroup->master_name ?? null;
     // }
+
+   
 }

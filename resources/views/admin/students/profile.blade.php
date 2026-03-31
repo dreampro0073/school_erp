@@ -49,7 +49,7 @@
                                     </span>
                                     Suspend
                                 </button>
-                                <a href="edit-student.html"
+                                <a href="{{url('admin/students/add/')}}/@{{student.unique_id}}"
                                     class="btn btn-primary-600 border fw-medium border-primary-600 text-md d-flex justify-content-center align-items-center gap-8 flex-grow-1 px-12 py-8 radius-8">
                                     <span class="d-flex text-lg">
                                         <i class="ri-edit-line"></i>

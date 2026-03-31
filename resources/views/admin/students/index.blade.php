@@ -121,7 +121,7 @@
                                  </div>
                               </td>
                               <td>
-                                 <span class="text-primary-600">AD52365</span>
+                                 <span class="text-primary-600">@{{item.admission_no}}</span>
                               </td>
                               <td>
                                  <div class="d-flex align-items-center">
