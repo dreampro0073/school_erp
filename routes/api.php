@@ -19,7 +19,7 @@ use App\Http\Controllers\WorklogController;
 use App\Http\Controllers\SchoolManagementController;
 
 // Grouped structure for middleware-based organization (no behavior change).
-Route::middleware(['api-token-user'])->group(function () {
+// Route::middleware(['api-token-user'])->group(function () {
 
     // Route::prefix('students')->controller(StudentController::class)->group(function () {
     //     Route::post('/init', 'initStudents');
@@ -75,7 +75,7 @@ Route::middleware(['api-token-user'])->group(function () {
             ->group(function () {
                 Route::any('/init', 'initStudents');
                 Route::post('/store', 'storeStudent');
-                Route::post('/init-details', 'initDetails');
+                Route::post('/init-details', 'viewDetails');
                 Route::post('/get-profile-details', 'getProfileDetails');
                 Route::post('/get-attendance', 'getAttendance');
                 Route::post('/get-leaves', 'getLeaves');
@@ -168,4 +168,4 @@ Route::middleware(['api-token-user'])->group(function () {
         Route::post('/store', 'store');
     });  
 
-});
+// });

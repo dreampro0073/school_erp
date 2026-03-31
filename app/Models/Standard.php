@@ -10,5 +10,9 @@ class Standard extends Model
     public $timestamps = false;
 
     protected $guarded = [];
+
+    public static function getClientStandardsDrop($client_id){
+        return Standard::select('standards.id as value','standards.name as label')->where('standards.client_id',$client_id)->get();
+    }
 }
 
