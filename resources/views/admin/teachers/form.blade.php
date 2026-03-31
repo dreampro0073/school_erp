@@ -193,7 +193,6 @@
                <div class="col-12" ng-repeat="item in formData.salary_components track by $index">
                   <div class="row g-2 align-items-end">
                      <div class="form-group col-md-5">
-
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Component Name <span class="text-danger-600">* </span></label>
                         <input type="text" class="form-control" ng-model="item.component_name" placeholder="Basic Salary / HRA / PF" required>
                      </div>
