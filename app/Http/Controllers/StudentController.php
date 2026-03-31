@@ -107,6 +107,9 @@ class StudentController extends Controller
             'weight',
             'previous_school',
             'previous_school_address',
+            'approved',
+            'student_photo',
+            'aadhar_card',
         ]);
 
         $parent_data = $request->only([
@@ -220,7 +223,11 @@ class StudentController extends Controller
         $user = User::authUser($apiToken);
         $student_token = $request->student_token;
 
-        $student = Student::with(['parentUser'])->where('unique_id',$request->student_token)->first();
+        $student = Student::with([
+            'parentUser',
+            'standard:id,name',
+            'section:id,name',
+        ])->where('unique_id', $request->student_token)->first();
         
         $data = null;
         if($student){
@@ -358,5 +365,46 @@ class StudentController extends Controller
         }
 
         return $user;
+    }
+
+    public function uploadFile(Request $request){
+
+
+        $destination = "students_photos/";
+
+        if($request->file('media')){
+            $extension = $request->file('media')->getClientOriginalExtension();
+            if(in_array($extension, User::fileExtensions())){
+
+                $file = $request->file('media');
+                $name_file = pathinfo($request->file('media')->getClientOriginalName(), PATHINFO_FILENAME);
+                $name_file = preg_replace('/[^a-zA-Z0-9]/', '', $name_file);
+
+                $name = 'student'.$name_file.'_'.strtotime("now").'.'.strtolower($extension);
+                $file = $file->move($destination, $name);
+                $data['media'] = $destination.$name;
+                $data['media_link'] = url($destination.$name);
+
+                return response()->json([
+                    "success" => true,
+                    "data" => $data,
+                ]);
+            }else{
+
+                return response()->json([
+                    "success" => false,
+                    "message" => "Invalid file format for image , Valid extentions are  jpg , png ,jpeg",
+                ]);
+
+
+            }
+        }else{
+            return response()->json([
+                "success" => false,
+                "message" => "Please select image",
+            ]);
+        }
+        
+
     }
 }

@@ -10,7 +10,7 @@
       Apply Leave
       </button>
    </div>
-   <div class="card-body p-0 dataTable-wrapper">
+   <div class="card-body p-0 dataTable-wrapper d-none">
       <div
          class="d-flex flex-wrap align-items-center gap-24 justify-content-between px-20 py-12">
          <div class="d-flex flex-wrap align-items-center gap-16">

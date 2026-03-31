@@ -364,4 +364,6 @@ CREATE TABLE `class_subjects` ( `id` INT NOT NULL AUTO_INCREMENT , `class_id` IN
 
 ALTER TABLE `sections` ADD `client_id` INT NOT NULL DEFAULT '0' AFTER `id`;
 
+ALTER TABLE `students` ADD `student_photo` VARCHAR(255) NULL DEFAULT NULL AFTER `cast_id`, ADD `aadhar_card` VARCHAR(255) NULL DEFAULT NULL AFTER `student_photo`;
+
 

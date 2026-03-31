@@ -31,7 +31,7 @@
                      <div class="d-flex gap-32 flex-md-row flex-column">
                         <div class="max-w-300-px w-100 text-center">
                             <figure class="mb-24 w-120-px h-120-px mx-auto rounded-circle overflow-hidden">
-                                <img src="{{url('assets/images/thumbs/student-details-img.png')}}" alt="Student Image" class="w-100 h-100 object-fit-cover">
+                                <img src="@{{student.student_photo}}" alt="Student Image" class="w-100 h-100 object-fit-cover">
                             </figure>
                             <h2 class="h6 text-primary-light mb-16 fw-semibold">
 
@@ -69,11 +69,11 @@
                             <div class="mt-16 d-flex flex-column gap-8">
                                 <div class="d-flex gap-4">
                                     <span class="fw-semibold text-sm text-primary-light w-110-px">Class</span>
-                                    <span class="fw-normal text-sm text-secondary-light">: 1 (A), 2(A), 3(A)</span>
+                                    <span class="fw-normal text-sm text-secondary-light">: @{{student.standard.name}}</span>
                                 </div>
                                 <div class="d-flex gap-4">
                                     <span class="fw-semibold text-sm text-primary-light w-110-px">Section</span>
-                                    <span class="fw-normal text-sm text-secondary-light">: A</span>
+                                    <span class="fw-normal text-sm text-secondary-light">: @{{student.section.name}}</span>
                                 </div>
                                 <div class="d-flex gap-4">
                                     <span class="fw-semibold text-sm text-primary-light w-110-px">Roll No</span>

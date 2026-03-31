@@ -125,7 +125,7 @@
                               </td>
                               <td>
                                  <div class="d-flex align-items-center">
-                                    <img src="assets/images/thumbs/avatar-img1.png" alt="Image" class="flex-shrink-0 me-12 radius-8">
+                                    <img src="@{{item.student_photo}}" alt="Image" class="flex-shrink-0 me-12 radius-8" style="width:48px;height:48px;object-fit: cover;border-radius: 24px;">
                                     <div class="">
                                        <h6 class="text-md mb-0 fw-medium flex-grow-1">@{{item.first_name}}</h6>
                                        <span class="">Roll No: <span class="fw-semibold">12</span> </span>
