@@ -41,7 +41,7 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">First Name *  <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">First Name <span class="text-danger-600">* </span> </label>
                         <input type="text" class="form-control" ng-model="formData.first_name">
                     </div>
 
@@ -194,7 +194,7 @@
         </div>
         <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden mt-16">
             <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
-                <h6 class="text-lg fw-semibold mb-0">Previous School Detailso</h6>
+                <h6 class="text-lg fw-semibold mb-0">Previous School Details</h6>
             </div>
             <div class="card-body p-20">
                 <div class="row g-3">
