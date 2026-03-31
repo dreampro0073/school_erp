@@ -10,7 +10,7 @@
       Collect Fees
       </button>
    </div>
-   <div class="card-body p-0 dataTable-wrapper">
+   <div class="card-body p-0 dataTable-wrapper d-none">
       <div class="p-20">
          <div class="row g-3">
             <div class="col-xl-3 col-sm-6">

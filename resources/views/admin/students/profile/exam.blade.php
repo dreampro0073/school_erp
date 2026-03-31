@@ -3,7 +3,7 @@
       class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
       <h6 class="text-lg fw-semibold mb-0">Exam </h6>
    </div>
-   <div class="card-body p-20 d-flex flex-column gap-20">
+   <div class="card-body p-20 d-flex flex-column gap-20 d-none">
       <div class="border radius-8 overflow-hidden">
          <button type="button"
             class="custom-accordion-btn text-md fw-semibold text-secondary-light w-100 py-10 px-20 d-flex align-items-center gap-12 justify-content-between">

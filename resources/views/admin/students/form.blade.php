@@ -19,11 +19,11 @@
             </div>
             <div class="card-body p-20">
                 <div class="row g-3">
-                    <div class="form-group col-md-4">
+                   <!--  <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Admission No  <span class="text-danger-600">* </span> </label>
                        
                         <input type="text" class="form-control" ng-model="formData.admission_no">
-                    </div>
+                    </div> -->
 
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Class  <span class="text-danger-600">* </span> </label>
@@ -101,6 +101,66 @@
                         </select>
                     </div>
 
+                    <div class="form-group col-md-4">
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Status  <span class="text-danger-600">* </span> </label>
+                        <select class="form-select" ng-model="formData.approved" convert-to-number>
+                            <option value="0">Active</option>
+                            <option value="1">Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label class="text-sm fw-semibold text-primary-light d-block mb-8">Photo</label>
+
+                        <button type="button"
+                            ng-if="!formData.student_photo || formData.student_photo == ''"
+                            class="btn btn-primary-600 border border-primary-600 text-md px-28 py-8 radius-8"
+                            ngf-select="uploadFile($file,'student_photo',formData)"
+                            ng-hide="formData.uploading">
+                            Select Image
+                        </button>
+
+                        <a ng-href="@{{formData.student_photo}}"
+                           ng-show="formData.student_photo"
+                           class="btn btn-primary-600 border border-primary-600 text-md px-28 py-8 radius-8"
+                           target="_blank">
+                           View Image
+                        </a>
+
+                        <button ng-show="formData.student_photo"
+                            type="button"
+                            class="btn btn-danger"
+                            ng-click="removeFile(formData,'student_photo')">
+                            X
+                        </button>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label class="text-sm fw-semibold text-primary-light d-block mb-8">Aadhar Card</label>
+                        <button type="button"
+                            ng-if="!formData.aadhar_card || formData.aadhar_card == ''"
+                            class="btn btn-primary-600 border border-primary-600 text-md px-28 py-8 radius-8"
+                            ngf-select="uploadFile($file,'aadhar_card',formData)"
+                            ng-hide="formData.uploading">
+                            Select Image
+                        </button>
+
+                        <a ng-href="@{{formData.aadhar_card}}"
+                           ng-show="formData.aadhar_card"
+                           class="btn btn-primary-600 border border-primary-600 text-md px-28 py-8 radius-8"
+                           target="_blank">
+                           View Image
+                        </a>
+
+                        <button ng-show="formData.aadhar_card"
+                            type="button"
+                            class="btn btn-danger"
+                            ng-click="removeFile(formData,'aadhar_card')">
+                            X
+                        </button>
+                    </div>
+
+
                                     
                 </div>
             </div>
@@ -153,14 +213,7 @@
                         <input type="text" class="form-control" ng-model="formData.mother_aadhar_no">
                     </div>
 
-                    <div class="form-group col-md-4">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Status  <span class="text-danger-600">* </span> </label>
-                        <select class="form-select" ng-model="formData.active">
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
-                        </select>
-                    </div>
-
+                    
                 </div>
 
                 
@@ -199,12 +252,12 @@
             <div class="card-body p-20">
                 <div class="row g-3">
                     <div class="form-group col-md-6">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">School Name <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">School Name</label>
                         <input type="text" class="form-control" ng-model="formData.previous_school">
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Address  <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Address</label>
                         <input type="text" class="form-control" ng-model="formData.previous_school_address">
                     </div>
                     

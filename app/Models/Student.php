@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-use App\Models\StudentParent;
+use App\Models\StudentParent,App\Models\Standard,App\Models\Section;
 use App\Models\User;
 
 class Student extends Model
@@ -15,7 +15,7 @@ class Student extends Model
     // protected $appends = ['blood_group_name'];
     protected $guarded = [];
 
-    public function studentId($student_token){
+    public static function studentId($student_token){
         $studentId = Student::where('unique_id', $student_token)->value('id');
         return $studentId ? $studentId : 0;
     }
@@ -31,6 +31,12 @@ class Student extends Model
     public function parentUser(){
         return $this->belongsTo(StudentParent::class, 'parent_id');
     }
+    public function standard(){
+        return $this->belongsTo(Standard::class, 'standard_id');
+    }
+    public function section(){
+        return $this->belongsTo(Section::class, 'section_id');
+    }
 
     // public function bloodGroup(){
     //     return $this->belongsTo(MasterData::class, 'blood_group_id');
@@ -39,4 +45,6 @@ class Student extends Model
     // public function getBloodGroupNameAttribute(){
     //     return $this->bloodGroup->master_name ?? null;
     // }
+
+   
 }

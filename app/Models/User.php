@@ -124,6 +124,10 @@ class User extends Authenticatable {
         return $sql;
     }
 
+    public static function fileExtensions(){
+        return ["jpg","jpeg","JPG","JPEG","png","PNG"];
+    }
+
    
 
         

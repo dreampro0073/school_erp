@@ -3,7 +3,7 @@
       class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
       <h6 class="text-lg fw-semibold mb-0">Attendance</h6>
    </div>
-   <div class="card-body p-0">
+   <div class="card-body p-0 d-none">
       <div class="px-20 pt-20">
          <div class="row row-cols-xxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 g-3">
             <div class="col">

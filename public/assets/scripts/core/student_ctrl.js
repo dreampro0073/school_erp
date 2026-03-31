@@ -52,7 +52,7 @@ app.controller('studentCtrl', function($scope , $http, $timeout , DBService, Upl
         });
     }   
 });
-app.controller('addStudentCtrl', function($scope , DBService){
+app.controller('addStudentCtrl', function($scope , DBService,Upload){
     $scope.processing = false;
     $scope.formData = {
         enc_id: '',
@@ -72,7 +72,9 @@ app.controller('addStudentCtrl', function($scope , DBService){
         parent_aadhar_no: '',
         document_type: 'Aadhar',
         document_no: '',
-        active: '1'
+        active: '1',
+        student_photo:'',
+        aadhar_card:'',
     };
 
     $scope.blood_groups = [];
@@ -135,6 +137,53 @@ app.controller('addStudentCtrl', function($scope , DBService){
             }
 
         });
+    };
+
+    $scope.uploadFile = function (file, name, object) {
+
+      
+        if (file.size > 1024 * 1024) {
+            alert("File size must be less than 1MB");
+            return;
+        }
+
+        object.uploading = true;
+
+        var url = base_url + '/api/admin/students/uploadFile';
+
+        Upload.upload({
+            url: url,
+            data: {
+                media: file
+            }
+        }).then(function (resp) {
+
+            if (resp.data.success) {
+
+                object[name] = resp.data.data.media_link;
+                object[name + '_link'] = resp.data.data.media_link;
+
+            } else {
+                alert(resp.data.message);
+            }
+
+            object.uploading = false;
+
+        }, function (resp) {
+            object.uploading = false;
+            alert("Upload failed, please try again");
+
+        }, function (evt) {
+            object.progress = parseInt(100.0 * evt.loaded / evt.total);
+
+        });
+
+
+    };
+
+    $scope.removeFile = function (object, name) {
+        object[name] = '';
+        object[name + '_link'] = '';
     };
 });
 
