@@ -120,7 +120,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="javascript:;" ng-click="getFees();changeTab(4)" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 "  ng-class="{'active': tab == 4 }">
+                            <a href="javascript:;" ng-click="getFees();getFeeParams();changeTab(4)" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 "  ng-class="{'active': tab == 4 }">
                                 <span class="d-flex tab-icon line-height-1 text-md">
                                     <i class="ri-money-dollar-box-line"></i>
                                 </span>

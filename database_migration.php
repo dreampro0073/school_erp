@@ -389,6 +389,10 @@ ALTER TABLE `fee_payments` ADD `transction_id` VARCHAR(255) NULL DEFAULT NULL AF
 
 ALTER TABLE `fee_payments` ADD `remarks` TEXT NULL DEFAULT NULL AFTER `cheque_no`;
 
+ALTER TABLE `fee_payments` ADD `added_by` INT NOT NULL DEFAULT '0' AFTER `transction_id`;
+
+ALTER TABLE `fee_payments` ADD `standard_id` INT NOT NULL DEFAULT '0' AFTER `school_id`;
+
 
 ALTER TABLE `teachers` ADD `father_name` VARCHAR(255) NULL DEFAULT NULL AFTER `resign_date`, ADD `father_mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `father_name`, ADD `father_email` VARCHAR(255) NULL DEFAULT NULL AFTER `father_mobile`, ADD `father_aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER `father_email`, ADD `mother_name` VARCHAR(255) NULL DEFAULT NULL AFTER `father_aadhar_no`, ADD `mother_mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `mother_name`, ADD `mother_email` VARCHAR(100) NULL DEFAULT NULL AFTER `mother_mobile`, ADD `mother_aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER `mother_email
 

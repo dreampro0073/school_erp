@@ -331,24 +331,65 @@ class StudentController extends Controller
         ]); 
 
     }
+    public function getFeeParams(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $student_token = $request->student_token;
+        $student_id = Student::studentId($student_token);
 
+        return response()->json([
+            "success" => true,
+            "fee_types" => FeeType::getFeeTypes(),
+            "fee_frequencies" => FeePayment::getFeeFrequencies($user->client_id),
+            "payment_modes" => FeePayment::getPaymentModes(),
+            "months" => FeePayment::getMonths(),
+        ]); 
+
+    }  
     public function getFees(Request $request){
         $apiToken = $request->header('apiToken');
         $user = User::authUser($apiToken);
         $student_token = $request->student_token;
         $student_id = Student::studentId($student_token);
 
-        $payments = [];
+        $limit = $request->has('limit')?$request->limit:2;
+
+        $months = [
+            1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'May',6=>'Jun',
+            7=>'Jul',8=>'Aug',9=>'Sep',10=>'Oct',11=>'Nov',12=>'Dec'
+        ];
+
+
+        $query = FeePayment::with(['feeType:id,name','paymentMode:id,name'])->where([
+            'school_id'=> $user->client_id,
+            'student_id'=> $student_id,
+
+        ]);
+       
+        $payments = $query->orderBy('id', 'DESC')->paginate($limit);
+
+        $payments->getCollection()->transform(function ($item) use ($months) {
+
+            return [
+                'id' => $item->id,
+                'amount' => $item->amount,
+                'month' => $item->month,
+                'month_name' => $months[$item->month] ?? null,
+                'fee_type_id' => $item->fee_type_id,
+                'fee_type_name' => $item->feeType->name ?? null,
+                'payment_mode' => $item->paymentMode->name ?? null,
+                
+                'paid_date' => date("d-m-Y",strtotime($item->paid_date)),
+            ];
+        });
 
         return response()->json([
             "success" => true,
-            "payments" => $payments,
-            "fee_types" => FeeType::getFeeTypes(),
-            "fee_frequencies" => FeePayment::getFeeFrequencies($user->client_id),
-            "payment_modes" => FeePayment::getPaymentModes(),
-        ]); 
+            "data" => $payments
+        ]);
 
-    }    
+    }
+   
 
     public function getFeeSubs(Request $request){
         $apiToken = $request->header('apiToken');
@@ -369,6 +410,9 @@ class StudentController extends Controller
     public function collectFee(Request $request){
         $authUser = User::resolveApiUser($request);
 
+        $student_token = $request->student_token;
+        $student_id = Student::studentId($student_token);
+
         $message = "Fee details Successfully saved!";
 
         $validator = Validator::make($request->all(), [
@@ -387,97 +431,43 @@ class StudentController extends Controller
         }
 
         $data = $request->only([
-            'amount',
             'standard_id',
             'fee_type_id',
             'payment_mode',
-            
+            'amount',
+            'month',
         ]);
 
-        $parent_data = $request->only([
-            'father_name',
-            'father_email',
-            'father_mobile',
-            'father_aadhar_no',
-            'mother_name',
-            'mother_aadhar_no',
-            'father_occupation',
-            'mother_mobile',
-            'mother_email',
-            'guardian_name'
-        ]);
+        $data['school_id'] = $authUser->client_id;
+        $data['student_id'] = $student_id;
+        $data['paid_date'] = now();
+        $data['added_by'] = $authUser->id;
 
         DB::beginTransaction();
         try {
-            $parentUser = User::where('email',$parent_data['father_email'])->first();
-           
-            if(!$parentUser){
-                $parentPassword = User::getRandPassword();
-                $parentUser = new User;
-                $parentUser->name = $parent_data['father_name'];
-                $parentUser->email = $parent_data['father_email'];
-                $parentUser->password = Hash::make($parentPassword);
-                $parentUser->password_check = $parentPassword;
-                $parentUser->parent_user_id =0;
-                $parentUser->added_by = $authUser->id;
-                $parentUser->org_id = $authUser->org_id;
-                $parentUser->client_id = $authUser->client_id;
-                $parentUser->priv = 5;
-                $parentUser->save();
-            }else{ 
-                $parentUser->name = $parent_data['father_name'];
-                $parentUser->save();
-            }
+            if(!$request->id){
+                $exists = FeePayment::where([
+                    'student_id' => $data['student_id'],
+                    'fee_type_id' => $data['fee_type_id'],
+                    'month' => $data['month'],
+                    'school_id' => $data['school_id']
+                ])->exists();
 
-            $parent = StudentParent::where('user_id',$parentUser->id)->first();
+                if ($exists) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Fee already collected for this month'
+                    ], 422);
+                }
 
-            if(!$parent){
-                $parent_data['user_id'] = $parentUser->id;
-                $parent_data['school_id'] = $authUser->client_id;
-                $parent_data['unique_id'] = time().$authUser->client_id.$authUser->id.$parentUser->id;
-                $parent = StudentParent::create($parent_data);
-            }else{
-                $parent->update($parent_data);
-            }
-
-            $user = User::where('email',$request->email)->first();
-            if(!$user){
-                $user = new User;
-                $password = User::getRandPassword();
-                $user->password = Hash::make($password);
-                $user->name = $data['first_name'].' '.$data['last_name'];
-                $user->start_date = $authUser->start_date;
-                $user->parent_user_id = $parentUser->id;
-                $user->added_by = $authUser->id;
-                $user->password_check = $password;
-                $user->org_id = $authUser->org_id;
-                $user->client_id = $authUser->client_id;
-                $user->priv = 4;
-                $user->email = $data['email'] ?? null;
-                $user->save();
-
-                $data['school_id'] = $authUser->client_id;
-                $data['user_id'] = $user->id;
-                $data['parent_id'] = $parent->id;
-                $data['unique_id'] = time().$authUser->client_id.$authUser->id;
-            }else{
-                $user->name = $data['first_name'].' '.$data['last_name'];
-                $user->save();
-            }
-
-            $data['name'] = $data['first_name'].' '.$data['last_name'];
-            $data['dob'] = date("Y-m-d",strtotime($request->dob));
-
-            if(!$e_student){
-                $data['admission_no'] = $this->generateAdmissionNumber($authUser->client_id);
-
-                $student = Student::create($data);
+                $fee_payment = FeePayment::create($data);
+                $message = "Fee collected successfully!";
 
             }else{
-                $data['admission_no'] = $this->generateAdmissionNumber($authUser->client_id);
-                
-                $e_student->update($data);
-                $student = $e_student;
+                $fee_payment = FeePayment::where('id', $request->id)->where('school_id', $authUser->client_id)->first();
+
+                $fee_payment->update($data);
+                $message = "Fee updated successfully!";
             }
 
             DB::commit();
@@ -485,7 +475,7 @@ class StudentController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'student' => $student
+                'student' => $fee_payment
             ]);
 
         } catch (\Exception $e){

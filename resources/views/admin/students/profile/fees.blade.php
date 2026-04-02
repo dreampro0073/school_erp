@@ -1,4 +1,4 @@
-<div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
+<div class="shadow-1 radius-12 bg-base h-100 overflow-hidden dt-container">
    <div
       class="card-header border-bottom bg-base py-10 px-20 d-flex align-items-center justify-content-between">
       <h6 class="text-lg fw-semibold mb-0">Fees </h6>
@@ -10,8 +10,8 @@
       Collect Fees
       </button>
    </div>
-   <div class="card-body p-0 dataTable-wrapper d-none">
-      <div class="p-20">
+   <div class="card-body p-0 dataTable-wrapper" style="overflow-x: scroll;">
+      <div class="p-20 d-none">
          <div class="row g-3">
             <div class="col-xl-3 col-sm-6">
                <div
@@ -97,7 +97,8 @@
       </div>
       <div
          class="d-flex flex-wrap align-items-center gap-24 justify-content-between px-20 pb-16">
-         <div class="d-flex flex-wrap align-items-center gap-16">
+         <div class="align-items-center gap-16" style="display: none;">
+         <!-- <div class="d-flex flex-wrap align-items-center gap-16" > -->
             <form class="navbar-search dt-search m-0">
                <input type="text" class="dt-input bg-transparent radius-4"
                   aria-controls="dataTable" name="search" placeholder="Search...">
@@ -144,21 +145,24 @@
                </ul>
             </div>
          </div>
-         <div class="d-flex align-items-center gap-8 text-secondary-light">
-            <span class="">
-            Rows per page:
-            </span>
-            <div class="dt-length">
-               <select name="dataTable_length" aria-controls="dataTable"
-                  class="dt-input form-control form-select">
-                  <option value="5">5</option>
-                  <option value="10" selected>10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-               </select>
-            </div>
+         <div style="display:none;">
+            <div class="d-flex align-items-center gap-8 text-secondary-light">
+                <span class="">
+                Rows per page:
+                </span>
+                <div class="dt-length">
+                   <select name="dataTable_length" aria-controls="dataTable"
+                      class="dt-input form-control form-select">
+                      <option value="5">5</option>
+                      <option value="10" selected>10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                   </select>
+                </div>
+             </div>
          </div>
+        
       </div>
       <table class="table bordered-table mb-0 table-heading-dark-mode w-100 data-table"
          id="dataTableTwo" data-page-length='10'>
@@ -173,301 +177,54 @@
                   </div>
                </th>
                <th scope="col">Fees Type</th>
-               <th scope="col">Due Date</th>
-               <th scope="col">Payment Type</th>
                <th scope="col">Amount</th>
-               <th scope="col">Discount</th>
-               <th scope="col">Fine</th>
-               <th scope="col">Paid</th>
-               <th scope="col">Due</th>
+
+               <th scope="col">Payment Mode</th>
                <th scope="col">Paid Date</th>
                <th scope="col">Status</th>
             </tr>
          </thead>
          <tbody>
-            <tr>
+            <tr ng-repeat="item in payments track by $index">
                <td>
                   <div class="form-check style-check d-flex align-items-center">
                      <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">01</label>
+                     <label class="form-check-label">@{{$index+1}}</label>
                   </div>
                </td>
-               <td>May Month Fees</td>
-               <td>05 May 2025</td>
-               <td>Bank</td>
-               <td>$700.50</td>
-               <td>10%</td>
-               <td>$50</td>
-               <td>$700.50</td>
-               <td>$0</td>
-               <td>12 May 2025</td>
+               <td>
+                   @{{item.fee_type_name}}  <span ng-show="item.month_name">(@{{item.month_name}})</span>
+               </td>
+               <td>
+                   @{{item.amount}}
+               </td>
+               <td>
+                   @{{item.payment_mode}}
+               </td>
+               <td>
+                   @{{item.paid_date}}
+               </td>
                <td>
                   <span
                      class="bg-success-100 text-success-600 px-20 py-4 radius-4 fw-medium text-sm">
-                  Paid
+                     Paid
                   </span>
                </td>
             </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">02</label>
-                  </div>
-               </td>
-               <td>June Month Fees</td>
-               <td>05 Jun 2025</td>
-               <td>Cash</td>
-               <td>$680.00</td>
-               <td>5%</td>
-               <td>$30</td>
-               <td>$350.00</td>
-               <td>$330.00</td>
-               <td>09 Jun 2025</td>
-               <td>
-                  <span
-                     class="bg-warning-100 text-warning-600 px-20 py-4 radius-4 fw-medium text-sm">
-                  Partial
-                  </span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">03</label>
-                  </div>
-               </td>
-               <td>July Month Fees</td>
-               <td>05 Jul 2025</td>
-               <td>Bank</td>
-               <td>$700.00</td>
-               <td>10%</td>
-               <td>$0</td>
-               <td>$0.00</td>
-               <td>$700.00</td>
-               <td>-</td>
-               <td>
-                  <span
-                     class="bg-danger-100 text-danger-600 px-20 py-4 radius-4 fw-medium text-sm">
-                  Unpaid
-                  </span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">04</label>
-                  </div>
-               </td>
-               <td>August Month Fees</td>
-               <td>05 Aug 2025</td>
-               <td>Online</td>
-               <td>$750.00</td>
-               <td>15%</td>
-               <td>$40</td>
-               <td>$750.00</td>
-               <td>$0</td>
-               <td>07 Aug 2025</td>
-               <td>
-                  <span
-                     class="bg-success-100 text-success-600 px-20 py-4 radius-4 fw-medium text-sm">
-                  Paid
-                  </span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">05</label>
-                  </div>
-               </td>
-               <td>September Month Fees</td>
-               <td>05 Sep 2025</td>
-               <td>Bank</td>
-               <td>$720.00</td>
-               <td>10%</td>
-               <td>$25</td>
-               <td>$360.00</td>
-               <td>$360.00</td>
-               <td>10 Sep 2025</td>
-               <td>
-                  <span
-                     class="bg-warning-100 text-warning-600 px-20 py-4 radius-4 fw-medium text-sm">
-                  Partial
-                  </span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">06</label>
-                  </div>
-               </td>
-               <td>June month fees</td>
-               <td>05 Jun 2025</td>
-               <td>Cash</td>
-               <td>$700.50</td>
-               <td>5%</td>
-               <td>$0</td>
-               <td>$665.00</td>
-               <td>$35.50</td>
-               <td>07 Jun 2025</td>
-               <td><span
-                  class="bg-warning-100 text-warning-600 px-20 py-4 radius-4 fw-medium text-sm">Partial</span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">07</label>
-                  </div>
-               </td>
-               <td>July month fees</td>
-               <td>05 Jul 2025</td>
-               <td>Bank</td>
-               <td>$700.50</td>
-               <td>10%</td>
-               <td>$25</td>
-               <td>$700.50</td>
-               <td>$0</td>
-               <td>06 Jul 2025</td>
-               <td><span
-                  class="bg-success-100 text-success-600 px-20 py-4 radius-4 fw-medium text-sm">Paid</span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">08</label>
-                  </div>
-               </td>
-               <td>August month fees</td>
-               <td>05 Aug 2025</td>
-               <td>Card</td>
-               <td>$700.50</td>
-               <td>0%</td>
-               <td>$0</td>
-               <td>$0</td>
-               <td>$700.50</td>
-               <td>-</td>
-               <td><span
-                  class="bg-danger-100 text-danger-600 px-20 py-4 radius-4 fw-medium text-sm">Unpaid</span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">09</label>
-                  </div>
-               </td>
-               <td>September month fees</td>
-               <td>05 Sep 2025</td>
-               <td>Online</td>
-               <td>$700.50</td>
-               <td>5%</td>
-               <td>$15</td>
-               <td>$350.00</td>
-               <td>$350.50</td>
-               <td>08 Sep 2025</td>
-               <td><span
-                  class="bg-warning-100 text-warning-600 px-20 py-4 radius-4 fw-medium text-sm">Partial</span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">10</label>
-                  </div>
-               </td>
-               <td>October month fees</td>
-               <td>05 Oct 2025</td>
-               <td>Bank</td>
-               <td>$700.50</td>
-               <td>10%</td>
-               <td>$20</td>
-               <td>$700.50</td>
-               <td>$0</td>
-               <td>06 Oct 2025</td>
-               <td><span
-                  class="bg-success-100 text-success-600 px-20 py-4 radius-4 fw-medium text-sm">Paid</span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">11</label>
-                  </div>
-               </td>
-               <td>November month fees</td>
-               <td>05 Nov 2025</td>
-               <td>Cash</td>
-               <td>$700.50</td>
-               <td>0%</td>
-               <td>$0</td>
-               <td>$0</td>
-               <td>$700.50</td>
-               <td>-</td>
-               <td><span
-                  class="bg-danger-100 text-danger-600 px-20 py-4 radius-4 fw-medium text-sm">Unpaid</span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">12</label>
-                  </div>
-               </td>
-               <td>December month fees</td>
-               <td>05 Dec 2025</td>
-               <td>Online</td>
-               <td>$700.50</td>
-               <td>15%</td>
-               <td>$0</td>
-               <td>$595.00</td>
-               <td>$105.50</td>
-               <td>10 Dec 2025</td>
-               <td><span
-                  class="bg-warning-100 text-warning-600 px-20 py-4 radius-4 fw-medium text-sm">Partial</span>
-               </td>
-            </tr>
-            <tr>
-               <td>
-                  <div class="form-check style-check d-flex align-items-center">
-                     <input class="form-check-input" type="checkbox">
-                     <label class="form-check-label">13</label>
-                  </div>
-               </td>
-               <td>January month fees</td>
-               <td>05 Jan 2026</td>
-               <td>Bank</td>
-               <td>$700.50</td>
-               <td>10%</td>
-               <td>$0</td>
-               <td>$700.50</td>
-               <td>$0</td>
-               <td>06 Jan 2026</td>
-               <td><span
-                  class="bg-success-100 text-success-600 px-20 py-4 radius-4 fw-medium text-sm">Paid</span>
-               </td>
-            </tr>
+            
          </tbody>
       </table>
+      <modern-pagination
+          current-page="currentPage"
+          total-pages="totalPages"
+          total-records="totalRecords"
+          on-page-change="changePage(page)">
+       </modern-pagination>
    </div>
 </div>
 
 <div class="my-sidebar bg-white position-fixed end-0 top-0 h-100vh overflow-y-auto z-99 max-w-700-px w-100 translate-x-full duration-300"
      ng-class="{'active active-translate-0': isSidebarOpen}" style="z-index: 9999!;">
-
     <div class="px-20 py-12 border-bottom d-flex align-items-center justify-content-between gap-20">
         <h5 class="text-lg mb-0">@{{ isEditMode ? 'Edit Payment' : 'Add New Payment' }}</h5>
         <button type="button" class="close-my-sidebar text-danger-600 text-lg d-flex" ng-click="closeSidebar()">
@@ -475,33 +232,40 @@
         </button>
     </div>
 
-    <form ng-submit="collectFees()" class="d-flex flex-column p-20">
+    <form name="myForm" novalidate="novalidate" ng-submit="collectFees(myForm.$valid)" class="d-flex flex-column p-20">
         <div class="row g-3">
-
             <div class="col-sm-12 form-group">
                 <label class="text-sm fw-semibold text-primary-light mb-8">Fee Type</label>
-                <select class="form-select" ng-model="formData.fee_type_id" convert-to-number ng-change="getFeeSubs()">
-                    <option value="">Select</option>
+                <select class="form-select" ng-model="formData.fee_type_id" convert-to-number ng-change="onChangeFeeType()" required>
+                    <option value="0">Select</option>
                     <option value="@{{item.value}}" ng-repeat="item in fee_types">@{{item.label}}</option>
                 </select>
             </div>
             <div class="col-sm-12 form-group" ng-show="formData.fee_type_id == 2 || formData.fee_type_id == 3">
                 <label class="text-sm fw-semibold text-primary-light mb-8">Fee Frequencies</label>
-                <select class="form-select" ng-model="formData.frequency_id" convert-to-number ng-change="getFeeSubs()">
-                    <option value="">Select</option>
+                <select class="form-select" ng-model="formData.frequency_id" convert-to-number ng-change="getFeeSubs();">
+                    <option value="0">Select</option>
                     <option value="@{{item.value}}" ng-repeat="item in fee_frequencies">@{{item.label}}</option>
+                </select>
+            </div>
+
+            <div class="col-sm-12 form-group" ng-show="formData.fee_type_id == 2 || formData.fee_type_id == 3">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Month</label>
+                <select class="form-select" ng-model="formData.month" convert-to-number >
+                    <option value="0">Select</option>
+                    <option value="@{{item.value}}" ng-repeat="item in months">@{{item.label}}</option>
                 </select>
             </div>
 
             <div class="col-sm-12 form-group">
                 <label class="text-sm fw-semibold text-primary-light mb-8">Amount</label>
-                <input type="text" class="form-control" ng-model="formData.amount">
+                <input type="text" class="form-control" ng-model="formData.amount" readonly>
 
             </div>
 
             <div class="col-sm-12 form-group">
                 <label class="text-sm fw-semibold text-primary-light mb-8">Payment Mode</label>
-                <select class="form-select" ng-model="formData.payment_mode" convert-to-number>
+                <select class="form-select" ng-model="formData.payment_mode" convert-to-number required>
                     <option value="">Select</option>
                     <option value="@{{item.value}}" ng-repeat="item in payment_modes">@{{item.label}}</option>
                 </select>
@@ -525,8 +289,12 @@
                 <div class="d-flex justify-content-center gap-3 mt-8">
                     <button type="button" ng-click="resetForm()" class="border border-danger-600 text-danger-600 px-50 py-11 radius-8"> Cancel </button>
 
-                    <button type="submit" class="btn btn-primary-600 px-28 py-12 radius-8 w-100">
-                        @{{ isEditMode ? 'Update' : 'Save' }}
+                    <button ng-disabled="formData.amount == 0 || formData.collect_fee_loading " type="submit" class="btn btn-primary-600 px-28 py-12 radius-8 w-100">
+                        <span ng-if="!collect_fee_loading">@{{ isEditMode ? 'Update' : 'Collect' }}</span>
+
+                        <div ng-if="collect_fee_loading" class="spinner-grow text-success" role="status">
+                          
+                        </div>
                     </button>
                 </div>
             </div>
