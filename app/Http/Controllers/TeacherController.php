@@ -57,12 +57,6 @@ class TeacherController extends Controller {
         return view('admin.teachers.index');
     }
 
-    public function addTeacherPage($teacher_token=0) {
-        return view('admin.teachers.form', [
-            'teacher_token' => $teacher_token,
-        ]);
-    }
-
     public function initTeachers(Request $request) {
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
@@ -83,6 +77,91 @@ class TeacherController extends Controller {
         return response()->json([
             'success' => true,
             'teachers' => $teachers,
+        ]);
+    }
+
+    public function addTeacherPage($teacher_token=0) {
+        return view('admin.teachers.form', [
+            'teacher_token' => $teacher_token,
+        ]);
+    }
+
+    public function viewDetails(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $teacher_token = $request->teacher_token;
+
+        $teacher = Teacher::where('unique_id',$request->teacher_token)->first();
+
+        return response()->json([
+            "success" => true,
+            "teacher" => $teacher,
+            "blood_groups" => MasterData::getMasterData(4),
+            "religions" => MasterData::getMasterData(1),
+            "casts" => MasterData::getMasterData(2),
+        ]);
+    }
+
+    public function initDetails(Request $request)
+    {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+
+        $teacher = Teacher::where('unique_id', $request->teacher_token)->first();
+
+        if(!$teacher){
+            return response()->json([
+                "success" => false,
+                "message" => "Teacher not found"
+            ],404);
+        }
+
+        $bank = DB::table('bank_details')->where('user_id', $teacher->user_id)->first();
+
+        $response = [
+            'enc_id' => $teacher->unique_id,
+
+            'first_name' => $teacher->first_name,
+            'last_name' => $teacher->last_name,
+            'email' => $teacher->email,
+            'mobile' => $teacher->mobile,
+            'gender' => $teacher->gender,
+            'dob' => $teacher->dob,
+            'aadhar_no' => $teacher->aadhar_no,
+
+            'residential_address' => $teacher->residential_address,
+            'permanent_address' => $teacher->permanent_address,
+
+            // Parent
+            'father_name' => $teacher->father_name,
+            'father_mobile' => $teacher->father_mobile,
+            'father_aadhar_no' => $teacher->father_aadhar_no,
+
+            'mother_name' => $teacher->mother_name,
+            'mother_mobile' => $teacher->mother_mobile,
+            'mother_aadhar_no' => $teacher->mother_aadhar_no,
+
+            // Bank (IMPORTANT change)
+            'bank_details' => [
+                'account_holder_name' => $bank->account_holder_name ?? null,
+                'bank_name' => $bank->bank_name ?? null,
+                'account_number' => $bank->account_number ?? null,
+                'ifsc_code' => $bank->ifsc_code ?? null,
+                'branch_name' => $bank->branch_name ?? null,
+                'upi_id' => $bank->upi_id ?? null,
+            ],
+
+            'active' => $teacher->active,
+        ];
+
+        return response()->json([
+            "success" => true,
+            "teacher" => $response,
+
+            // Dropdowns
+            "blood_groups" => MasterData::getMasterData(4),
+            "religions" => MasterData::getMasterData(1),
+            "casts" => MasterData::getMasterData(2),
         ]);
     }
 

@@ -586,17 +586,13 @@ app.controller('teacherCtrl', function($scope , DBService){
         remark: ''
     };
 
-    $scope.applyFilters = function() {
-    
-    };
-
     $scope.resetFilters = function() {
         $scope.filters = {
             search: '',
             gender: '',
             status: ''
         };
-        $scope.applyFilters();
+        $scope.init();
     };
 
     $scope.init = function() {
@@ -608,7 +604,6 @@ app.controller('teacherCtrl', function($scope , DBService){
                 $scope.allTeachers = [];
                 $scope.teachers = [];
             }
-            $scope.applyFilters();
             $scope.loading = false;
         });
 
