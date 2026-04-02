@@ -81,6 +81,8 @@ use App\Http\Controllers\SchoolManagementController;
                 Route::post('/get-leaves', 'getLeaves');
                 Route::post('/get-exams', 'getExams');
                 Route::post('/get-fees', 'getFees');
+                Route::post('/get-fee-subs', 'getFeeSubs');
+                Route::post('/collect-fee', 'collectFee');
                 Route::post('/uploadFile', 'uploadFile');
             }
         );

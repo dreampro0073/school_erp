@@ -267,89 +267,6 @@ ALTER TABLE `students` ADD INDEX( `school_id`, `user_id`, `parent_id`, `erp_id`,
 
 ALTER TABLE `parents` ADD INDEX( `school_id`, `user_id`, `erp_id`, `added_by`);
 
-CREATE TABLE fee_structures (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    class_id BIGINT UNSIGNED NOT NULL,
-    fee_type_id BIGINT UNSIGNED NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    frequency ENUM('monthly','yearly','one_time') NOT NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL,
-    UNIQUE KEY unique_class_fee (class_id, fee_type_id)
-);
-
-CREATE TABLE fee_installments (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    start_date DATE NULL,
-    due_date DATE NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL
-);
-
-CREATE TABLE student_fees (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    student_id BIGINT UNSIGNED NOT NULL,
-    fee_structure_id BIGINT UNSIGNED NOT NULL,
-    installment_id BIGINT UNSIGNED NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    discount DECIMAL(10,2) DEFAULT 0,
-    final_amount DECIMAL(10,2) NOT NULL,
-    status ENUM('pending','partial','paid') DEFAULT 'pending',
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL
-);
-
-CREATE TABLE payments (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    student_id BIGINT UNSIGNED NOT NULL,
-    total_amount DECIMAL(10,2) NOT NULL,
-    paid_amount DECIMAL(10,2) NOT NULL,
-    payment_date DATE NOT NULL,
-    payment_mode ENUM('cash','online','cheque') NOT NULL,
-    transaction_id VARCHAR(255) NULL,
-    remarks TEXT NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL
-);
-
-CREATE TABLE payment_details (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    payment_id BIGINT UNSIGNED NOT NULL,
-    student_fee_id BIGINT UNSIGNED NOT NULL,
-    paid_amount DECIMAL(10,2) NOT NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL
-);
-
-CREATE TABLE receipts (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    payment_id BIGINT UNSIGNED NOT NULL,
-    receipt_no VARCHAR(255) NOT NULL UNIQUE,
-    generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL
-);
-
-CREATE TABLE discounts (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    type ENUM('percentage','fixed') NOT NULL,
-    value DECIMAL(10,2) NOT NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL
-);
-
-CREATE TABLE fines (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    student_fee_id BIGINT UNSIGNED NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    reason VARCHAR(255) NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL
-);
-
-
 // Devendra 22Mar2026
 
 ALTER TABLE `client_standards` ADD `session_id` INT NULL DEFAULT NULL AFTER `section_id`;
@@ -379,7 +296,106 @@ ALTER TABLE `teachers` ADD INDEX(`blood_group_id`);
 ALTER TABLE `teachers` ADD INDEX(`religion_id`);
 ALTER TABLE `teachers` ADD INDEX(`cast_id`);
 
+//Dipanshu Chauhan Apr 2026
+
+CREATE TABLE fee_types (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    school_id BIGINT UNSIGNED NOT NULL,
+
+    name VARCHAR(100) NOT NULL,
+    is_recurring TINYINT(1) DEFAULT 0,
+    description TEXT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+CREATE TABLE fee_frequencies (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    school_id BIGINT UNSIGNED NOT NULL,
+
+    name VARCHAR(50) NOT NULL,
+    months_count INT NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE fee_structures (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    school_id BIGINT UNSIGNED NOT NULL,
+
+    class_id BIGINT UNSIGNED NOT NULL,
+    fee_type_id BIGINT UNSIGNED NOT NULL,
+    frequency_id BIGINT UNSIGNED NULL,
+
+    amount DECIMAL(10,2) NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+
+
+CREATE TABLE student_fee_assignments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    school_id BIGINT UNSIGNED NOT NULL,
+
+    student_id BIGINT UNSIGNED NOT NULL,
+    fee_structure_id BIGINT UNSIGNED NOT NULL,
+
+    custom_amount DECIMAL(10,2) NULL,
+    discount DECIMAL(10,2) DEFAULT 0,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+ALTER TABLE `fee_structures` CHANGE `created_at` `created_at` TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `fee_types` CHANGE `created_at` `created_at` TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `fee_frequencies` CHANGE `created_at` `created_at` TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE `student_fee_assignments` CHANGE `created_at` `created_at` TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `fee_payments` CHANGE `created_at` `created_at` TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `fee_structures` CHANGE `class_id` `standard_id` BIGINT(20) UNSIGNED NOT NULL;
+
+CREATE TABLE payment_modes (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,          -- Cash, UPI, Card, etc.
+    code VARCHAR(50) UNIQUE NULL,        -- CASH, UPI, CARD (for internal use)
+    description TEXT NULL,               -- optional details
+    is_online TINYINT(1) DEFAULT 0,      -- 1 = online (UPI, NetBanking)
+    status TINYINT(1) DEFAULT 1,         -- 1 = active, 0 = inactive
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO payment_modes (name, code, is_online) VALUES
+('Cash', 'CASH', 0),
+('UPI', 'UPI', 1),
+('Debit Card', 'DEBIT_CARD', 1),
+('Credit Card', 'CREDIT_CARD', 1),
+('Net Banking', 'NET_BANKING', 1),
+('Cheque', 'CHEQUE', 0),
+('DD', 'DEMAND_DRAFT', 0),
+('Wallet', 'WALLET', 1);
+ALTER TABLE `payment_modes` CHANGE `created_at` `created_at` TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE `fee_payments` ADD `payment_mode` INT NOT NULL DEFAULT '0' AFTER `status`;
+
+ALTER TABLE `fee_payments` ADD `transction_id` VARCHAR(255) NULL DEFAULT NULL AFTER `payment_mode`, ADD `cheque_no` VARCHAR(50) NULL DEFAULT NULL AFTER `transction_id`;
+
+ALTER TABLE `fee_payments` ADD `remarks` TEXT NULL DEFAULT NULL AFTER `cheque_no`;
+
+
 ALTER TABLE `teachers` ADD `father_name` VARCHAR(255) NULL DEFAULT NULL AFTER `resign_date`, ADD `father_mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `father_name`, ADD `father_email` VARCHAR(255) NULL DEFAULT NULL AFTER `father_mobile`, ADD `father_aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER `father_email`, ADD `mother_name` VARCHAR(255) NULL DEFAULT NULL AFTER `father_aadhar_no`, ADD `mother_mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `mother_name`, ADD `mother_email` VARCHAR(100) NULL DEFAULT NULL AFTER `mother_mobile`, ADD `mother_aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER `mother_email
 
 ALTER TABLE `teachers` ADD `active` TINYINT(2) NOT NULL DEFAULT '0' AFTER `mother_aadhar_no`;
 ALTER TABLE `teachers` CHANGE `gender` `gender` VARCHAR(22) NULL DEFAULT NULL;
+
+
+//DIpanshu
+
+

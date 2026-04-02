@@ -10,5 +10,9 @@ class FeeType extends Model
     public $timestamps = false;
 
     protected $guarded = [];
+
+    public static function getFeeTypes(){
+        return FeeType::select('id as value','name as label')->get();
+    }
 }
 

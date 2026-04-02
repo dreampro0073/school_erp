@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Student,App\Models\StudentParent,App\Models\MasterData, App\Models\User,App\Models\Standard;
+use App\Models\Student,App\Models\StudentParent,App\Models\MasterData, App\Models\User,App\Models\Standard,App\Models\FeePayment,App\Models\FeeType;
 use DB;
 
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -319,8 +319,10 @@ class StudentController extends Controller
         $apiToken = $request->header('apiToken');
         $user = User::authUser($apiToken);
         $student_token = $request->student_token;
+        $standard_id = $request->standard_id;
 
         $student_id = Student::studentId($student_token);
+        
         $data = [];
 
         return response()->json([
@@ -334,17 +336,167 @@ class StudentController extends Controller
         $apiToken = $request->header('apiToken');
         $user = User::authUser($apiToken);
         $student_token = $request->student_token;
-
         $student_id = Student::studentId($student_token);
 
         $payments = [];
 
         return response()->json([
             "success" => true,
-            "payments" => $data,
+            "payments" => $payments,
+            "fee_types" => FeeType::getFeeTypes(),
+            "fee_frequencies" => FeePayment::getFeeFrequencies($user->client_id),
+            "payment_modes" => FeePayment::getPaymentModes(),
         ]); 
 
     }    
+
+    public function getFeeSubs(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+        $student_token = $request->student_token;
+        $student_id = Student::studentId($student_token);
+        $standard_id = $request->standard_id;
+        $fee_type_id = $request->fee_type_id;
+        $frequency_id = $request->has('frequency_id')?$request->frequency_id:null;
+        
+        return response()->json([
+            "success" => true,
+            "amount" => FeePayment::getFeeAmount($user->client_id,$fee_type_id,$standard_id,$frequency_id),
+        ]); 
+
+    }    
+
+    public function collectFee(Request $request){
+        $authUser = User::resolveApiUser($request);
+
+        $message = "Fee details Successfully saved!";
+
+        $validator = Validator::make($request->all(), [
+            'amount' => ['required'],
+            'standard_id' => ['required'],
+            'fee_type_id' => ['required'],
+            'payment_mode' => ['required'],
+            
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success'=>false,
+                'errors'=>$validator->errors(),
+            ],422);
+        }
+
+        $data = $request->only([
+            'amount',
+            'standard_id',
+            'fee_type_id',
+            'payment_mode',
+            
+        ]);
+
+        $parent_data = $request->only([
+            'father_name',
+            'father_email',
+            'father_mobile',
+            'father_aadhar_no',
+            'mother_name',
+            'mother_aadhar_no',
+            'father_occupation',
+            'mother_mobile',
+            'mother_email',
+            'guardian_name'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $parentUser = User::where('email',$parent_data['father_email'])->first();
+           
+            if(!$parentUser){
+                $parentPassword = User::getRandPassword();
+                $parentUser = new User;
+                $parentUser->name = $parent_data['father_name'];
+                $parentUser->email = $parent_data['father_email'];
+                $parentUser->password = Hash::make($parentPassword);
+                $parentUser->password_check = $parentPassword;
+                $parentUser->parent_user_id =0;
+                $parentUser->added_by = $authUser->id;
+                $parentUser->org_id = $authUser->org_id;
+                $parentUser->client_id = $authUser->client_id;
+                $parentUser->priv = 5;
+                $parentUser->save();
+            }else{ 
+                $parentUser->name = $parent_data['father_name'];
+                $parentUser->save();
+            }
+
+            $parent = StudentParent::where('user_id',$parentUser->id)->first();
+
+            if(!$parent){
+                $parent_data['user_id'] = $parentUser->id;
+                $parent_data['school_id'] = $authUser->client_id;
+                $parent_data['unique_id'] = time().$authUser->client_id.$authUser->id.$parentUser->id;
+                $parent = StudentParent::create($parent_data);
+            }else{
+                $parent->update($parent_data);
+            }
+
+            $user = User::where('email',$request->email)->first();
+            if(!$user){
+                $user = new User;
+                $password = User::getRandPassword();
+                $user->password = Hash::make($password);
+                $user->name = $data['first_name'].' '.$data['last_name'];
+                $user->start_date = $authUser->start_date;
+                $user->parent_user_id = $parentUser->id;
+                $user->added_by = $authUser->id;
+                $user->password_check = $password;
+                $user->org_id = $authUser->org_id;
+                $user->client_id = $authUser->client_id;
+                $user->priv = 4;
+                $user->email = $data['email'] ?? null;
+                $user->save();
+
+                $data['school_id'] = $authUser->client_id;
+                $data['user_id'] = $user->id;
+                $data['parent_id'] = $parent->id;
+                $data['unique_id'] = time().$authUser->client_id.$authUser->id;
+            }else{
+                $user->name = $data['first_name'].' '.$data['last_name'];
+                $user->save();
+            }
+
+            $data['name'] = $data['first_name'].' '.$data['last_name'];
+            $data['dob'] = date("Y-m-d",strtotime($request->dob));
+
+            if(!$e_student){
+                $data['admission_no'] = $this->generateAdmissionNumber($authUser->client_id);
+
+                $student = Student::create($data);
+
+            }else{
+                $data['admission_no'] = $this->generateAdmissionNumber($authUser->client_id);
+                
+                $e_student->update($data);
+                $student = $e_student;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'student' => $student
+            ]);
+
+        } catch (\Exception $e){
+            DB::rollback();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+    }
 
     public function destroy($id){
         Student::findOrFail($id)->delete();

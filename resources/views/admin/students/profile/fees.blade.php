@@ -2,7 +2,7 @@
    <div
       class="card-header border-bottom bg-base py-10 px-20 d-flex align-items-center justify-content-between">
       <h6 class="text-lg fw-semibold mb-0">Fees </h6>
-      <button type="button"
+      <button ng-click="openFeeModal()" type="button"
          class="collect-fees-btn btn btn-primary-600 d-flex align-items-center gap-6 py-8 text-sm">
       <span class="d-flex text-sm">
       <i class="ri-calendar-close-line"></i>
@@ -463,4 +463,74 @@
          </tbody>
       </table>
    </div>
+</div>
+
+<div class="my-sidebar bg-white position-fixed end-0 top-0 h-100vh overflow-y-auto z-99 max-w-700-px w-100 translate-x-full duration-300"
+     ng-class="{'active active-translate-0': isSidebarOpen}" style="z-index: 9999!;">
+
+    <div class="px-20 py-12 border-bottom d-flex align-items-center justify-content-between gap-20">
+        <h5 class="text-lg mb-0">@{{ isEditMode ? 'Edit Payment' : 'Add New Payment' }}</h5>
+        <button type="button" class="close-my-sidebar text-danger-600 text-lg d-flex" ng-click="closeSidebar()">
+            <i class="ri-close-large-line"></i>
+        </button>
+    </div>
+
+    <form ng-submit="collectFees()" class="d-flex flex-column p-20">
+        <div class="row g-3">
+
+            <div class="col-sm-12 form-group">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Fee Type</label>
+                <select class="form-select" ng-model="formData.fee_type_id" convert-to-number ng-change="getFeeSubs()">
+                    <option value="">Select</option>
+                    <option value="@{{item.value}}" ng-repeat="item in fee_types">@{{item.label}}</option>
+                </select>
+            </div>
+            <div class="col-sm-12 form-group" ng-show="formData.fee_type_id == 2 || formData.fee_type_id == 3">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Fee Frequencies</label>
+                <select class="form-select" ng-model="formData.frequency_id" convert-to-number ng-change="getFeeSubs()">
+                    <option value="">Select</option>
+                    <option value="@{{item.value}}" ng-repeat="item in fee_frequencies">@{{item.label}}</option>
+                </select>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Amount</label>
+                <input type="text" class="form-control" ng-model="formData.amount">
+
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Payment Mode</label>
+                <select class="form-select" ng-model="formData.payment_mode" convert-to-number>
+                    <option value="">Select</option>
+                    <option value="@{{item.value}}" ng-repeat="item in payment_modes">@{{item.label}}</option>
+                </select>
+            </div>
+
+            <div class="col-sm-12 form-group" ng-if="formData.payment_mode != 6">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Transction Id</label>
+                <input type="text" class="form-control" ng-model="formData.transction_id">
+
+            </div>
+            <div class="col-sm-12 form-group" ng-if="formData.payment_mode == 6">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Cheque No</label>
+                <input type="text" class="form-control" ng-model="formData.cheque_no" >
+
+            </div>
+
+           
+
+         
+            <div class="col-12">
+                <div class="d-flex justify-content-center gap-3 mt-8">
+                    <button type="button" ng-click="resetForm()" class="border border-danger-600 text-danger-600 px-50 py-11 radius-8"> Cancel </button>
+
+                    <button type="submit" class="btn btn-primary-600 px-28 py-12 radius-8 w-100">
+                        @{{ isEditMode ? 'Update' : 'Save' }}
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </form>
 </div>
