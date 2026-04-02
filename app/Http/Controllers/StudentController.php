@@ -281,10 +281,9 @@ class StudentController extends Controller
             "religions" => MasterData::getMasterData(1),
             "casts" => MasterData::getMasterData(2),
             "standards" => Standard::getClientStandardsDrop($user->client_id),
-        ]); 
-        
-
+        ]);
     }
+
     public function getAttendance(Request $request){
         $apiToken = $request->header('apiToken');
         $user = User::authUser($apiToken);
