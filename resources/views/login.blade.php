@@ -34,7 +34,7 @@
 <body class="h-100">
 
 
-<div class="d-lg-flex bg-white h-100">
+<div class="d-lg-flex theme-bg-white h-100">
     <div class="w-50 d-lg-flex d-none overflow-hidden h-100">
         <img src="{{url('assets/img/login-bg.jpg')}}" alt="Login Image" class="w-100 h-100 object-fit-cover">
     </div>

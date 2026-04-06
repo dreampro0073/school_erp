@@ -47,7 +47,7 @@
                                 ng-class="m.is_me ? 'justify-content-end' : 'justify-content-start'">
                                 <div
                                     class="p-10 radius-8"
-                                    ng-class="m.is_me ? 'bg-primary-600 text-white' : 'bg-white border'">
+                                    ng-class="m.is_me ? 'bg-primary-600 text-white' : 'theme-bg-white border'">
                                     <div style="white-space: pre-wrap;">@{{ m.message }}</div>
                                     <div class="small mt-1" ng-class="m.is_me ? 'text-white-50' : 'text-secondary'">
                                         @{{ m.created_at }}
