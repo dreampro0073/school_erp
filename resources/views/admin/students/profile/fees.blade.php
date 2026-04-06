@@ -223,36 +223,36 @@
 	<form name="myForm" novalidate="novalidate" ng-submit="collectFees(myForm.$valid)" class="d-flex flex-column p-20">
 		<div class="row g-3">
 			<div class="col-sm-12 form-group">
-				<label class="text-sm fw-semibold text-primary-light mb-8">Fee Type</label>
+				<label class="text-sm fw-semibold text-primary-light mb-8">Fee Type <span class="text-danger-600">* </span></label>
 				<select class="form-select" ng-model="formData.fee_type_id" convert-to-number ng-change="onChangeFeeType()" required>
-					<option value="0">Select</option>
+					<option value="">Select</option>
 					<option value="@{{item.value}}" ng-repeat="item in fee_types">@{{item.label}}</option>
 				</select>
 			</div>
-			<div class="col-sm-12 form-group" ng-show="formData.fee_type_id == 2 || formData.fee_type_id == 3">
-				<label class="text-sm fw-semibold text-primary-light mb-8">Fee Frequencies</label>
-				<select class="form-select" ng-model="formData.frequency_id" convert-to-number ng-change="getFeeSubs();">
-					<option value="0">Select</option>
+			<div class="col-sm-12 form-group" ng-if="formData.fee_type_id == 2 || formData.fee_type_id == 3">
+				<label class="text-sm fw-semibold text-primary-light mb-8">Fee Frequencies <span class="text-danger-600">* </span></label>
+				<select class="form-select" ng-model="formData.frequency_id" convert-to-number ng-change="getFeeSubs();" required>
+					<option value="">Select</option>
 					<option value="@{{item.value}}" ng-repeat="item in fee_frequencies">@{{item.label}}</option>
 				</select>
 			</div>
 
-			<div class="col-sm-12 form-group" ng-show="formData.fee_type_id == 2 || formData.fee_type_id == 3">
+			<div class="col-sm-12 form-group" ng-if="(formData.fee_type_id == 2 && formData.frequency_id == 1) || (formData.fee_type_id == 3 && formData.frequency_id == 1)">
 				<label class="text-sm fw-semibold text-primary-light mb-8">Month</label>
-				<select class="form-select" ng-model="formData.month" convert-to-number >
-					<option value="0">Select</option>
+				<select class="form-select" ng-model="formData.month" convert-to-number required>
+					<option value="">Select</option>
 					<option value="@{{item.value}}" ng-repeat="item in months">@{{item.label}}</option>
 				</select>
 			</div>
 
 			<div class="col-sm-12 form-group">
-					<label class="text-sm fw-semibold text-primary-light mb-8">Amount</label>
-					<input type="text" class="form-control" ng-model="formData.amount" readonly>
+				<label class="text-sm fw-semibold text-primary-light mb-8">Amount <span class="text-danger-600">* </span></label>
+				<input type="text" class="form-control" ng-model="formData.amount" readonly required>
 
 			</div>
 
 			<div class="col-sm-12 form-group">
-				<label class="text-sm fw-semibold text-primary-light mb-8">Payment Mode</label>
+				<label class="text-sm fw-semibold text-primary-light mb-8">Payment Mode <span class="text-danger-600">* </span></label>
 				<select class="form-select" ng-model="formData.payment_mode" convert-to-number required>
 					<option value="">Select</option>
 					<option value="@{{item.value}}" ng-repeat="item in payment_modes">@{{item.label}}</option>

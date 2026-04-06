@@ -75,7 +75,7 @@ use App\Http\Controllers\SchoolManagementController;
             ->group(function () {
                 Route::any('/init', 'initStudents');
                 Route::post('/store', 'storeStudent');
-                Route::post('/init-details', 'initDetails');
+                Route::post('/init-details', 'viewDetails');
                 Route::post('/get-profile-details', 'getProfileDetails');
                 Route::post('/get-attendance', 'getAttendance');
                 Route::post('/get-leaves', 'getLeaves');

@@ -293,6 +293,10 @@
   --input-bg: var(--neutral-50);
   --input-stroke: var(--neutral-300);
   --border-color: #d1d5db80;
+
+  .theme-bg-white{
+    background-color: var(--base) !important;
+  }
 }
 
 [data-theme=dark] {

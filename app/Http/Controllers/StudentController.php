@@ -61,7 +61,6 @@ class StudentController extends Controller
             'dob' => ['required'],
             'mobile' => ['required','digits:10'],
             'email' => 'required|email|unique:users,email,'.$user_id,
-            'admission_no' => ['nullable','string','max:100'],
             'aadhar_no'=> ['required','digits:12'], 
             'residential_address' => ['required'],
             'permanent_address' => ['required'],
@@ -94,7 +93,6 @@ class StudentController extends Controller
             'dob',
             'mobile',
             'email',
-            'admission_no',
             'aadhar_no', 
             'residential_address',
             'permanent_address',
@@ -187,7 +185,6 @@ class StudentController extends Controller
             $data['dob'] = date("Y-m-d",strtotime($request->dob));
 
             if(!$e_student){
-                $data['admission_no'] = $this->generateAdmissionNumber($authUser->client_id);
 
                 $student = Student::create($data);
 
@@ -445,18 +442,25 @@ class StudentController extends Controller
         DB::beginTransaction();
         try {
             if(!$request->id){
-                $exists = FeePayment::where([
+
+                $data_ar = [
                     'student_id' => $data['student_id'],
                     'fee_type_id' => $data['fee_type_id'],
-                    'month' => $data['month'],
                     'school_id' => $data['school_id']
-                ])->exists();
+                ];
 
-                if ($exists) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Fee already collected for this month'
-                    ], 422);
+                if($request->month != ""){
+                    $data_ar['month'] = $request->month;
+
+                    $exists = FeePayment::where($data_ar)->exists();
+
+                    if ($exists) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Fee already collected for this month/category'
+                        ], 422);
+                    }
+
                 }
 
                 $fee_payment = FeePayment::create($data);
@@ -474,7 +478,8 @@ class StudentController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'student' => $fee_payment
+                'fee_payment' => $fee_payment,
+                'payment_id' => $fee_payment->id,
             ]);
 
         } catch (\Exception $e){
@@ -572,5 +577,45 @@ class StudentController extends Controller
 
         $sequence = str_pad($nextNumber, $remainingLength, '0', STR_PAD_LEFT);
         return $prefix . $sequence;
+    }
+
+
+    public function generateReceipt($id){
+        $fee = FeePayment::with(['feeType:id,name','student:id,name','paymentMode:id,name'])
+            ->where('id', $id)
+            ->first();
+
+        if (!$fee) {
+            abort(404, 'Receipt not found');
+        }
+        $months = [
+            1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'May',6=>'Jun',
+            7=>'Jul',8=>'Aug',9=>'Sep',10=>'Oct',11=>'Nov',12=>'Dec'
+        ];
+
+        $data = (object) [
+            'id' => $fee->id,
+            'receipt_no' => 'RCPT-' . str_pad($fee->id, 6, '0', STR_PAD_LEFT),
+
+            'student_name' => $fee->student->name ?? null,
+            'fee_type_name' => $fee->feeType->name ?? null,
+            'payment_mode' => $fee->paymentMode->name ?? null,
+
+            'amount' => $fee->amount,
+            // 'payment_mode' => ucfirst($fee->payment_mode),
+
+            'month' => $fee->month,
+            'month_name' => $months[$fee->month] ?? null,
+
+            'paid_date' => date("d-m-Y",strtotime($fee->paid_date)),
+        ];
+
+        $pdf = Pdf::loadView('admin.students.receipts.fee_receipt', compact('data'));
+
+        return $pdf->stream('receipt.pdf');
+
+     
+        return $pdf->download('fee_receipt_'.$fee->id.'.pdf');
+
     }
 }
