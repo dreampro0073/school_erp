@@ -18,11 +18,11 @@
                
             </li>
             
-            <li class="nav-item">
+            <li class="nav-item" ng-if="">
                <a href="javascript:;" ng-click="type = 'exams'; typeExams()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'exams'}">  <i class="ri-file-edit-line"></i>Exams</a>
               
             </li>
-            <li class="nav-item">
+            <li class="nav-item" ng-if="">
                 <a href="javascript:;" ng-click="type = 'results'; typeResults()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 "  ng-class="{'active': type == 'results'}">  <i class="ri-book-line"></i>Results</a>
             </li>
         </ul>
@@ -39,19 +39,20 @@
 
           @include('admin.school.schedule')
          </div>
+
          <div class="tab-pane fade" role="tabpanel"
            ng-show="type == 'classes'"
            ng-class="{'active show tab-pane-animate': type == 'classes'}">
-       
             @include('admin.school.classes')
          </div>
-         <div class="tab-pane fade" role="tabpanel"
+
+         <div ng-if="" class="tab-pane fade" role="tabpanel"
            ng-show="type == 'exams'"
            ng-class="{'active show tab-pane-animate': type == 'exams'}">
        
             @include('admin.school.exams')
          </div>
-          <div class="tab-pane fade" role="tabpanel"
+          <div ng-if="" class="tab-pane fade" role="tabpanel"
            ng-show="type == 'results'"
            ng-class="{'active show tab-pane-animate': type == 'results'}">
        
