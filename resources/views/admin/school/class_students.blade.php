@@ -120,7 +120,7 @@
     </div>
 </div>
 
-<div class="my-sidebar bg-white position-fixed end-0 top-0 h-100vh overflow-y-auto z-99 max-w-700-px w-100 translate-x-full duration-300"
+<div class="my-sidebar theme-bg-white position-fixed end-0 top-0 h-100vh overflow-y-auto z-99 max-w-700-px w-100 translate-x-full duration-300"
      ng-class="{'active active-translate-0': isSidebarOpen}" style="z-index: 9999!;">
 
     <div class="px-20 py-12 border-bottom d-flex align-items-center justify-content-between gap-20">

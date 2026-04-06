@@ -42,7 +42,7 @@ app.directive("modernPagination", function () {
 
       template: `
 
-<div class="dt-layout-row">
+<div class="dt-layout-row theme-layout-row">
    <div class="dt-layout-cell dt-start ">
       <div class="dt-info" aria-live="polite" id="dataTable_info" role="status"Total Records: {{totalRecords}}>Total Records: {{totalRecords}}</div>
    </div>

@@ -344,6 +344,7 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
             if (data.success) {
                 alert(data.message);
                 $scope.closeSidebar();
+                $scope.getFees();
             } else {
                 let firstError = data.message;
                 alert(firstError);

@@ -58,5 +58,10 @@
     transform: rotate(0deg); }
   100% {
     transform: rotate(360deg); } }
+.theme-layout-row {
+  display: flex; }
+  .theme-layout-row > div {
+    flex: 0 0 50%;
+    width: 50%; }
 
 /*# sourceMappingURL=custom.css.map */

@@ -40,7 +40,7 @@
             $panelLabel = $dashboardLabels[$authPriv] ?? 'Dashboard';
         @endphp
 
-        <div class="navbar-header px-24 py-16 bg-white border-bottom border-neutral-200">
+        <div class="navbar-header px-24 py-16 theme-bg-white border-bottom border-neutral-200">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div class="d-flex align-items-center gap-3">
                     <button type="button" class="sidebar-mobile-toggle text-xl text-neutral-500">

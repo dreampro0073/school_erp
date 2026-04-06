@@ -48,7 +48,7 @@
 
 
 
-<div class="my-sidebar bg-white position-fixed end-0 top-0 h-100vh overflow-y-auto z-99 max-w-700-px w-100 translate-x-full duration-300 active-translate-0">
+<div class="my-sidebar theme-bg-white position-fixed end-0 top-0 h-100vh overflow-y-auto z-99 max-w-700-px w-100 translate-x-full duration-300 active-translate-0">
 
     <div class="px-20 py-12 border-bottom d-flex align-items-center justify-content-between gap-20">
         <h5 class="text-lg mb-0">Add New Class</h5>

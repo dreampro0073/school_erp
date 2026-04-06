@@ -327,7 +327,13 @@
   --neutral-700: #EBECEF;
   --neutral-800: #F3F4F6;
   --neutral-900: #F5F6FA;
+
+  .theme-bg-white{
+    background-color: var(--dark-2) !important;
+  }
 }
+
+
 
 /* === reset css start === */
 /* === reset css start === */
