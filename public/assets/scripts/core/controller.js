@@ -586,78 +586,36 @@ app.controller('teacherCtrl', function($scope , DBService){
         remark: ''
     };
 
-    $scope.resetFilters = function() {
-        $scope.filters = {
-            search: '',
-            gender: '',
-            status: ''
-        };
-        $scope.init();
+   $scope.resetFilters = function() {
+    $scope.filters = {
+        search: '',
+        gender: '',
+        status: ''
     };
 
-    $scope.init = function() {
-        $scope.loading = true;
-        DBService.postCall({}, '/api/admin/teachers/init').then(function(data) {
+    $scope.applyFilters(); // instead of init()
+};
+
+   $scope.init = function() {
+    $scope.applyFilters();
+};
+
+    $scope.applyFilters = function() {
+    $scope.loading = true;
+
+    DBService.postCall($scope.filters, '/api/admin/teachers/init')
+        .then(function(data) {
             if (data.success) {
-                $scope.allTeachers = data.teachers ;
-            } else {
-                $scope.allTeachers = [];
-                $scope.teachers = [];
+                $scope.teachers = data.teachers.data;
             }
             $scope.loading = false;
         });
+};
 
-        $scope.loadSalaryLogs();
-    };
+    
 
-    $scope.loadSalaryLogs = function() {
-
-        $scope.logLoading = true;
-        DBService.postCall(payload, '/api/admin/teacher-salary/logs/init').then(function(data) {
-            if (data.success) {
-                $scope.teacherOptions = data.teacher_options ;
-                $scope.salaryLogs = data.logs ;
-            } else {
-                $scope.salaryLogs = [];
-            }
-            $scope.logLoading = false;
-        }, function() {
-            $scope.logLoading = false;
-        });
-    };
-
-    $scope.resetSalaryFilters = function() {
-        $scope.salaryFilters = {
-            teacher_id: null,
-            month: ''
-        };
-        $scope.loadSalaryLogs();
-    };
-
-    $scope.saveSalaryLog = function() {
-
-
-        $scope.logProcessing = true;
-        DBService.postCall($scope.logForm, '/api/admin/teacher-salary/logs/store').then(function(data) {
-            alert((data.message) ? data.message : 'Unable to save salary log.');
-            if (data.success) {
-                $scope.logForm = {
-                    teacher_id: null,
-                    salary_month: '',
-                    gross_amount: '',
-                    deduction_amount: '0',
-                    payment_date: '',
-                    payment_mode: '',
-                    transaction_ref: '',
-                    remark: ''
-                };
-                $scope.loadSalaryLogs();
-            }
-            $scope.logProcessing = false;
-        }, function() {
-            $scope.logProcessing = false;
-        });
-    };
+  
+ 
 });
 
 // *** adminDashboardCtrl ***
@@ -982,6 +940,9 @@ app.controller('addTeacherCtrl', function($scope , DBService){
         DBService.postCall({ teacher_token:teacher_token}, '/api/admin/teachers/init-details').then(function(data) {
             if (data.success) {
                 if(data.teacher){
+                    if (data.teacher.dob) {
+                           data.teacher.dob = new Date(data.teacher.dob);
+                        }
                     $scope.formData = data.teacher;                
                 }
 

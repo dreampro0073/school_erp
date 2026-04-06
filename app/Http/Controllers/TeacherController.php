@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\AttendanceStatus;
+use App\Models\MasterData;
 use App\Models\ModelHelper;
 use App\Models\User;
 use App\Models\Teacher;
@@ -58,21 +59,38 @@ class TeacherController extends Controller {
     }
 
     public function initTeachers(Request $request) {
+
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
         $limit = $request->has('limit')?$request->limit:10;
-        $query = Teacher::where('school_id', $user->client_id);
-        if($request->search){
-            $query->where('first_name', 'like', '%'.$request->search.'%');
+        $query = Teacher::where('school_id', $auth_user->client_id);
+        if ($request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('first_name', 'like', '%'.$request->search.'%')
+                  ->orWhere('last_name', 'like', '%'.$request->search.'%')
+                  ->orWhere('email', 'like', '%'.$request->search.'%')
+                  ->orWhere('mobile', 'like', '%'.$request->search.'%');
+            });
         }
+
+        // ✅ GENDER FILTER
+        if ($request->gender) {
+            $query->where('gender', ucfirst($request->gender)); 
+            // because DB has Male/Female
+        }
+         if ($request->status !== null && $request->status !== '') {
+            $query->where('active', $request->status);
+        }
+
         $teachers = $query->orderBy('id', 'DESC')->paginate($limit);
 
         foreach ($teachers as $teacher) {
-            $teacher->dob = date("d-m-Y", strtotime($row->dob));
-            $teacher->joining_date = date("d-m-Y", strtotime($row->joining_date));
-            $teacher->resign_date = date("d-m-Y", strtotime($row->resign_date));
+            $teacher->dob = date("d-m-Y", strtotime($teacher->dob));
+            $teacher->joining_date = date("d-m-Y", strtotime($teacher->joining_date));
+            $teacher->resign_date = date("d-m-Y", strtotime($teacher->resign_date));
         }
+
 
         return response()->json([
             'success' => true,
@@ -81,6 +99,7 @@ class TeacherController extends Controller {
     }
 
     public function addTeacherPage($teacher_token=0) {
+
         return view('admin.teachers.form', [
             'teacher_token' => $teacher_token,
         ]);
@@ -107,6 +126,38 @@ class TeacherController extends Controller {
         $apiToken = $request->header('apiToken');
         $user = User::authUser($apiToken);
 
+
+        // ✅ ADD MODE
+        if (!$request->teacher_token || $request->teacher_token == 0) {
+            return response()->json([
+                "success" => true,
+                "teacher" => [
+                    'enc_id' => null,
+                    'first_name' => '',
+                    'last_name' => '',
+                    'email' => '',
+                    'mobile' => '',
+                    'gender' => '',
+                    'dob' => null,
+                    'salary_components' => [
+                        [
+                            'component_name' => 'Basic Salary',
+                            'component_type' => 'earning',
+                            'amount' => ''
+                        ]
+                    ],
+                    'bank_details' => []
+                ],
+
+                // dropdowns
+                "blood_groups" => MasterData::getMasterData(4),
+                "religions" => MasterData::getMasterData(1),
+                "casts" => MasterData::getMasterData(2),
+            ]);
+        }
+
+        // ✅ EDIT MODE
+
         $teacher = Teacher::where('unique_id', $request->teacher_token)->first();
 
         if(!$teacher){
@@ -118,6 +169,10 @@ class TeacherController extends Controller {
 
         $bank = DB::table('bank_details')->where('user_id', $teacher->user_id)->first();
 
+           $salary = DB::table('teacher_salary_structures')
+        ->where('teacher_id', $teacher->id)
+        ->get();
+
         $response = [
             'enc_id' => $teacher->unique_id,
 
@@ -126,33 +181,96 @@ class TeacherController extends Controller {
             'email' => $teacher->email,
             'mobile' => $teacher->mobile,
             'gender' => $teacher->gender,
-            'dob' => $teacher->dob,
+            'dob' => $teacher->dob ? date('Y-m-d', strtotime($teacher->dob)) : null,
             'aadhar_no' => $teacher->aadhar_no,
+
+            'joining_date' => $teacher->joining_date ? date('d-m-Y', strtotime($teacher->joining_date)) : null,
+            'resign_date' => $teacher->resign_date ? date('d-m-Y', strtotime($teacher->resign_date)) : null,
+
+            'erp_id' => $teacher->erp_id,
 
             'residential_address' => $teacher->residential_address,
             'permanent_address' => $teacher->permanent_address,
 
-            // Parent
             'father_name' => $teacher->father_name,
             'father_mobile' => $teacher->father_mobile,
+            'father_email' => $teacher->father_email,
             'father_aadhar_no' => $teacher->father_aadhar_no,
 
             'mother_name' => $teacher->mother_name,
             'mother_mobile' => $teacher->mother_mobile,
+            'mother_email' => $teacher->mother_email,
             'mother_aadhar_no' => $teacher->mother_aadhar_no,
 
-            // Bank (IMPORTANT change)
+            'blood_group_id' => $teacher->blood_group_id,
+            'religion_id' => $teacher->religion_id,
+            'cast_id' => $teacher->cast_id,
+            'height' => $teacher->height,
+            'weight' => $teacher->weight,
+            'previous_school' => $teacher->previous_school,
+            'previous_school_address' => $teacher->previous_school_address,
+
             'bank_details' => [
-                'account_holder_name' => $bank->account_holder_name ?? null,
-                'bank_name' => $bank->bank_name ?? null,
-                'account_number' => $bank->account_number ?? null,
-                'ifsc_code' => $bank->ifsc_code ?? null,
-                'branch_name' => $bank->branch_name ?? null,
-                'upi_id' => $bank->upi_id ?? null,
+                'account_holder_name' => optional($bank)->account_holder_name,
+                'bank_name' => optional($bank)->bank_name,
+                'account_number' => optional($bank)->account_number,
+                'ifsc_code' => optional($bank)->ifsc_code,
+                'branch_name' => optional($bank)->branch_name,
+                'upi_id' => optional($bank)->upi_id,
             ],
 
-            'active' => $teacher->active,
+            'salary_components' => $salary->count() ? $salary->map(function($item){
+                return [
+                    'component_name' => $item->component_name,
+                    'component_type' => $item->component_type,
+                ];
+            }) : [
+                [
+                    'component_name' => 'Basic Salary',
+                    'component_type' => 'earning',
+                    'amount' => ''
+                ]
+            ],
+
+            'active' => (string) $teacher->active,
         ];
+
+
+        // $response = [
+        //     'enc_id' => $teacher->unique_id,
+
+        //     'first_name' => $teacher->first_name,
+        //     'last_name' => $teacher->last_name,
+        //     'email' => $teacher->email,
+        //     'mobile' => $teacher->mobile,
+        //     'gender' => $teacher->gender,
+        //     'dob' => $teacher->dob,
+        //     'aadhar_no' => $teacher->aadhar_no,
+
+        //     'residential_address' => $teacher->residential_address,
+        //     'permanent_address' => $teacher->permanent_address,
+
+        //     // Parent
+        //     'father_name' => $teacher->father_name,
+        //     'father_mobile' => $teacher->father_mobile,
+        //     'father_aadhar_no' => $teacher->father_aadhar_no,
+
+        //     'mother_name' => $teacher->mother_name,
+        //     'mother_mobile' => $teacher->mother_mobile,
+        //     'mother_aadhar_no' => $teacher->mother_aadhar_no,
+
+        //     // Bank (IMPORTANT change)
+        //     'bank_details' => [
+        //         'account_holder_name' => $bank->account_holder_name ?? null,
+        //         'bank_name' => $bank->bank_name ?? null,
+        //         'account_number' => $bank->account_number ?? null,
+        //         'ifsc_code' => $bank->ifsc_code ?? null,
+        //         'branch_name' => $bank->branch_name ?? null,
+        //         'upi_id' => $bank->upi_id ?? null,
+        //     ],
+
+        //     'active' => $teacher->active,
+        // ];
 
         return response()->json([
             "success" => true,
@@ -168,7 +286,8 @@ class TeacherController extends Controller {
     public function storeTeacher(Request $request)
     {
         $authUser = User::resolveApiUser($request);
-        $e_teacher = Teacher::where('unique_id',$request->unique_id)->first(); 
+        $unique_id = $request->enc_id ?: ($request->unique_id ?: null);
+        $e_teacher = $unique_id ? Teacher::where('unique_id', $unique_id)->first() : null;
 
         $validator = Validator::make($request->all(), [
             'first_name' => ['required','string','max:255'],
@@ -176,7 +295,7 @@ class TeacherController extends Controller {
             'gender' => ['required'],
             'dob' => ['required'],
             'mobile' => ['required','digits:10'],
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:teachers,email,' . $e_teacher->id,
             'aadhar_no'=> ['required','digits:12'], 
             'residential_address' => ['required'],
             'permanent_address' => ['required'],
@@ -212,8 +331,9 @@ class TeacherController extends Controller {
                 $user->client_id = $authUser->client_id;
                 $user->save();
 
+
             }else{
-                $user->name = $data['first_name'].' '.$data['last_name'];
+               $user->name = $request->first_name.' '.$request->last_name;
                 $user->save();
             }
 
@@ -246,6 +366,7 @@ class TeacherController extends Controller {
 
 
             if(!$e_teacher){
+                $teacherData['unique_id'] = time().$authUser->client_id.$authUser->id.$user->id;
                 $teacher = Teacher::create($teacherData);
 
             }else{
@@ -279,13 +400,40 @@ class TeacherController extends Controller {
                 ]);
             }
 
+
+            // ✅ Delete old salary (for update case)
+                DB::table('teacher_salary_structures')
+                    ->where('teacher_id', $teacher->id)
+                    ->delete();
+                // ✅ Insert new salary components
+
+                if (!empty($request->salary_components)) {
+                    $salaryInsert = [];
+
+                   foreach ($request->salary_components as $index => $item) {
+                        $salaryInsert[] = [
+                            'client_id' => $authUser->client_id, // required
+                            'teacher_id' => $teacher->id,
+                            'component_name' => $item['component_name'],
+                            'component_type' => $item['component_type'],
+                            'amount' => $item['amount'],
+                            'sort_order' => $index + 1,
+                            'active' => 1,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+
+                    DB::table('teacher_salary_structures')->insert($salaryInsert);
+                }
+
             DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Teacher created successfully',
-                'teacher' => $teacher,
-                'login_password' => $password
+                // 'teacher' => $teacher,
+                // 'login_password' => $password
             ]);
 
         } catch (\Exception $e){

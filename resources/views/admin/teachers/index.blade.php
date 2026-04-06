@@ -58,7 +58,7 @@
                   </tr>
                </thead>
                <tbody>
-                  <tr ng-repeat="item in teachers track by item.id">
+                  <tr ng-repeat="item in teachers track by $index">
                      <td>@{{$index + 1}}</td>
                      <td>@{{item.first_name || item.name || '-'}} @{{item.last_name || ''}}</td>
                      <td>@{{item.dob || '-'}}</td>
@@ -71,12 +71,21 @@
                         </span>
                      </td>
                      <td>
-                        <a ng-if="item.enc_id" ng-href="@{{baseUrl + '/admin/teachers/add/' + encodeURIComponent(item.enc_id)}}" class="btn btn-sm btn-outline-primary">
+                        @if(false)
+                       <!--  <a ng-if="item.unique_id" ng-href="@{{baseUrl + '/admin/teachers/add/' + encodeURIComponent(item.unique_id)}}" class="btn btn-sm btn-outline-primary">
                            <i class="ri-edit-2-line"></i> Edit
+                        </a> -->
+                        @endif
+
+                        <a 
+                          ng-if="item.unique_id"
+                          ng-href="@{{ baseUrl + '/admin/teachers/add/' + item.unique_id }}"
+                          class="btn btn-sm btn-outline-primary">
+                          Edit
                         </a>
                      </td>
                   </tr>
-                  <tr ng-if="!teachers.length">
+                  <tr ng-if="!teachers.length ">
                      <td colspan="8" class="text-center py-4 text-secondary">No teachers found.</td>
                   </tr>
                </tbody>
