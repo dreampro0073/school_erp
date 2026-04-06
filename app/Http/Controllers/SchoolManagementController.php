@@ -33,56 +33,47 @@ class SchoolManagementController extends Controller {
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
-        $schedule = [];
+        $schedule = DB::table('class_schedule')->where("client_id", $auth_user->client_id)->get();
+        $subjects = DB::table("subjects")->where("client_id", $auth_user->client_id)->get();
+
         $data["success"] = true;
         $data["schedule"] = $schedule;
         return response()->json($data,200,[]);
-    } 
-
-    public function editSchedule(Request $request){
-        $apiToken = $request->header('apiToken');
-        $auth_user = User::authUser($apiToken);
-
-        $formData = [];
-        
-        if($formData){
-            $data["success"] = true;
-            $data["formData"] = $formData;
-        } else {
-            $data["success"] = true;
-            $data["message"] = "Data not found";
-        }
-
-        return response()->json($data,200,[]);
     }
 
-    public function scheduleStore(Request $request){
-        dd("Pending....");
-        $apiToken = $request->header('apiToken');
-        $auth_user = User::authUser($apiToken);
+    public function scheduleStore(Request $request) {
+        try {
 
-        $request->validate([
-            'session_id'   => 'required',
-        ]);
+            foreach ($request->schedule as $row) {
 
-        foreach ($variable as $item) {
-            if(true){ 
-                DB::table('schedule')->update([
-                    "updated_at" => date("Y-m-d H:i:s"),
+                DB::table('schedules')->insert([
+                    'standard_id' => $row['standard_id'] ?? null,
+                    'section_id' => $row['section_id'] ?? null,
+                    'subject_id' => $row['subject_id'] ?? null,
+                    'teacher_id' => $row['teacher_id'] ?? null,
+                    'day_id' => $row['day_id'] ?? null,
+                    'start_time' => $row['start_time'] ?? null,
+                    'end_time' => $row['end_time'] ?? null,
+                    'duration' => $row['duration'] ?? null,
+                    'remarks' => $row['remarks'] ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ]);
-            } else {
-                DB::table('schedule')->insert([
-                    "updated_at" => date("Y-m-d H:i:s"),
-                    "created_at" => date("Y-m-d H:i:s"),
-                ]);
-            }   
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Schedule saved successfully'
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
         }
-
-        $data["success"] = true;
-        $data["message"] = "Updated Successfully";
-
-        return response()->json($data,200,[]);
-    }   
+    } 
 
     // ** Classes **
     public function initClasses(Request $request){

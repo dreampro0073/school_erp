@@ -129,7 +129,6 @@ use App\Http\Controllers\SchoolManagementController;
             Route::post('/init', 'initSchool');
             
             Route::post('/schedule', 'initSchedule');
-            Route::post('/schedule-edit', 'editSchedule');
             Route::post('/schedule-store', 'scheduleStore');
             
             Route::post('/classes', 'initClasses');
