@@ -2,7 +2,7 @@
 
 @section('main')
 <div ng-controller="addTeacherCtrl" ng-init="init('{{ $teacher_token }}');" class="mt-24">
-
+ 
    <div class="d-flex justify-content-between align-items-center mb-16">
         <h4 class="fw-bold text-lg">
             @{{formData.enc_id ? 'Edit Teacher' : 'Add Teacher'}}
@@ -205,7 +205,13 @@
                      </div>
                      <div class="form-group col-md-3">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Amount <span class="text-danger-600">* </span></label>
-                        <input type="number" step="0.01" min="0" class="form-control" ng-model="item.amount" required>
+
+                        <input type="text"
+                         class="form-control"
+                         ng-model="item.amount"
+                         ng-pattern="/^\d+(\.\d{1,2})?$/"
+                         placeholder="e.g. 22.50"
+                         required>
                      </div>
                      <div class="form-group col-md-1 d-grid">
                         <button type="button" class="btn btn-outline-danger" ng-click="removeSalaryComponent($index)" title="Remove">
