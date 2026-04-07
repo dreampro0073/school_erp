@@ -146,7 +146,14 @@ class TeacherController extends Controller {
                             'amount' => ''
                         ]
                     ],
-                    'bank_details' => []
+                    'bank_details' => [
+                        'account_holder_name' => '',
+                        'bank_name' => '',
+                        'account_number' => '',
+                        'ifsc_code' => '',
+                        'branch_name' => '',
+                        'upi_id' => ''
+                    ]
                 ],
 
                 // dropdowns
@@ -223,6 +230,7 @@ class TeacherController extends Controller {
                 return [
                     'component_name' => $item->component_name,
                     'component_type' => $item->component_type,
+                    'amount' => $item->amount,
                 ];
             }) : [
                 [
@@ -295,14 +303,46 @@ class TeacherController extends Controller {
             'gender' => ['required'],
             'dob' => ['required'],
             'mobile' => ['required','digits:10'],
-            'email' => 'required|email|unique:teachers,email,' . $e_teacher->id,
+            'email' => 'required|email|unique:teachers,email,' . ($e_teacher->id ?? 'NULL') . ',id',
             'aadhar_no'=> ['required','digits:12'], 
+            'blood_group_id' => ['required','integer'],
+            'weight' => ['required','string','max:20'],
+            'height' => ['required','string','max:20'],
             'residential_address' => ['required'],
             'permanent_address' => ['required'],
 
-            'father_name' => ['required','string','max:255'],
-            'mother_name' => ['required','string','max:255'],
+            'father_name' => ['nullable','string','max:255'],
+            'mother_name' => ['nullable','string','max:255'],
+
+            'bank_details.account_holder_name' => ['required','string','max:255'],
+            'bank_details.bank_name' => ['required','string','max:255'],
+            'bank_details.account_number' => ['required','string','max:50'],
+            'bank_details.ifsc_code' => ['required','string','max:20'],
+            'bank_details.branch_name' => ['required','string','max:255'],
+            'bank_details.upi_id' => ['nullable','string','max:255'],
+
+            'salary_components' => ['required','array','min:1'],
+            'salary_components.*.component_name' => ['required','string','max:255'],
+            'salary_components.*.component_type' => ['required','in:earning,deduction'],
+            'salary_components.*.amount' => ['required','regex:/^\d+(\.\d{1,2})?$/'],
         ]);
+
+        $validator->setCustomMessages([
+            'blood_group_id.required' => 'Blood group is required.',
+            'weight.required' => 'Weight is required.',
+            'height.required' => 'Height is required.',
+            'bank_details.account_holder_name.required' => 'Account holder name is required.',
+            'bank_details.bank_name.required' => 'Bank name is required.',
+            'bank_details.account_number.required' => 'Account number is required.',
+            'bank_details.ifsc_code.required' => 'IFSC code is required.',
+            'bank_details.branch_name.required' => 'Branch name is required.',
+            'salary_components.required' => 'At least one salary component is required.',
+            'salary_components.*.component_name.required' => 'Component name is required.',
+            'salary_components.*.component_type.required' => 'Component type is required.',
+            'salary_components.*.amount.required' => 'Amount is required.',
+            'salary_components.*.amount.regex' => 'Enter a valid amount.',
+        ]);
+
 
         if($validator->fails()){
             return response()->json([
@@ -354,11 +394,19 @@ class TeacherController extends Controller {
 
                 'father_name' => $request->father_name,
                 'father_mobile' => $request->father_mobile,
+                'father_email' => $request->father_email,
                 'father_aadhar_no' => $request->father_aadhar_no,
 
                 'mother_name' => $request->mother_name,
                 'mother_mobile' => $request->mother_mobile,
+                'mother_email' => $request->mother_email,
                 'mother_aadhar_no' => $request->mother_aadhar_no,
+
+                'blood_group_id' => $request->blood_group_id,
+                'height' => $request->height,
+                'weight' => $request->weight,
+                'previous_school' => $request->previous_school,
+                'previous_school_address' => $request->previous_school_address,
 
                 'active' => $request->active ?? 1,
                 'school_id' => $authUser->client_id,

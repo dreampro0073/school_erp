@@ -983,7 +983,9 @@ app.controller('addTeacherCtrl', function($scope , DBService){
     };
 
     $scope.removeSalaryComponent = function(index) {
-
+        if (($scope.formData.salary_components || []).length <= 1) {
+            return;
+        }
         $scope.formData.salary_components.splice(index, 1);
     };
 

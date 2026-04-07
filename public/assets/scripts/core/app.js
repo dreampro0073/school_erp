@@ -6,8 +6,12 @@ var app = angular.module('app', [
 
 angular.module('jcs-autoValidate')
     .run([
+    'validator',
     'defaultErrorMessageResolver',
-    function (defaultErrorMessageResolver) {
+    function (validator, defaultErrorMessageResolver) {
+        validator.setFirstInvalidElementScrollingOnSubmit(true);
+        validator.setFocusInputError(true);
+
         defaultErrorMessageResolver.getErrorMessages().then(function (errorMessages) {
           errorMessages['patternInt'] = 'Please fill a numeric value';
           errorMessages['patternFloat'] = 'Please fill a numeric/decimal value';
