@@ -204,9 +204,10 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
     }
 
     $scope.formData = {
-        fee_type_id:0,
-        frequency_id:0,
-        month:0,
+        fee_type_id:'',
+        frequency_id:'',
+        month:'',
+        payment_mode:'',
     };
     $scope.isSidebarOpen = false;
     $scope.isEditMode = false;
@@ -277,6 +278,7 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
     };
 
     $scope.getFees = function(page = 1){
+        $scope.filter.page = page;
         $scope.payments = [];
         $scope.filter.page = page;
         $scope.filter.student_token = $scope.student_token;
@@ -293,6 +295,12 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
         });
     }  
 
+   
+    $scope.changePage = function(page){
+        if($scope.tab == 4){
+            $scope.getFees(page);
+        }
+    };
     $scope.getFeeParams = function() {
         DBService.postCall({ student_token:$scope.student_token,standard_id:$scope.standard_id }, '/api/admin/students/get-fee-params').then(function(data) {
             if (data.success) {
@@ -307,7 +315,7 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
 
     $scope.onChangeFeeType = () => {
         $scope.formData.amount = 0;
-        $scope.formData.frequency_id = 0;
+        $scope.formData.frequency_id = '';
 
         $scope.getFeeSubs();
     }
@@ -345,10 +353,18 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
                 alert(data.message);
                 $scope.closeSidebar();
                 $scope.getFees();
+
+                setTimeout(function(){
+                    window.open(base_url+'/admin/students/receipt/'+data.payment_id,'_blank');
+                }, 800);
             } else {
-                let firstError = data.message;
-                alert(firstError);
-                
+                if(data.length > 0){
+                    let firstError = Object.values(data.errors)[0][0];
+                    alert(firstError);
+                    $scope.errors = data.errors;
+                }else{
+                    alert(data.message);
+                }
             }
             $scope.collect_fee_loading = false;
         });
@@ -357,9 +373,10 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
     $scope.openFeeModal = function () {
         $scope.isEditMode = false;
         $scope.formData = {
-            fee_type_id:0,
-            frequency_id:0,
-            month:0,
+            fee_type_id:'',
+            frequency_id:'',
+            month:'',
+            payment_mode:'',
         };
         $scope.isSidebarOpen = true;
     };
@@ -381,9 +398,9 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
     $scope.closeSidebar = function () {
         $scope.isSidebarOpen = false;
         $scope.formData = {
-            fee_type_id:0,
-            frequency_id:0,
-            month:0,
+            fee_type_id:'',
+            frequency_id:'',
+            month:'',
         };
     };
 });

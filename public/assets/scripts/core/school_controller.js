@@ -1,49 +1,142 @@
-app.controller('schoolManagementCtrl', function($scope , DBService){
+app.controller('schoolManagementCtrl', function($scope, DBService) {
+
     $scope.loading = false;
     $scope.list_loading = false;
     $scope.type = "classes";
     $scope.standards = [];
-    $scope.dataSet = [];
     $scope.sections = [];
     $scope.sessions = [];
     $scope.teachers = [];
     $scope.students = [];
-    $scope.dataSet = [];
+    $scope.subjects = [];
     $scope.days = [];
     $scope.formData = {};
     $scope.isSidebarOpen = false;
     $scope.isEditMode = false;
+    $scope.scheduleRows = [];
+    $scope.edit_flag = false;
 
-    $scope.init = function(){
-        $scope.loading = true;
-        DBService.postCall({type : $scope.type}, '/api/admin/school/init').then(function(data) {
-            if(data.success){
-                $scope.standards = data.standards;
-                $scope.sections = data.sections;
-                $scope.sessions = data.sessions;
-                $scope.teachers = data.teachers;
-                $scope.students = data.students;
-                $scope.days = data.days;
-                $scope.loading = false;
-            }
+
+    $scope.schedule = {
+        day_id: '8',
+        standard_id: ''
+    };
+
+    $scope.addRow = function () {
+        $scope.scheduleRows.push({
+            standard_id: $scope.schedule.standard_id || '',
+            section_id: '',
+            subject_id: '',
+            teacher_id: '',
+            day_id: $scope.schedule.day_id || '',
+            start_time: '',
+            end_time: '',
+            duration: '',
+            remarks: ''
         });
-    }
+    };
+
+    $scope.removeRow = function (index) {
+        $scope.scheduleRows.splice(index, 1);
+    };
+
+    $scope.init = function() {
+        $scope.loading = true;
+
+        DBService.postCall({ type: $scope.type }, '/api/admin/school/init').then(function(data) {
+            if (data.success) {
+                $scope.standards = data.standards || [];
+                $scope.sections = data.sections || [];
+                $scope.sessions = data.sessions || [];
+                $scope.teachers = data.teachers || [];
+                $scope.students = data.students || [];
+                $scope.days = data.days || [];
+            }
+            $scope.edit_flag = false;
+            $scope.loading = false;
+        }, function() {
+            $scope.loading = false;
+        });
+    };
 
     $scope.typeSchedule = function() {
+
+        if (!$scope.schedule.day_id || !$scope.schedule.standard_id) {
+            $scope.scheduleRows = [];
+            return;
+        }
+
         $scope.list_loading = true;
-        DBService.postCall({type : 'schedule'}, '/api/admin/school/schedule').then(function(data) {
-            if(data.success){
-                $scope.list_loading = false;
+
+        DBService.postCall({
+            type: 'schedule',
+            day_id: $scope.schedule.day_id,
+            standard_id: $scope.schedule.standard_id
+        }, '/api/admin/school/schedule').then(function(data) {
+            if (data.success) {
+                $scope.scheduleRows = data.schedule || [];
+                $scope.subjects = data.subjects || [];
+
+                angular.forEach($scope.scheduleRows, function(row) {
+                    row.standard_id = row.standard_id || $scope.schedule.standard_id;
+                    row.day_id = row.day_id || $scope.schedule.day_id;
+                });
+            }
+
+            $scope.list_loading = false;
+        }, function() {
+            $scope.list_loading = false;
+        });
+    };
+
+    $scope.onTypeChange = function() {
+        if ($scope.schedule.day_id && $scope.schedule.standard_id) {
+            $scope.typeSchedule();
+        } else {
+            $scope.scheduleRows = [];
+        }
+    };
+
+    $scope.saveSchedule = function() {
+
+        if (!$scope.schedule.day_id || !$scope.schedule.standard_id) {
+            alert("Please select day and standard");
+            return;
+        }
+
+        if (!$scope.scheduleRows.length) {
+            alert("Please add at least one row");
+            return;
+        }
+
+        for (var i = 0; i < $scope.scheduleRows.length; i++) {
+            var row = $scope.scheduleRows[i];
+
+            // parent filters ko row me set karo
+            row.day_id = $scope.schedule.day_id;
+            row.standard_id = $scope.schedule.standard_id;
+
+            if (!row.subject_id || !row.teacher_id || !row.start_time || !row.end_time) {
+                alert("Please fill all required fields in row " + (i + 1));
+                return;
+            }
+        }
+
+        DBService.postCall({
+            day_id: $scope.schedule.day_id,
+            standard_id: $scope.schedule.standard_id,
+            schedule: $scope.scheduleRows
+        }, '/api/admin/school/schedule-store').then(function(data) {
+            if (data.success) {
+                alert(data.message || "Saved Successfully");
+                $scope.typeSchedule();
+            } else {
+                alert(data.message || "Something went wrong");
             }
         });
-    }; 
-
-    $scope.submitSchedule = function () {
-        $http.post('/api/admin/school/class-store', $scope.formData).then(function (res) {
-            alert(res.data.message);
-            $scope.formData = {};
-        });
-    };   
+    };
+  
+    // CLASSES
 
     $scope.typeClasses = function() {
         $scope.list_loading = true;

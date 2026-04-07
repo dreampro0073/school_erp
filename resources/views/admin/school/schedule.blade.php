@@ -1,163 +1,114 @@
 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
-    <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
-        <div>
-            <h6 class="text-lg fw-semibold mb-0">Schedule</h6>
+    <div class="card-header border-bottom bg-base py-20 px-20">
+        <h6 class="text-lg fw-semibold mb-20">Schedule</h6>
+        <div class="row align-items-center gap-2">
+            <div class="col-md-3">
+                <select ng-model="schedule.day_id" class="form-select" ng-change="onTypeChange()">
+                    <option value="8">Weekly</option>
+                    <option ng-repeat="(key, day) in days" value="@{{key}}">
+                        @{{day}}
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select ng-model="schedule.standard_id" class="form-select" ng-change="onTypeChange()">
+                    <option value="">Select Standard</option>
+                    <option ng-repeat="(key, value) in standards" value="@{{key}}">
+                        @{{value}}
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-3" ng-if="edit_flag">
+                <button ng-click="addRow()" type="button" class="collect-fees-btn btn btn-primary-600 d-flex align-items-center gap-6 py-8 text-sm">
+                    <span class="d-flex text-sm">
+                        <i class="ri-add"></i>
+                    </span>
+                    + Add Row
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-20" ng-if="schedule.day_id > 0 && schedule.standard_id > 0">
+        <div ng-if="list_loading" class="mb-3">
+            Loading...
         </div>
 
-        <button type="button" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6">
-          <span class="d-flex text-md">
-              <i class="ri-add-large-line"></i>
-          </span>
-          Update Schedule
-      </button>
-    </div>
-    <div class="card-body p-20">
         <div class="table-responsive">
-         <table class="table bordered-table mb-0">
-            <thead>
-               <tr>
-                  <th>SN.</th>
-                  <th>Classes</th>
-                  <th>Session</th>
-                  <th>Verifed</th>
-                  <th>#</th>
-               </tr>
-            </thead>
-            <tbody>
-               <tr ng-repeat="item in classes">
-                  <td>@{{$index + 1}}</td>
-                  <td>@{{item.name}}</td>
-                  <td>
-                     <span ng-if="item.status != 1" class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">Active</span>
-                     <span ng-if="item.status == 1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Inactive</span>
-                  </td>
-                  <td>
-                     <button type="button" class="btn btn-sm btn-info-100 text-info-600 me-8" ng-click="openEditModal()">Edit</button>
-                     <button type="button" class="btn btn-sm btn-info-100 text-info-600 me-8" ng-click="openEditModal()">Delete</button>
-                  </td>
-               </tr>
-               <tr ng-if="!standards.length">
-                  <td colspan="4" class="text-center py-4">No standards found.</td>
-               </tr>
-            </tbody>
-         </table>
-      </div> 
-    </div>
-</div>
+            <table class="table bordered-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Teacher</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration</th>
+                        <th>Remarks</th>
+                        <th width="100">#</th>
+                    </tr>
+                </thead>
 
+                <tbody>
+                    <tr ng-if="scheduleRows.length == 0">
+                        <td colspan="7" class="text-center">No schedule found</td>
+                    </tr>
 
+                    <tr ng-repeat="row in scheduleRows track by $index">
 
+                        <td>
+                            <small>@{{days[row.day_id]}}</small>
 
-<div class="my-sidebar theme-bg-white position-fixed end-0 top-0 h-100vh overflow-y-auto z-99 max-w-700-px w-100 translate-x-full duration-300 active-translate-0">
+                            <select ng-model="row.subject_id" class="form-select" ng-disabled="!edit_flag">
+                                <option value="">Select Subject</option>
+                                <option ng-repeat="sub in subjects" ng-value="sub.id">
+                                    @{{sub.name}}
+                                </option>
+                            </select>
+                        </td>
 
-    <div class="px-20 py-12 border-bottom d-flex align-items-center justify-content-between gap-20">
-        <h5 class="text-lg mb-0">Add New Class</h5>
-        <button type="button" class="close-my-sidebar text-danger-600 text-lg d-flex">
-            <i class="ri-close-large-line"></i>
-        </button>
-    </div>
+                        <td>
+                            <select ng-model="row.teacher_id" class="form-select" ng-disabled="!edit_flag">
+                                <option value="">Select Teacher</option>
+                                <option ng-repeat="(key, value) in teachers" ng-value="@{{key}}">
+                                    @{{value}}
+                                </option>
+                            </select>
+                        </td>
 
-    <form ng-submit="submitForm()" class="d-flex flex-column p-20">
+                        <td>
+                            <input type="text" ng-model="row.start_time" class="form-control" ng-readonly="!edit_flag" ng-class="{'bg-light': !edit_flag}">
+                        </td>
 
-        <div class="row g-3">
+                        <td>
+                            <input type="text" ng-model="row.end_time" class="form-control" ng-readonly="!edit_flag" ng-class="{'bg-light': !edit_flag}">
+                        </td>
 
-            <!-- Class Name -->
-            <div class="col-sm-12">
-                <label class="text-sm fw-semibold text-primary-light mb-8">Class Name</label>
-                <input type="text"
-                       class="form-control"
-                       ng-model="formData.class_name"
-                       placeholder="Enter Class name"
-                       required>
-            </div>
+                        <td>
+                            <input type="text" ng-model="row.duration" class="form-control" ng-readonly="!edit_flag" ng-class="{'bg-light': !edit_flag}">
+                        </td>
 
-            <!-- Standard Dropdown -->
-            <div class="col-sm-12">
-                <label class="text-sm fw-semibold text-primary-light mb-8">Class</label>
-                <select class="form-control form-select"
-                        ng-model="formData.standard_id"
-                        ng-options="std.id as std.name for std in standards"
-                        required>
-                    <option value="">Select Class</option>
-                </select>
-            </div>
+                        <td>
+                            <input type="text" ng-model="row.remarks" class="form-control" placeholder="Remarks" ng-readonly="!edit_flag" ng-class="{'bg-light': !edit_flag}">
+                        </td>
 
-            <!-- Section Dropdown -->
-            <div class="col-sm-12">
-                <label class="text-sm fw-semibold text-primary-light mb-8">Section</label>
-                <select class="form-control form-select"
-                        ng-model="formData.section_id"
-                        ng-options="sec.id as sec.name for sec in sections"
-                        required>
-                    <option value="">Select Section</option>
-                </select>
-            </div>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" ng-click="removeRow($index)" ng-if="edit_flag">
+                                <i class="ri-delete-bin-6-line"></i>
+                            </button>
 
-            <!-- Session Dropdown -->
-            <div class="col-sm-12">
-                <label class="text-sm fw-semibold text-primary-light mb-8">Session</label>
-                <select class="form-control form-select"
-                        ng-model="formData.session_id"
-                        ng-options="ses.id as ses.name for ses in sessions"
-                        required>
-                    <option value="">Select Session</option>
-                </select>
-            </div>
+                            <span ng-if="!edit_flag">-</span>
+                        </td>
+                    </tr>
+                </tbody>
 
-            <!-- Status -->
-            <div class="col-sm-12">
-                <label class="text-sm fw-semibold text-primary-light mb-8">Status</label>
-                <select class="form-control form-select"
-                        ng-model="formData.status"
-                        required>
-                    <option value="">Select Status</option>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                </select>
-            </div>
-
-            <!-- Buttons -->
-            <div class="col-12">
-                <div class="d-flex justify-content-center gap-3 mt-8">
-                    <button type="button"
-                            ng-click="resetForm()"
-                            class="border border-danger-600 text-danger-600 px-50 py-11 radius-8">
-                        Cancel
-                    </button>
-
-                    <button type="submit"
-                            class="btn btn-primary-600 px-28 py-12 radius-8 w-100">
-                        Save
-                    </button>
-                </div>
-            </div>
-
+            </table>
         </div>
 
-    </form>
+        <div class="mt-3" ng-if="edit_flag">
+            
+            <button class="collect-fees-btn btn btn-primary-600 d-flex align-items-center gap-6 py-8 text-sm" ng-click="saveSchedule()">Save Schedule</button>
+        </div>
+    </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
 
-    $('.my-sidebar-btn').on('click', function () {
-        $('.my-sidebar').addClass('active');
-        $('.overlay').addClass('active');
-    });
-    $('.close-my-sidebar, .overlay').on('click', function () {
-        $('.my-sidebar').removeClass('active');
-        $('.overlay').removeClass('active');
-    });
-
-
-    $('.edit-sidebar-btn').on('click', function () {
-        $('.edit-sidebar').addClass('active');
-        $('.overlay').addClass('active');
-    });
-    $('.close-edit-sidebar, .overlay').on('click', function () {
-        $('.edit-sidebar').removeClass('active');
-        $('.overlay').removeClass('active');
-    });
-
-
-</script>

@@ -394,12 +394,23 @@ ALTER TABLE `fee_payments` ADD `added_by` INT NOT NULL DEFAULT '0' AFTER `transc
 ALTER TABLE `fee_payments` ADD `standard_id` INT NOT NULL DEFAULT '0' AFTER `school_id`;
 
 
-ALTER TABLE `teachers` ADD `father_name` VARCHAR(255) NULL DEFAULT NULL AFTER `resign_date`, ADD `father_mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `father_name`, ADD `father_email` VARCHAR(255) NULL DEFAULT NULL AFTER `father_mobile`, ADD `father_aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER `father_email`, ADD `mother_name` VARCHAR(255) NULL DEFAULT NULL AFTER `father_aadhar_no`, ADD `mother_mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `mother_name`, ADD `mother_email` VARCHAR(100) NULL DEFAULT NULL AFTER `mother_mobile`, ADD `mother_aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER `mother_email
+ALTER TABLE `teachers` ADD `father_name` VARCHAR(255) NULL DEFAULT NULL AFTER `resign_date`, ADD `father_mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `father_name`, ADD `father_email` VARCHAR(255) NULL DEFAULT NULL AFTER `father_mobile`, ADD `father_aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER `father_email`, ADD `mother_name` VARCHAR(255) NULL DEFAULT NULL AFTER `father_aadhar_no`, ADD `mother_mobile` VARCHAR(20) NULL DEFAULT NULL AFTER `mother_name`, ADD `mother_email` VARCHAR(100) NULL DEFAULT NULL AFTER `mother_mobile`, ADD `mother_aadhar_no` VARCHAR(20) NULL DEFAULT NULL AFTER 'mother_email';
 
 ALTER TABLE `teachers` ADD `active` TINYINT(2) NOT NULL DEFAULT '0' AFTER `mother_aadhar_no`;
 ALTER TABLE `teachers` CHANGE `gender` `gender` VARCHAR(22) NULL DEFAULT NULL;
 
 
-//DIpanshu
+// Divandra
 
+INSERT INTO days (name, `name3l`, `name1l`) VALUES
+('Monday', 'Mon', 'M'),
+('Tuesday', 'Tue', 'T'),
+('Wednesday', 'Wed', 'W'),
+('Thursday', 'Thu', 'T'),
+('Friday', 'Fri', 'F'),
+('Saturday', 'Sat', 'S'),
+('Sunday', 'Sun', 'S');
+ALTER TABLE `class_schedule` ADD `client_id` INT NULL DEFAULT NULL AFTER `remarks`;
+ALTER TABLE `subjects` ADD `client_id` INT NULL DEFAULT NULL AFTER `status`;
 
+ALTER TABLE `standards` ADD `is_verified` TINYINT NOT NULL DEFAULT '0' COMMENT ' 0=>pedding, 1=>verified, -1=>blocked, -2 block after verified' AFTER `status`;
