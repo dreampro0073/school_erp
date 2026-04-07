@@ -20,22 +20,20 @@
                     <tr>
                         <th>SN.</th>
                         <th>Class</th>
-                        <th>Session</th>
                         <th>Verifed</th>
-                        <th>Action</th>
+                        <th>#</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="item in dataSet">
                         <td>@{{$index + 1}}</td>
-                        <td>@{{item.standard_name}} <span ng-if="item.section_name">(@{{item.section_name}})</span></td>
-                        <td>@{{item.period}}</td>
+                        <td>@{{item.name}}</td>
                         <td>
                             <span ng-if="item.is_verified == 0" class="bg-primary-100 text-primary-600 px-24 py-4 radius-4 fw-medium text-sm">Pending</span>
-                            <span ng-if="item.is_verified == -1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Deactivate</span>
+                            <span ng-if="item.is_verified == -1 || item.is_verified == -2" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Deactivate</span>
                             <span ng-if="item.is_verified == 1" class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">Verified</span>
                         </td>
-                        <td>
+                        <td >
 
                             <div class="btn-group">
                                 <button type="button" class="text-primary-light text-xl" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
@@ -94,26 +92,7 @@
 
             <div class="col-sm-12 form-group">
                 <label class="text-sm fw-semibold text-primary-light mb-8">Class</label>
-                <select class="form-select" ng-model="formData.standard_id" convert-to-number>
-                    <option value="">Select Class</option>
-                    <option value="@{{key}}" ng-repeat="(key, value) in standards">@{{value}}</option>
-                </select>
-            </div>
-
-            <div class="col-sm-12 form-group">
-                <label class="text-sm fw-semibold text-primary-light mb-8">Section</label>
-                <select class="form-select" ng-model="formData.section_id" convert-to-number>
-                    <option value="">Select Section</option>
-                    <option value="@{{key}}" ng-repeat="(key, value) in sections">@{{value}}</option>
-                </select>
-            </div>
-
-            <div class="col-sm-12 form-group">
-                <label class="text-sm fw-semibold text-primary-light mb-8">Session</label>
-                <select class="form-select" ng-model="formData.session_id" convert-to-number>
-                    <option value="">Select Session</option>
-                    <option value="@{{key}}" ng-repeat="(key, value) in sessions">@{{value}}</option>
-                </select>
+                <input type="text" class="form-control" ng-model="formData.name" required>
             </div>
 
             <div class="col-12">

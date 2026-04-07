@@ -412,3 +412,5 @@ INSERT INTO days (name, `name3l`, `name1l`) VALUES
 ('Sunday', 'Sun', 'S');
 ALTER TABLE `class_schedule` ADD `client_id` INT NULL DEFAULT NULL AFTER `remarks`;
 ALTER TABLE `subjects` ADD `client_id` INT NULL DEFAULT NULL AFTER `status`;
+
+ALTER TABLE `standards` ADD `is_verified` TINYINT NOT NULL DEFAULT '0' COMMENT ' 0=>pedding, 1=>verified, -1=>blocked, -2 block after verified' AFTER `status`;

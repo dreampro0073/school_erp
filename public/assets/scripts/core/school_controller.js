@@ -2,7 +2,7 @@ app.controller('schoolManagementCtrl', function($scope, DBService) {
 
     $scope.loading = false;
     $scope.list_loading = false;
-    $scope.type = "schedule";
+    $scope.type = "classes";
     $scope.standards = [];
     $scope.sections = [];
     $scope.sessions = [];

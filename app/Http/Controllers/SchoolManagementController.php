@@ -17,7 +17,7 @@ class SchoolManagementController extends Controller {
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
-        $data["standards"] = Standard::where("standards.status", 0)->pluck("name", "id")->toArray();
+        $data["standards"] = Standard::where("standards.status", 0)->where("client_id", $auth_user->client_id)->pluck("name", "id")->toArray();
         $data["sections"] = Section::where("sections.status", 0)->pluck("name", "id")->toArray();
         $data["sessions"] = DB::table('years')->pluck("period", "year")->toArray();
         $data["teachers"] = Teacher::where("school_id", $auth_user->client_id)->pluck("teachers.name", "teachers.id")->toArray();
@@ -173,11 +173,8 @@ class SchoolManagementController extends Controller {
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
-        $classes = DB::table("client_standards")->select("client_standards.*", "standards.name as standard_name", "sections.name as section_name", "years.period")
-        ->join("standards", "standards.id", "=", "client_standards.standard_id")
-        ->leftJoin("sections", "sections.id", "=", "client_standards.section_id")
-        ->leftJoin("years", "years.year", "=", "client_standards.session_id")
-        ->where("client_standards.client_id", $auth_user->client_id)->where("client_standards.status", 0)->get();
+        $classes = DB::table("standards")->select("standards.*")
+        ->where("standards.client_id", $auth_user->client_id)->where("standards.status", 0)->get();
         
         $data["success"] = true;
         $data["classes"] = $classes;
@@ -188,7 +185,7 @@ class SchoolManagementController extends Controller {
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
-        $formData = DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)->first();
+        $formData = DB::table('standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)->first();
         
         if($formData){
             $data["success"] = true;
@@ -207,64 +204,30 @@ class SchoolManagementController extends Controller {
         $auth_user = User::authUser($apiToken);
 
         $request->validate([
-            'standard_id'  => 'required',
-            'session_id'   => 'required',
+            'name'  => 'required',
         ]);
 
-        $check = DB::table('client_standards')
-        ->where("client_id", $auth_user->client_id)
-        ->where("standard_id", $request->standard_id)
-        ->where("session_id", $request->session_id)
-        ->where("section_id", $request->section_id);
-
         if($request->id){
-            
-            $check = $check->where("id", "!=", $request->id)->first();
-            
-            if($check){
-                $data["success"] = false;
-                $data["message"] = "This class already exists for the selected session.";
-                return response()->json($data,200,[]);
+            DB::table('standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)->where("is_verified", "!=", 1)->update([
+                "name" => $request->name,
+                "status" => 0, 
+                "is_verified" => 0
+            ]);
 
-            } else {
-                DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)->where("is_verified", "!=", 1)->update([
-                    'standard_id' => $request->standard_id,
-                    'section_id' => $request->section_id,
-                    'session_id' => $request->session_id,
-                    "status" => 0
-                ]);
-
-                $data["success"] = true;
-                $data["message"] = "Updated Successfully";
-            }
+            $data["success"] = true;
+            $data["message"] = "Updated Successfully";
 
         } else {
+            DB::table('standards')->insertGetId([
+                "name" => $request->name,
+                'status'       => 0,
+                "is_verified"  => 0,
+                "client_id" => $auth_user->client_id,
+                "created_at" => date("Y-m-d H:i:s")
+            ]);                
 
-            $check = $check->first();
-            if($check){
-                DB::table("client_standards")->where("id", $check->id)->update([
-                    "status" => 0,
-                    "added_by" => $auth_user->id,
-                ]);
-
-                $data["success"] = true;
-                $data["message"] = 'Created Successfully';
-            } else {
-                $id = DB::table('client_standards')->insertGetId([
-                    'standard_id'  => $request->standard_id,
-                    'section_id'   => $request->section_id,
-                    'session_id'   => $request->session_id,
-                    'status'       => 0,
-                    "is_verified"  => 0,
-                    "client_id"  => $auth_user->client_id,
-                    "added_by"  => $auth_user->id,
-                    "created_at" => date("Y-m-d H:i:s")
-                ]);
-                
-
-                $data["success"] = true;
-                $data["message"] = "Created Successfully";
-            }
+            $data["success"] = true;
+            $data["message"] = "Created Successfully";
         }
         return response()->json($data,200,[]);
     }
@@ -272,7 +235,8 @@ class SchoolManagementController extends Controller {
     public function changeClassStatus(Request $request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
-        $check = DB::table('client_standards')->where('id', $request->entry_id)->where("client_id", $auth_user->client_id)->first();
+
+        $check = DB::table('standards')->where('id', $request->entry_id)->where("client_id", $auth_user->client_id)->first();
 
         if($check){
             $status = $request->status;
@@ -282,7 +246,7 @@ class SchoolManagementController extends Controller {
                 $status = 1;
             }
 
-            DB::table('client_standards')->where('id', $check->id)->update([
+            DB::table('standards')->where('id', $check->id)->update([
                 "is_verified" => $status,
             ]);
 
@@ -300,10 +264,10 @@ class SchoolManagementController extends Controller {
     public function deleteClass(Request $request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
-        $check = DB::table('client_standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)->first();
+        $check = DB::table('standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)->first();
 
         if($check){
-            DB::table('client_standards')->where('id', $check->id)->update([
+            DB::table('standards')->where('id', $check->id)->update([
                 "status" => 1,
             ]);
 
@@ -323,6 +287,7 @@ class SchoolManagementController extends Controller {
     }
 
     public function classManageInit(Request $request){
+        die("check code");
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
