@@ -22,44 +22,135 @@ class SchoolManagementController extends Controller {
         $data["sessions"] = DB::table('years')->pluck("period", "year")->toArray();
         $data["teachers"] = Teacher::where("school_id", $auth_user->client_id)->pluck("teachers.name", "teachers.id")->toArray();
         $data["students"] = Student::where("school_id", $auth_user->client_id)->pluck("name", "id")->toArray();
-        $data["days"] = DB::table("days")->get();
 
+        $data["days"] = DB::table("days")->where("id", "!=", 7)->pluck("name3l", "id")->toArray();
         $data["success"] = true;
         return response()->json($data,200,[]);
     }
 
     // ** Schedule **
-    public function initSchedule($request){
+    public function initSchedule(Request $request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
+        
 
-        $schedule = DB::table('class_schedule')->where("client_id", $auth_user->client_id)->get();
-        $subjects = DB::table("subjects")->where("client_id", $auth_user->client_id)->get();
+        $schedule = DB::table('class_schedule')
+            ->where('client_id', $auth_user->client_id)
+            ->when($request->standard_id, function ($q) use ($request) {
+                $q->where('standard_id', $request->standard_id);
+            });
+
+        if ((int)$request->day_id !== 8) {
+            $schedule->when($request->day_id, function ($q) use ($request) {
+                $q->where('day_id', $request->day_id);
+            });
+        }
+
+        $schedule = $schedule->orderBy('start_time', 'asc')->get();
+
+        $subjects = DB::table("subjects")
+            ->where("client_id", $auth_user->client_id)
+            ->get();
 
         $data["success"] = true;
         $data["schedule"] = $schedule;
-        return response()->json($data,200,[]);
-    }
+        $data["subjects"] = $subjects;
 
-    public function scheduleStore(Request $request) {
+        return response()->json($data, 200, []);
+    }    
+
+    public function scheduleStore(Request $request)
+    {
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        DB::beginTransaction();
+
         try {
-
-            foreach ($request->schedule as $row) {
-
-                DB::table('schedules')->insert([
-                    'standard_id' => $row['standard_id'] ?? null,
-                    'section_id' => $row['section_id'] ?? null,
-                    'subject_id' => $row['subject_id'] ?? null,
-                    'teacher_id' => $row['teacher_id'] ?? null,
-                    'day_id' => $row['day_id'] ?? null,
-                    'start_time' => $row['start_time'] ?? null,
-                    'end_time' => $row['end_time'] ?? null,
-                    'duration' => $row['duration'] ?? null,
-                    'remarks' => $row['remarks'] ?? null,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+            if (!$request->has('schedule') || !is_array($request->schedule)) {
+                throw new \Exception('Schedule data is required');
             }
+
+            $standard_id = $request->standard_id;
+            $day_id = (int) $request->day_id;
+            $scheduleRows = $request->schedule;
+
+            if (!$standard_id) {
+                throw new \Exception('Standard is required');
+            }
+
+            if ($day_id == 8) {
+                $days = DB::table("days")
+                    ->where("id", "!=", 7)
+                    ->pluck("id")
+                    ->toArray();
+            } else {
+                $days = [$day_id];
+            }
+
+            foreach ($days as $currentDay) {
+
+                $existingRows = DB::table('class_schedule')
+                    ->where('client_id', $auth_user->client_id)
+                    ->where('standard_id', $standard_id)
+                    ->where('day_id', $currentDay)
+                    ->orderBy('id', 'asc')
+                    ->get()
+                    ->values();
+
+                $existingIds = $existingRows->pluck('id')->toArray();
+                $requestIds = [];
+
+                foreach ($scheduleRows as $index => $row) {
+
+                    $rowId = !empty($row['id']) ? (int) $row['id'] : 0;
+
+                    $data = [
+                        'client_id'   => $auth_user->client_id,
+                        'standard_id' => $standard_id,
+                        'section_id'  => $row['section_id'] ?? null,
+                        'subject_id'  => $row['subject_id'] ?? null,
+                        'teacher_id'  => $row['teacher_id'] ?? null,
+                        'day_id'      => $currentDay,
+                        'start_time'  => $row['start_time'] ?? null,
+                        'end_time'    => $row['end_time'] ?? null,
+                        'duration'    => $row['duration'] ?? null,
+                        'remarks'     => $row['remarks'] ?? null,
+                        'updated_at'  => now(),
+                        'added_by'    => $auth_user->id,
+                        'approved_by' => $auth_user->client_id,
+                    ];
+
+                    if ($rowId > 0) {
+                        DB::table('class_schedule')
+                            ->where('id', $rowId)
+                            ->where('client_id', $auth_user->client_id)
+                            ->where('standard_id', $standard_id)
+                            ->where('day_id', $currentDay)
+                            ->update($data);
+
+                        $requestIds[] = $rowId;
+                    } else {
+                        $data['created_at'] = now();
+
+                        $newId = DB::table('class_schedule')->insertGetId($data);
+                        $requestIds[] = $newId;
+                    }
+                }
+
+                $deleteIds = array_diff($existingIds, $requestIds);
+
+                if (!empty($deleteIds)) {
+                    DB::table('class_schedule')
+                        ->where('client_id', $auth_user->client_id)
+                        ->where('standard_id', $standard_id)
+                        ->where('day_id', $currentDay)
+                        ->whereIn('id', $deleteIds)
+                        ->delete();
+                }
+            }
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -67,14 +158,14 @@ class SchoolManagementController extends Controller {
             ]);
 
         } catch (\Exception $e) {
+            DB::rollBack();
 
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
             ]);
         }
-    } 
-
+    }
     // ** Classes **
     public function initClasses(Request $request){
         $apiToken = $request->header('apiToken');

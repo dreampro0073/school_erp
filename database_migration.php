@@ -410,4 +410,5 @@ INSERT INTO days (name, `name3l`, `name1l`) VALUES
 ('Friday', 'Fri', 'F'),
 ('Saturday', 'Sat', 'S'),
 ('Sunday', 'Sun', 'S');
-
+ALTER TABLE `class_schedule` ADD `client_id` INT NULL DEFAULT NULL AFTER `remarks`;
+ALTER TABLE `subjects` ADD `client_id` INT NULL DEFAULT NULL AFTER `status`;
