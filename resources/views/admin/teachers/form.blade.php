@@ -221,9 +221,9 @@
                   </div>
                </div>
             </div>
-            <div class="card-body p-20">
+            <div class="py-20">
                <div class="col-12 d-flex justify-content-between align-items-center">
-                  <button type="button" class="btn btn-outline-primary btn-sm" ng-click="addSalaryComponent()">
+                  <button type="button" class="border border-success-600 bg-hover-success-200 text-success-600 text-md px-50 py-6 radius-8" ng-click="addSalaryComponent()">
                      <i class="ri-add-line"></i> Add Component
                   </button>
                   <div class="text-end">
