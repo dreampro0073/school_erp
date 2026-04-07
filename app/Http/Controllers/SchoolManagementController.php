@@ -24,6 +24,8 @@ class SchoolManagementController extends Controller {
         $data["students"] = Student::where("school_id", $auth_user->client_id)->pluck("name", "id")->toArray();
 
         $data["days"] = DB::table("days")->where("id", "!=", 7)->pluck("name3l", "id")->toArray();
+
+        $data["edit_flag"] = $auth_user->priv == 2 ? true : false;
         $data["success"] = true;
         return response()->json($data,200,[]);
     }

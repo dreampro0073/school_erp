@@ -14,6 +14,7 @@ app.controller('schoolManagementCtrl', function($scope, DBService) {
     $scope.isSidebarOpen = false;
     $scope.isEditMode = false;
     $scope.scheduleRows = [];
+    $scope.edit_flag = false;
 
 
     $scope.schedule = {
@@ -51,6 +52,7 @@ app.controller('schoolManagementCtrl', function($scope, DBService) {
                 $scope.students = data.students || [];
                 $scope.days = data.days || [];
             }
+            $scope.edit_flag = false;
             $scope.loading = false;
         }, function() {
             $scope.loading = false;
