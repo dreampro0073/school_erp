@@ -417,3 +417,5 @@ ALTER TABLE `standards` ADD `is_verified` TINYINT NOT NULL DEFAULT '0' COMMENT '
 
 // Devenrda
 ALTER TABLE `fee_structures` ADD `status` TINYINT NOT NULL DEFAULT '0' COMMENT '0-active, 1-inactive' AFTER `amount`;
+
+ALTER TABLE `fee_structures` ADD `fin_year` INT NULL DEFAULT NULL AFTER `amount`;

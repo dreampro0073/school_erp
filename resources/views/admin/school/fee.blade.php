@@ -22,6 +22,10 @@
                       </th>
                       <th>
                          <span class="dt-column-title" role="button">Fee Type</span><span class="dt-column-order"></span>
+                      </th>                      
+
+                      <th>
+                         <span class="dt-column-title" role="button">Financial Year</span><span class="dt-column-order"></span>
                       </th>
                       <th>
                          <span class="dt-column-title" role="button">Frequency</span><span class="dt-column-order"></span>
@@ -48,6 +52,9 @@
                          @{{item.fee_type}}<br>
                          <small>@{{item.description}}</small>
                       </td>
+                      <td>
+                         @{{item.period}}
+                      </td>                      
                       <td>
                          @{{item.fee_frequency}}
                       </td>

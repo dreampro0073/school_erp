@@ -306,7 +306,8 @@ class SchoolManagementController extends Controller {
 
         if($request->type == "fee"){
             $dataList = DB::table("fee_structures")
-            ->select("fee_structures.*", "fee_frequencies.name as fee_frequency", "fee_types.name as fee_type", "fee_types.description")
+            ->select("fee_structures.*", "fee_frequencies.name as fee_frequency", "fee_types.name as fee_type", "fee_types.description", "years.period")
+            ->leftJoin("years", "years.year", "=", "fee_structures.fin_year")
             ->join("fee_types", "fee_types.id", "=", "fee_structures.fee_type_id")
             ->join("fee_frequencies", "fee_frequencies.id", "=", "fee_structures.frequency_id")
             ->where("fee_structures.status", 0)
