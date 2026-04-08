@@ -425,3 +425,15 @@ ALTER TABLE `class_subjects` ADD `book_name` VARCHAR(255) NULL DEFAULT NULL AFTE
 ALTER TABLE `fee_structures` ADD COLUMN `class_id` BIGINT UNSIGNED NULL AFTER `school_id`;
 ALTER TABLE `fee_structures`
   MODIFY `standard_id` BIGINT UNSIGNED NULL;
+
+
+
+
+UPDATE `fee_structures`
+SET `class_id` = `standard_id`
+WHERE `class_id` IS NULL OR `class_id` = 0;
+ALTER TABLE `fee_structures`
+  MODIFY `class_id` BIGINT UNSIGNED NOT NULL;
+
+ALTER TABLE `fee_structures`
+  DROP COLUMN `standard_id`;
