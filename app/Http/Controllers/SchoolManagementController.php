@@ -300,7 +300,7 @@ class SchoolManagementController extends Controller {
         }
 
         if($request->type == "subjects"){
-            $dataList = DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("class_id", $request->class_id)->get();
+            $dataList = DB::table("class_subjects")->select("class_subjects.*", "subjects.name as sub_name")->join("subjects", "subjects.id", "class_subjects.subject_id")->where("school_id", $auth_user->client_id)->where("class_id", $request->class_id)->where("class_subjects.status", 0)->get();
             $data["dataList"] = $dataList;
         }        
 
@@ -454,6 +454,37 @@ class SchoolManagementController extends Controller {
         $auth_user = User::authUser($apiToken);
 
         DB::table("fee_structures")->where("school_id", $auth_user->client_id)->where("id", $request->id)->update([
+            "status" => 1
+        ]);
+
+        $data["success"] = true;
+        return response()->json($data,200,[]);
+    }    
+
+    // *** FEE ***
+
+    public function feeSubEdit(Request $request){
+        $apiToken = $request->header("apiToken");
+        $auth_user = User::authUser($apiToken);
+        $row = DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("id", $request->id)->first();
+
+        $data["success"] = true;
+        $data["row"] = $row;
+        return response()->json($data,200,[]);
+    }
+    public function feeSubStore(Request $request){
+        $apiToken = $request->header("apiToken");
+        $auth_user = User::authUser($apiToken);
+
+
+        $data["success"] = true;
+        return response()->json($data,200,[]);
+    }
+    public function feeSubDelete(Request $request){
+        $apiToken = $request->header("apiToken");
+        $auth_user = User::authUser($apiToken);
+
+        DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("id", $request->id)->update([
             "status" => 1
         ]);
 

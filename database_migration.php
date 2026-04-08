@@ -419,3 +419,6 @@ ALTER TABLE `standards` ADD `is_verified` TINYINT NOT NULL DEFAULT '0' COMMENT '
 ALTER TABLE `fee_structures` ADD `status` TINYINT NOT NULL DEFAULT '0' COMMENT '0-active, 1-inactive' AFTER `amount`;
 
 ALTER TABLE `fee_structures` ADD `fin_year` INT NULL DEFAULT NULL AFTER `amount`;
+
+CREATE TABLE `class_subjects` ( `id` INT NOT NULL AUTO_INCREMENT , `subject_id` INT NULL DEFAULT NULL , `class_id` INT NULL DEFAULT NULL , `school_id` INT NULL DEFAULT NULL , `added_by` INT NULL DEFAULT NULL , `status` TINYINT NOT NULL DEFAULT '0' , `created_at` TIMESTAMP NULL DEFAULT NULL , `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+ALTER TABLE `class_subjects` ADD `book_name` VARCHAR(255) NULL DEFAULT NULL AFTER `school_id`, ADD `published_by` VARCHAR(255) NULL DEFAULT NULL AFTER `book_name`;

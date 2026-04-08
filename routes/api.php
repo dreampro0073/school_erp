@@ -150,7 +150,11 @@ use App\Http\Controllers\SchoolManagementController;
 
             Route::post('/fee-row-edit', 'feeRowEdit');
             Route::post('/fee-row-store', 'feeRowStore');
-            Route::post('/fee-row-delete', 'feeRowDelete');
+            Route::post('/fee-row-delete', 'feeRowDelete');            
+
+            Route::post('/sub-row-edit', 'subRowEdit');
+            Route::post('/sub-row-store', 'subRowStore');
+            Route::post('/sub-row-delete', 'subRowDelete');
         });
     });
 

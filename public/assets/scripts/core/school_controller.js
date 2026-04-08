@@ -331,4 +331,35 @@ app.controller('classManagementCtrl', function($scope , DBService){
         $scope.isEditMode = false;
         $scope.isSidebarOpen = false;
     };
+
+    $scope.addSubRow = function() {
+        $scope.isEditMode = false;
+        $scope.formData = {};
+        $scope.isSidebarOpen = true;
+    };
+
+    $scope.editSubRow = function() {
+        $scope.processing = true;
+        DBService.erpPostCall($scope.formData, '/api/admin/school/sub-row-edit').then(function(data){
+            $scope.isEditMode = true;
+            $scope.formData = {};
+            $scope.isSidebarOpen = true;
+        });
+    }
+
+    $scope.updateSubRow = function() {
+        $scope.processing = true;
+        DBService.erpPostCall($scope.formData, '/api/admin/school/sub-row-store').then(function(data){
+            $scope.processing = false;
+            $scope.formData = data.row;
+        });
+    }    
+
+    $scope.deleteSubRow = function() {
+        $scope.processing = true;
+        DBService.erpPostCall($scope.formData, '/api/admin/school/sub-row-delete').then(function(data){
+            $scope.processing = false;
+        });
+    }
+
  });

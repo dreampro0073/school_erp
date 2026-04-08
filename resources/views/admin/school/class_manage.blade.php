@@ -18,7 +18,7 @@
             </li>            
 
             <li class="nav-item">
-               <a href="javascript:;" ng-click="type = 'subjects'; initClass()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'subjects'}">  <i class="ri-group-line"></i>Subjects</a>
+               <a href="javascript:;" ng-click="type = 'subjects'; initClass()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'subjects'}">  <i class="ri-book-line"></i>Subjects</a>
             </li>
         </ul>
       </div>
