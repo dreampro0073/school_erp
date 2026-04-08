@@ -51,10 +51,7 @@ class FeePayment extends Model
             ->select('id','amount')
             ->where('school_id', $school_id)
             ->where('fee_type_id', $fee_type_id)
-            ->where(function ($q) use ($class_id) {
-                $q->where('class_id', $class_id)
-                  ->orWhere('standard_id', $class_id);
-            });
+            ->where('class_id', $class_id);
 
         if ($frequency_id === null || $frequency_id === '') {
             $fee_subs->whereNull('frequency_id');

@@ -323,7 +323,6 @@ app.controller('classManagementCtrl', function($scope , DBService){
                 $scope.isEditMode = true;
                 $scope.formData = data.row || {};
                 $scope.formData.class_id = $scope.formData.class_id || $scope.class_id;
-                $scope.formData.standard_id = $scope.formData.standard_id || $scope.formData.class_id || $scope.class_id;
                 $scope.isSidebarOpen = true;
             } else {
                 alert(data.message || 'Data not found');
@@ -377,7 +376,6 @@ app.controller('classManagementCtrl', function($scope , DBService){
         $scope.isEditMode = false;
         $scope.formData = {
             class_id: $scope.class_id,
-            standard_id: $scope.class_id,
             fee_type_id: '',
             frequency_id: '',
             amount: ''
@@ -390,7 +388,6 @@ app.controller('classManagementCtrl', function($scope , DBService){
         $scope.isEditMode = false;
         $scope.formData = {
             class_id: $scope.class_id,
-            standard_id: $scope.class_id,
             fee_type_id: '',
             frequency_id: '',
             amount: ''
@@ -400,7 +397,6 @@ app.controller('classManagementCtrl', function($scope , DBService){
     $scope.resetForm = function () {
         $scope.formData = {
             class_id: $scope.class_id,
-            standard_id: $scope.class_id,
             fee_type_id: '',
             frequency_id: '',
             amount: ''

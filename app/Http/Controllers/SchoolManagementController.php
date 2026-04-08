@@ -294,7 +294,7 @@ class SchoolManagementController extends Controller {
     public function classManageInit(Request $request){
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
-        $classId = $request->class_id ?: $request->standard_id;
+        $classId = $request->class_id;
 
         $standard = DB::table("standards")->select("standards.*")
         ->where("standards.id", $classId)
@@ -321,10 +321,7 @@ class SchoolManagementController extends Controller {
             ->leftJoin("fee_types", "fee_types.id", "=", "fee_structures.fee_type_id")
             ->leftJoin("fee_frequencies", "fee_frequencies.id", "=", "fee_structures.frequency_id")
             ->where("fee_structures.school_id", $auth_user->client_id)
-            ->where(function ($q) use ($classId) {
-                $q->where("fee_structures.class_id", $classId)
-                  ->orWhere("fee_structures.standard_id", $classId);
-            })
+            ->where("fee_structures.class_id", $classId)
             ->orderBy("fee_structures.id", "DESC")
             ->get();
             
@@ -472,15 +469,10 @@ class SchoolManagementController extends Controller {
         $auth_user = User::authUser($apiToken);
 
         $validator = Validator::make($request->all(), [
+            'class_id' => ['required'],
             'fee_type_id' => ['required'],
             'amount' => ['required', 'numeric'],
         ]);
-
-        $validator->after(function ($validator) use ($request) {
-            if (!$request->class_id && !$request->standard_id) {
-                $validator->errors()->add('class_id', 'Class is required');
-            }
-        });
 
         if($validator->fails()){
             return response()->json([
@@ -490,7 +482,7 @@ class SchoolManagementController extends Controller {
             ],422);
         }
 
-        $classId = $request->class_id ?: $request->standard_id;
+        $classId = $request->class_id;
         $frequencyId = ($request->frequency_id === '' || $request->frequency_id === null) ? null : $request->frequency_id;
 
         DB::beginTransaction();
@@ -498,7 +490,6 @@ class SchoolManagementController extends Controller {
         try {
             $payload = [
                 "school_id" => $auth_user->client_id,
-                "standard_id" => $classId,
                 "class_id" => $classId,
                 "fee_type_id" => $request->fee_type_id,
                 "frequency_id" => $frequencyId,
@@ -526,10 +517,7 @@ class SchoolManagementController extends Controller {
             } else {
                 $existing = DB::table("fee_structures")
                     ->where("school_id", $auth_user->client_id)
-                    ->where(function ($q) use ($classId) {
-                        $q->where("class_id", $classId)
-                          ->orWhere("standard_id", $classId);
-                    })
+                    ->where("class_id", $classId)
                     ->where("fee_type_id", $request->fee_type_id)
                     ->when($frequencyId === null, function ($q) {
                         $q->whereNull("frequency_id");
