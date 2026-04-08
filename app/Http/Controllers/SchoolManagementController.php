@@ -434,7 +434,7 @@ class SchoolManagementController extends Controller {
     public function feeRowEdit(Request $request){
         $apiToken = $request->header("apiToken");
         $auth_user = User::authUser($apiToken);
-        $row = DB::table("fee_structures")->where("school_id", $auth_user->client_id)->where("id", $request->id)->first()
+        $row = DB::table("fee_structures")->where("school_id", $auth_user->client_id)->where("id", $request->id)->first();
 
         $data["success"] = true;
         $data["row"] = $row;
