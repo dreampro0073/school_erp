@@ -323,6 +323,9 @@ app.controller('classManagementCtrl', function($scope , DBService){
                 $scope.isEditMode = true;
                 $scope.formData = data.row || {};
                 $scope.formData.class_id = $scope.formData.class_id || $scope.class_id;
+                $scope.formData.amount = ($scope.formData.amount === null || $scope.formData.amount === undefined || $scope.formData.amount === '')
+                    ? ''
+                    : Number($scope.formData.amount);
                 $scope.isSidebarOpen = true;
             } else {
                 alert(data.message || 'Data not found');
