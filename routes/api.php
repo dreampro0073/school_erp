@@ -146,6 +146,11 @@ use App\Http\Controllers\SchoolManagementController;
             Route::post('/results', 'initResults');
             Route::post('/results-edit', 'editResults');
             Route::post('/results-store', 'resultsStore');
+            
+
+            Route::post('/fee-row-edit', 'feeRowEdit');
+            Route::post('/fee-row-store', 'feeRowStore');
+            Route::post('/fee-row-delete', 'feeRowDelete');
         });
     });
 

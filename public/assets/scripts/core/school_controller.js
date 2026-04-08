@@ -274,16 +274,61 @@ app.controller('classManagementCtrl', function($scope , DBService){
     $scope.class_id = 0;
     $scope.standard = {};
     $scope.dataList = [];
-    $scope.type = "students";
+    $scope.type = "fee";
     $scope.list_loading = false;
+    $scope.isSidebarOpen = false;
+    $scope.isEditMode = false;
+
     $scope.initClass = function() {
         $scope.list_loading = true;
         DBService.postCall({type : $scope.type, class_id : $scope.class_id}, '/api/admin/school/class-manage-init').then(function(data) {
             if(data.success){
+                console.log($scope.standard)
                 $scope.standard = data.standard; 
                 $scope.dataList = data.dataList;
                 $scope.list_loading = false;
             }
         });
     };
-});
+
+    $scope.editFeeRow = function() {
+        $scope.processing = true;
+        DBService.erpPostCall($scope.formData, '/api/admin/school/fee-row-edit').then(function(data){
+            $scope.isEditMode = true;
+            $scope.formData = {};
+            $scope.isSidebarOpen = true;
+        });
+    }     
+
+    $scope.updateFeeRow = function() {
+        $scope.processing = true;
+        DBService.erpPostCall($scope.formData, '/api/admin/school/fee-row-store').then(function(data){
+            $scope.processing = false;
+            $scope.formData = data.row;
+        });
+    }    
+
+    $scope.deleteFeeRow = function() {
+        $scope.processing = true;
+        DBService.erpPostCall($scope.formData, '/api/admin/school/fee-row-delete').then(function(data){
+            $scope.processing = false;
+        });
+    }
+
+    $scope.addFeeRow = function() {
+        $scope.isEditMode = false;
+        $scope.formData = {};
+        $scope.isSidebarOpen = true;
+    };
+
+    $scope.closeSidebar = function () {
+        $scope.isSidebarOpen = false;
+        $scope.formData = {};
+    };
+
+    $scope.resetForm = function () {
+        $scope.formData = {};
+        $scope.isEditMode = false;
+        $scope.isSidebarOpen = false;
+    };
+ });

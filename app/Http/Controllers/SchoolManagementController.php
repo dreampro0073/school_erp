@@ -287,16 +287,12 @@ class SchoolManagementController extends Controller {
     }
 
     public function classManageInit(Request $request){
-        die("check code");
         $apiToken = $request->header('apiToken');
         $auth_user = User::authUser($apiToken);
 
-        $standard = DB::table("client_standards")->select("client_standards.*", "standards.name as standard_name", "sections.name as section_name", "years.period")
-        ->join("standards", "standards.id", "=", "client_standards.standard_id")
-        ->leftJoin("sections", "sections.id", "=", "client_standards.section_id")
-        ->leftJoin("years", "years.year", "=", "client_standards.session_id")
-        ->where("client_standards.id", $request->class_id)
-        ->where("client_standards.client_id", $auth_user->client_id)->where("client_standards.status", 0)->first();
+        $standard = DB::table("standards")->select("standards.*")
+        ->where("standards.id", $request->class_id)
+        ->where("standards.client_id", $auth_user->client_id)->where("standards.status", 0)->first();
 
         if($request->type == "students"){
             $dataList = DB::table("class_students")->where("school_id", $auth_user->client_id)->where("class_id", $request->class_id)->get();
@@ -306,8 +302,20 @@ class SchoolManagementController extends Controller {
         if($request->type == "subjects"){
             $dataList = DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("class_id", $request->class_id)->get();
             $data["dataList"] = $dataList;
+        }        
+
+        if($request->type == "fee"){
+            $dataList = DB::table("fee_structures")
+            ->select("fee_structures.*", "fee_frequencies.name as fee_frequency", "fee_types.name as fee_type", "fee_types.description")
+            ->join("fee_types", "fee_types.id", "=", "fee_structures.fee_type_id")
+            ->join("fee_frequencies", "fee_frequencies.id", "=", "fee_structures.frequency_id")
+            ->where("fee_structures.status", 0)
+            ->where("fee_structures.school_id", $auth_user->client_id)->where("fee_structures.standard_id", $request->class_id)->get();
+            
+            $data["dataList"] = $dataList;
         }
 
+        $data["years"] = DB::table("years")->pluck("period", "year")->toArray();
         $data["standard"] = $standard;
         $data["success"] = true;
         return $data;
@@ -419,6 +427,37 @@ class SchoolManagementController extends Controller {
 
         $data["success"] = true;
         $data["message"] = "Updated Successfully"; 
+    }
+
+    // *** FEE ***
+
+    public function feeRowEdit(Request $request){
+        $apiToken = $request->header("apiToken");
+        $auth_user = User::authUser($apiToken);
+        $row = DB::table("fee_structures")->where("school_id", $auth_user->client_id)->where("id", $request->id)->first()
+
+        $data["success"] = true;
+        $data["row"] = $row;
+        return response()->json($data,200,[]);
+    }
+    public function feeRowStore(Request $request){
+        $apiToken = $request->header("apiToken");
+        $auth_user = User::authUser($apiToken);
+
+
+        $data["success"] = true;
+        return response()->json($data,200,[]);
+    }
+    public function feeRowDelete(Request $request){
+        $apiToken = $request->header("apiToken");
+        $auth_user = User::authUser($apiToken);
+
+        DB::table("fee_structures")->where("school_id", $auth_user->client_id)->where("id", $request->id)->update([
+            "status" => 1
+        ]);
+
+        $data["success"] = true;
+        return response()->json($data,200,[]);
     }
 
 

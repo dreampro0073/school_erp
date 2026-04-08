@@ -414,3 +414,6 @@ ALTER TABLE `class_schedule` ADD `client_id` INT NULL DEFAULT NULL AFTER `remark
 ALTER TABLE `subjects` ADD `client_id` INT NULL DEFAULT NULL AFTER `status`;
 
 ALTER TABLE `standards` ADD `is_verified` TINYINT NOT NULL DEFAULT '0' COMMENT ' 0=>pedding, 1=>verified, -1=>blocked, -2 block after verified' AFTER `status`;
+
+// Devenrda
+ALTER TABLE `fee_structures` ADD `status` TINYINT NOT NULL DEFAULT '0' COMMENT '0-active, 1-inactive' AFTER `amount`;
