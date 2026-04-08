@@ -1,9 +1,9 @@
 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
     <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
         <div>
-            <h1 class="fw-semibold mb-4 h6 text-primary-light">Class Subjects</h1>
+            <h1 class="fw-semibold mb-4 h6 text-primary-light">Fee Manage</h1>
         </div>
-        <button type="button" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6" ng-click="addFeeRow()"> <span class="d-flex text-md"> <i class="ri-add-large-line"></i> </span> Add Subject </button>
+        <button type="button" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6" ng-click="addFeeRow()"> <span class="d-flex text-md"> <i class="ri-add-large-line"></i> </span> Add Fee </button>
     </div>
 
     <div class="card-body p-20">
@@ -21,15 +21,18 @@
                          <span class="dt-column-order"></span>
                       </th>
                       <th>
-                         <span class="dt-column-title" role="button">Subject Name</span><span class="dt-column-order"></span>
-                      </th>                       <th>
-                         <span class="dt-column-title" role="button">Book Name</span><span class="dt-column-order"></span>
-                      </th>                       
-
-                      <th>
-                         <span class="dt-column-title" role="button">Published By</span><span class="dt-column-order"></span>
+                         <span class="dt-column-title" role="button">Fee Type</span><span class="dt-column-order"></span>
                       </th>                      
 
+                      <th>
+                         <span class="dt-column-title" role="button">Financial Year</span><span class="dt-column-order"></span>
+                      </th>
+                      <th>
+                         <span class="dt-column-title" role="button">Frequency</span><span class="dt-column-order"></span>
+                      </th>
+                      <th>
+                         <span class="dt-column-title" role="button">Amount</span><span class="dt-column-order"></span>
+                      </th>
                       <th>
                          <span class="dt-column-title" role="button">Action</span><span class="dt-column-order"></span>
                       </th>
@@ -46,14 +49,16 @@
                          </div>
                       </td>
                       <td>
-                         @{{item.sub_name}}<br>
+                         @{{item.fee_type}}<br>
+                         <small>@{{item.description}}</small>
                       </td>
                       <td>
-                         @{{item.book_name}}<br>
-                      </td>
+                         @{{item.period}}
+                      </td>                      
                       <td>
-                         @{{item.published_by}}<br>
+                         @{{item.fee_frequency}}
                       </td>
+                      <td>@{{item.amount}}</td>
                       <td>
                          <div class="btn-group">
                             <button type="button" class="text-primary-light text-xl" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
@@ -61,10 +66,10 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-lg-end border p-12">
                               <li>
-                                  <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" ng-click="editSubRow(item, $index)"><i class="ri-edit-2-line"></i>Edit</button>
+                                  <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" ng-click="editFeeRow(item, $index)"><i class="ri-edit-2-line"></i>Edit</button>
                                </li>
                                <li>
-                                  <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" ng-click="deleteSubRow(item, $index)"><i class="ri-delete-bin-6-line"></i>Remove</button>
+                                  <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" ng-click="deleteFeeRow(item, $index)"><i class="ri-delete-bin-6-line"></i>Remove</button>
                                </li>
 
                             </ul>
@@ -81,13 +86,13 @@
      ng-class="{'active active-translate-0': isSidebarOpen}" style="z-index: 9999!;">
 
     <div class="px-20 py-12 border-bottom d-flex align-items-center justify-content-between gap-20">
-        <h5 class="text-lg mb-0">@{{ isEditMode ? 'Edit Subject' : 'Add New Subject' }}</h5>
+        <h5 class="text-lg mb-0">@{{ isEditMode ? 'Edit Fee' : 'Add New Fee' }}</h5>
         <button type="button" class="close-my-sidebar text-danger-600 text-lg d-flex" ng-click="closeSidebar()">
             <i class="ri-close-large-line"></i>
         </button>
     </div>
 
-    <form ng-submit="updateSubRow()" class="d-flex flex-column p-20">
+    <form ng-submit="updateFeeRow()" class="d-flex flex-column p-20">
         <div class="row g-3">
 
             <div class="col-12">
