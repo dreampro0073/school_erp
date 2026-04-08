@@ -46,20 +46,24 @@ class FeePayment extends Model
 
         return $months;
     }
-    public static function getFeeAmount($school_id, $fee_type_id, $standard_id, $frequency_id = null){
+    public static function getFeeAmount($school_id, $fee_type_id, $class_id, $frequency_id = null){
         $fee_subs = DB::table('fee_structures')
             ->select('id','amount')
-            ->where([
-                'school_id' => $school_id,
-                'fee_type_id' => $fee_type_id,
-                'standard_id' => $standard_id
-            ]);
+            ->where('school_id', $school_id)
+            ->where('fee_type_id', $fee_type_id)
+            ->where(function ($q) use ($class_id) {
+                $q->where('class_id', $class_id)
+                  ->orWhere('standard_id', $class_id);
+            });
 
-        if (!empty($frequency_id)) {
+        if ($frequency_id === null || $frequency_id === '') {
+            $fee_subs->whereNull('frequency_id');
+        } else {
             $fee_subs->where('frequency_id', $frequency_id);
         }
+
+        $fee_subs->orderBy('id', 'desc');
         $fee_subs = $fee_subs->first();
         return ($fee_subs)?$fee_subs->amount : 0;
     }
 }
-

@@ -23,10 +23,6 @@
                       <th>
                          <span class="dt-column-title" role="button">Fee Type</span><span class="dt-column-order"></span>
                       </th>                      
-
-                      <th>
-                         <span class="dt-column-title" role="button">Financial Year</span><span class="dt-column-order"></span>
-                      </th>
                       <th>
                          <span class="dt-column-title" role="button">Frequency</span><span class="dt-column-order"></span>
                       </th>
@@ -52,9 +48,6 @@
                          @{{item.fee_type}}<br>
                          <small>@{{item.description}}</small>
                       </td>
-                      <td>
-                         @{{item.period}}
-                      </td>                      
                       <td>
                          @{{item.fee_frequency}}
                       </td>
@@ -92,14 +85,34 @@
         </button>
     </div>
 
-    <form ng-submit="updateFeeRow()" class="d-flex flex-column p-20">
+    <form name="myForm" novalidate="novalidate" ng-submit="updateFeeRow()" class="d-flex flex-column p-20">
         <div class="row g-3">
+            <div class="col-sm-12 form-group">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Fee Type <span class="text-danger-600">*</span></label>
+                <select class="form-select" ng-model="formData.fee_type_id" convert-to-number required>
+                    <option value="">Select</option>
+                    <option value="@{{item.value}}" ng-repeat="item in fee_types">@{{item.label}}</option>
+                </select>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Frequency</label>
+                <select class="form-select" ng-model="formData.frequency_id" convert-to-number>
+                    <option value="">None</option>
+                    <option value="@{{item.value}}" ng-repeat="item in fee_frequencies">@{{item.label}}</option>
+                </select>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Amount <span class="text-danger-600">*</span></label>
+                <input type="number" step="0.01" min="0" class="form-control" ng-model="formData.amount" required>
+            </div>
 
             <div class="col-12">
                 <div class="d-flex justify-content-center gap-3 mt-8">
                     <button type="button" ng-click="resetForm()" class="border border-danger-600 text-danger-600 px-50 py-11 radius-8"> Cancel </button>
 
-                    <button type="submit" class="btn btn-primary-600 px-28 py-12 radius-8 w-100">
+                    <button type="submit" class="btn btn-primary-600 px-28 py-12 radius-8 w-100" ng-disabled="processing">
                         @{{ isEditMode ? 'Update' : 'Save' }}
                     </button>
                 </div>

@@ -142,7 +142,13 @@ app.controller('schoolManagementCtrl', function($scope, DBService) {
         $scope.list_loading = true;
         DBService.postCall({type : 'classes'}, '/api/admin/school/classes').then(function(data) {
             if(data.success){
-                $scope.dataSet = data.classes;
+                $scope.dataSet = (data.classes || []).map(function(item) {
+                    item.is_verified = (item.is_verified === null || item.is_verified === undefined || item.is_verified === '')
+                        ? 0
+                        : parseInt(item.is_verified, 10);
+
+                    return item;
+                });
                 $scope.list_loading = false;
             }
         });
@@ -274,10 +280,19 @@ app.controller('classManagementCtrl', function($scope , DBService){
     $scope.class_id = 0;
     $scope.standard = {};
     $scope.dataList = [];
+    $scope.fee_types = [];
+    $scope.fee_frequencies = [];
     $scope.type = "fee";
     $scope.list_loading = false;
     $scope.isSidebarOpen = false;
     $scope.isEditMode = false;
+    $scope.processing = false;
+    $scope.formData = {
+        class_id: '',
+        fee_type_id: '',
+        frequency_id: '',
+        amount: ''
+    };
 
     $scope.initClass = function() {
         $scope.list_loading = true;
@@ -286,48 +301,110 @@ app.controller('classManagementCtrl', function($scope , DBService){
                 console.log($scope.standard)
                 $scope.standard = data.standard; 
                 $scope.dataList = data.dataList;
-                $scope.list_loading = false;
+                $scope.fee_types = data.fee_types || [];
+                $scope.fee_frequencies = data.fee_frequencies || [];
             }
+            $scope.list_loading = false;
+        }, function () {
+            $scope.list_loading = false;
         });
     };
 
-    $scope.editFeeRow = function() {
+    $scope.editFeeRow = function(item) {
+        if (!item || !item.id) {
+            return;
+        }
+
         $scope.processing = true;
-        DBService.erpPostCall($scope.formData, '/api/admin/school/fee-row-edit').then(function(data){
-            $scope.isEditMode = true;
-            $scope.formData = {};
-            $scope.isSidebarOpen = true;
+        DBService.erpPostCall({id : item.id}, '/api/admin/school/fee-row-edit').then(function(data){
+            $scope.processing = false;
+
+            if(data.success){
+                $scope.isEditMode = true;
+                $scope.formData = data.row || {};
+                $scope.formData.class_id = $scope.formData.class_id || $scope.class_id;
+                $scope.formData.standard_id = $scope.formData.standard_id || $scope.formData.class_id || $scope.class_id;
+                $scope.isSidebarOpen = true;
+            } else {
+                alert(data.message || 'Data not found');
+            }
         });
-    }     
+    };
 
     $scope.updateFeeRow = function() {
         $scope.processing = true;
         DBService.erpPostCall($scope.formData, '/api/admin/school/fee-row-store').then(function(data){
             $scope.processing = false;
-            $scope.formData = data.row;
+
+            if(data.success){
+                alert(data.message || 'Saved Successfully');
+                $scope.closeSidebar();
+                $scope.initClass();
+            } else {
+                if (data.errors) {
+                    let firstError = Object.values(data.errors)[0][0];
+                    alert(firstError);
+                    $scope.errors = data.errors;
+                } else {
+                    alert(data.message || 'Something went wrong');
+                }
+            }
         });
     }    
 
-    $scope.deleteFeeRow = function() {
+    $scope.deleteFeeRow = function(item) {
+        if (!item || !item.id) {
+            return;
+        }
+
+        var result = confirm("Are you sure ?");
+        if (!result) {
+            return;
+        }
+
         $scope.processing = true;
-        DBService.erpPostCall($scope.formData, '/api/admin/school/fee-row-delete').then(function(data){
+        DBService.erpPostCall({id : item.id}, '/api/admin/school/fee-row-delete').then(function(data){
             $scope.processing = false;
+
+            alert(data.message || 'Deleted Successfully');
+            if(data.success){
+                $scope.initClass();
+            }
         });
     }
 
     $scope.addFeeRow = function() {
         $scope.isEditMode = false;
-        $scope.formData = {};
+        $scope.formData = {
+            class_id: $scope.class_id,
+            standard_id: $scope.class_id,
+            fee_type_id: '',
+            frequency_id: '',
+            amount: ''
+        };
         $scope.isSidebarOpen = true;
     };
 
     $scope.closeSidebar = function () {
         $scope.isSidebarOpen = false;
-        $scope.formData = {};
+        $scope.isEditMode = false;
+        $scope.formData = {
+            class_id: $scope.class_id,
+            standard_id: $scope.class_id,
+            fee_type_id: '',
+            frequency_id: '',
+            amount: ''
+        };
     };
 
     $scope.resetForm = function () {
-        $scope.formData = {};
+        $scope.formData = {
+            class_id: $scope.class_id,
+            standard_id: $scope.class_id,
+            fee_type_id: '',
+            frequency_id: '',
+            amount: ''
+        };
         $scope.isEditMode = false;
         $scope.isSidebarOpen = false;
     };

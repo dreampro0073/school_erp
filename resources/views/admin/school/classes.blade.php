@@ -20,7 +20,7 @@
                     <tr>
                         <th>SN.</th>
                         <th>Class</th>
-                        <th>Verifed</th>
+                        <th>Verified</th>
                         <th>#</th>
                     </tr>
                 </thead>
@@ -29,9 +29,9 @@
                         <td>@{{$index + 1}}</td>
                         <td>@{{item.name}}</td>
                         <td>
-                            <span ng-if="item.is_verified == 0" class="bg-primary-100 text-primary-600 px-24 py-4 radius-4 fw-medium text-sm">Pending</span>
-                            <span ng-if="item.is_verified == -1 || item.is_verified == -2" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Deactivate</span>
                             <span ng-if="item.is_verified == 1" class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">Verified</span>
+                            <span ng-if="item.is_verified == -1 || item.is_verified == -2" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Deactivate</span>
+                            <span ng-if="item.is_verified == 0 || item.is_verified === null || item.is_verified === undefined" class="bg-primary-100 text-primary-600 px-24 py-4 radius-4 fw-medium text-sm">Pending</span>
                         </td>
                         <td >
 
