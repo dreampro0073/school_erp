@@ -86,9 +86,9 @@ class TeacherController extends Controller {
         $teachers = $query->orderBy('id', 'DESC')->paginate($limit);
 
         foreach ($teachers as $teacher) {
-            $teacher->dob = date("d-m-Y", strtotime($teacher->dob));
-            $teacher->joining_date = date("d-m-Y", strtotime($teacher->joining_date));
-            $teacher->resign_date = date("d-m-Y", strtotime($teacher->resign_date));
+            $teacher->dob = $teacher->dob ? date("d-m-Y", strtotime($teacher->dob)) : null;
+            $teacher->joining_date = $teacher->joining_date ? date("d-m-Y", strtotime($teacher->joining_date)) : null;
+            $teacher->resign_date = $teacher->resign_date ? date("d-m-Y", strtotime($teacher->resign_date)) : null;
         }
 
 

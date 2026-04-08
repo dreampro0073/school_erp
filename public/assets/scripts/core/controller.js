@@ -557,65 +557,74 @@ app.controller('studentProfileCtrl', function($scope , DBService){
 });
 
 // *** teacherCtrl ***
-app.controller('teacherCtrl', function($scope , DBService){
+app.controller('teacherCtrl', function($scope, $timeout, DBService){
     $scope.loading = false;
-    $scope.logLoading = false;
-    $scope.logProcessing = false;
-    $scope.allTeachers = [];
     $scope.teachers = [];
     $scope.baseUrl = base_url;
-    $scope.filters = {
-        search: '',
-        gender: '',
-        status: ''
-    };
-    $scope.salaryFilters = {
-        teacher_id: null,
-        month: ''
-    };
-    $scope.teacherOptions = [];
-    $scope.salaryLogs = [];
-    $scope.logForm = {
-        teacher_id: null,
-        salary_month: '',
-        gross_amount: '',
-        deduction_amount: '0',
-        payment_date: '',
-        payment_mode: '',
-        transaction_ref: '',
-        remark: ''
-    };
 
-   $scope.resetFilters = function() {
+    $scope.currentPage = 1;
+    $scope.totalPages = 1;
+    $scope.totalRecords = 0;
+
     $scope.filters = {
+        page: 1,
         search: '',
+        limit: 10,
         gender: '',
         status: ''
     };
 
-    $scope.applyFilters(); // instead of init()
-};
+    var searchTimeout = null;
 
-   $scope.init = function() {
-    $scope.applyFilters();
-};
+    $scope.changePage = function(page) {
+        $scope.init(page);
+    };
+
+    $scope.onSearch = function() {
+        if (searchTimeout) {
+            $timeout.cancel(searchTimeout);
+        }
+
+        searchTimeout = $timeout(function() {
+            $scope.init(1);
+        }, 400);
+    };
 
     $scope.applyFilters = function() {
-    $scope.loading = true;
+        $scope.init(1);
+    };
 
-    DBService.postCall($scope.filters, '/api/admin/teachers/init')
-        .then(function(data) {
-            if (data.success) {
-                $scope.teachers = data.teachers.data;
-            }
-            $scope.loading = false;
-        });
-};
+    $scope.resetFilters = function() {
+        $scope.filters = {
+            page: 1,
+            search: '',
+            limit: 10,
+            gender: '',
+            status: ''
+        };
+        $scope.init(1);
+    };
 
-    
+    $scope.init = function(page = 1) {
+        $scope.filters.page = page;
+        $scope.loading = true;
 
-  
- 
+        DBService.postCall($scope.filters, '/api/admin/teachers/init')
+            .then(function(data) {
+                if (data.success) {
+                    $scope.teachers = data.teachers.data;
+                    $scope.currentPage = data.teachers.current_page;
+                    $scope.totalPages = data.teachers.last_page;
+                    $scope.totalRecords = data.teachers.total;
+                } else {
+                    $scope.teachers = [];
+                    $scope.currentPage = 1;
+                    $scope.totalPages = 1;
+                    $scope.totalRecords = 0;
+                }
+                $scope.loading = false;
+            });
+    };
 });
 
 // *** adminDashboardCtrl ***

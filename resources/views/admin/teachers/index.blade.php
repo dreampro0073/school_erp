@@ -1,213 +1,153 @@
 @extends('layout.layout')
 
 @section('main')
-<div ng-controller="teacherCtrl" ng-init="init();" class="mt-24">
-   <div class="d-flex justify-content-between align-items-center mb-16">
-      <h5 class="mb-0">Teachers</h5>
-      <a href="{{ url('/admin/teachers/add') }}" class="btn btn-primary">
-         <i class="ri-add-line"></i> Add Teacher
+   <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+      <div class="">
+         <h1 class="fw-semibold mb-4 h6 text-primary-light">Teachers List </h1>
+         <div class="">
+              <a href="{{url('admin/dashboard')}}" class="text-secondary-light hover-text-primary hover-underline">Dashboard </a>
+              <span class="text-secondary-light">/ Teachers </span>
+         </div>
+      </div>
+      <a href="{{url('admin/teachers/add')}}" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6">
+         <span class="d-flex text-md">
+              <i class="ri-add-large-line"></i>
+         </span>
+         Add Teacher
       </a>
    </div>
 
-   <div class="card h-100">
-      <div class="card-header">
-         <div class="row g-2">
-            <div class="col-md-5">
-               <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Search by name, mobile, email"
-                  ng-model="filters.search"
-                  ng-change="applyFilters()">
-            </div>
-            <div class="col-md-3">
-               <select class="form-select" ng-model="filters.gender" ng-change="applyFilters()">
-                  <option value="">All Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-               </select>
-            </div>
-            <div class="col-md-2">
-               <select class="form-select" ng-model="filters.status" ng-change="applyFilters()">
-                  <option value="">All Status</option>
-                  <option value="1">Active</option>
-                  <option value="0">Inactive</option>
-               </select>
-            </div>
-            <div class="col-md-2">
-               <button type="button" class="btn btn-outline-secondary w-100" ng-click="resetFilters()">
-                  Clear
-               </button>
-            </div>
-         </div>
-      </div>
-      <div class="card-body p-0">
-         <div class="table-responsive">
-            <table class="table bordered-table mb-0">
-               <thead>
-                  <tr>
-                     <th>#</th>
-                     <th>Name</th>
-                     <th>DOB</th>
-                     <th>Gender</th>
-                     <th>Mobile</th>
-                     <th>Email</th>
-                     <th>Status</th>
-                     <th>Action</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  <tr ng-repeat="item in teachers track by $index">
-                     <td>@{{$index + 1}}</td>
-                     <td>@{{item.first_name || item.name || '-'}} @{{item.last_name || ''}}</td>
-                     <td>@{{item.dob || '-'}}</td>
-                     <td>@{{item.gender || '-'}}</td>
-                     <td>@{{item.mobile || '-'}}</td>
-                     <td>@{{item.email || '-'}}</td>
-                     <td>
-                        <span class="badge" ng-class="item.active == 0 ? 'text-bg-danger' : 'text-bg-success'">
-                           @{{item.active == 0 ? 'Inactive' : 'Active'}}
-                        </span>
-                     </td>
-                     <td>
-                        @if(false)
-                       <!--  <a ng-if="item.unique_id" ng-href="@{{baseUrl + '/admin/teachers/add/' + encodeURIComponent(item.unique_id)}}" class="btn btn-sm btn-outline-primary">
-                           <i class="ri-edit-2-line"></i> Edit
-                        </a> -->
-                        @endif
+   <div ng-controller="teacherCtrl" ng-init="init();">
+      <div class="card h-100">
+         <div class="card-body p-0 dataTable-wrapper">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-16 px-20 py-12 border-bottom border-neutral-200">
+               <div class="d-flex flex-wrap align-items-center gap-16 flex-grow-1">
+                  <form class="navbar-search dt-search m-0 flex-shrink-0">
+                     <input type="text" class="dt-input bg-transparent radius-4 form-control" placeholder="Search by name, mobile, email" ng-model="filters.search" ng-change="onSearch();">
+                     <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+                  </form>
 
-                        <a 
-                          ng-if="item.unique_id"
-                          ng-href="@{{ baseUrl + '/admin/teachers/add/' + item.unique_id }}"
-                          class="btn btn-sm btn-outline-primary">
-                          Edit
-                        </a>
-                     </td>
-                  </tr>
-                  <tr ng-if="!teachers.length ">
-                     <td colspan="8" class="text-center py-4 text-secondary">No teachers found.</td>
-                  </tr>
-               </tbody>
-            </table>
-         </div>
-      </div>
-   </div>
+                  <div class="d-flex flex-wrap align-items-center gap-12 teacher-filter-group">
+                     <select class="form-select teacher-filter-select" ng-model="filters.gender" ng-change="applyFilters()">
+                        <option value="">All Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                     </select>
 
-   @if(false)
-   <div class="card h-100 mt-16">
-      <div class="card-header">
-         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h6 class="mb-0">Teacher Salary Logs</h6>
-            <button type="button" class="btn btn-outline-secondary btn-sm" ng-click="loadSalaryLogs()">
-               Refresh
-            </button>
-         </div>
-      </div>
-      <div class="card-body">
-         <div class="row g-2 mb-3">
-            <div class="col-md-4">
-               <select class="form-select" ng-model="salaryFilters.teacher_id">
-                  <option value="">All Teachers</option>
-                  <option ng-repeat="opt in teacherOptions track by opt.teacher_id" ng-value="opt.teacher_id">
-                     @{{ opt.teacher_name }}
-                  </option>
-               </select>
-            </div>
-            <div class="col-md-3">
-               <input type="month" class="form-control" ng-model="salaryFilters.month">
-            </div>
-            <div class="col-md-2">
-               <button type="button" class="btn btn-primary w-100" ng-click="loadSalaryLogs()">Apply</button>
-            </div>
-            <div class="col-md-2">
-               <button type="button" class="btn btn-light w-100" ng-click="resetSalaryFilters()">Clear</button>
-            </div>
-         </div>
+                     <select class="form-select teacher-filter-select" ng-model="filters.status" ng-change="applyFilters()">
+                        <option value="">All Status</option>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                     </select>
 
-         <div class="border rounded p-3 mb-3">
-            <h6 class="mb-3">Add / Update Salary Payment</h6>
-            <div class="row g-2">
-               <div class="col-md-3">
-                  <label class="form-label">Teacher *</label>
-                  <select class="form-select" ng-model="logForm.teacher_id">
-                     <option value="">Select Teacher</option>
-                     <option ng-repeat="opt in teacherOptions track by opt.teacher_id" ng-value="opt.teacher_id">
-                        @{{ opt.teacher_name }}
-                     </option>
-                  </select>
+                     <button type="button" class="btn btn-outline-secondary btn-sm flex-shrink-0" ng-click="resetFilters()">
+                        Clear
+                     </button>
+                  </div>
                </div>
-               <div class="col-md-2">
-                  <label class="form-label">Salary Month *</label>
-                  <input type="month" class="form-control" ng-model="logForm.salary_month">
-               </div>
-               <div class="col-md-2">
-                  <label class="form-label">Gross *</label>
-                  <input type="number" step="0.01" min="0" class="form-control" ng-model="logForm.gross_amount">
-               </div>
-               <div class="col-md-2">
-                  <label class="form-label">Deduction</label>
-                  <input type="number" step="0.01" min="0" class="form-control" ng-model="logForm.deduction_amount">
-               </div>
-               <div class="col-md-3">
-                  <label class="form-label">Payment Date</label>
-                  <input type="date" class="form-control" ng-model="logForm.payment_date">
-               </div>
-               <div class="col-md-3">
-                  <label class="form-label">Payment Mode</label>
-                  <input type="text" class="form-control" ng-model="logForm.payment_mode" placeholder="Cash / Bank / UPI">
-               </div>
-               <div class="col-md-3">
-                  <label class="form-label">Transaction Ref</label>
-                  <input type="text" class="form-control" ng-model="logForm.transaction_ref">
-               </div>
-               <div class="col-md-4">
-                  <label class="form-label">Remark</label>
-                  <input type="text" class="form-control" ng-model="logForm.remark">
-               </div>
-               <div class="col-md-2 d-grid align-items-end">
-                  <button type="button" class="btn btn-success" ng-click="saveSalaryLog()" ng-disabled="logProcessing">
-                     @{{ logProcessing ? 'Saving...' : 'Save Log' }}
-                  </button>
+
+               <div class="d-flex align-items-center gap-8 text-secondary-light flex-shrink-0">
+                  <span class="">
+                     Rows per page:
+                  </span>
+                  <div class="dt-length">
+                     <select name="dataTable_length" aria-controls="dataTable" class="dt-input form-control form-select teacher-length-select" ng-change="init();" ng-model="filters.limit" convert-to-number>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                     </select>
+                  </div>
                </div>
             </div>
-         </div>
 
-         <div class="table-responsive">
-            <table class="table bordered-table mb-0">
-               <thead>
-                  <tr>
-                     <th>#</th>
-                     <th>Teacher</th>
-                     <th>Month</th>
-                     <th>Gross</th>
-                     <th>Deduction</th>
-                     <th>Net</th>
-                     <th>Payment Date</th>
-                     <th>Mode</th>
-                     <th>Ref</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  <tr ng-repeat="log in salaryLogs track by log.id">
-                     <td>@{{$index + 1}}</td>
-                     <td>@{{log.teacher_name || '-'}}</td>
-                     <td>@{{log.salary_month_label || log.salary_month || '-'}}</td>
-                     <td>@{{log.gross_amount || 0}}</td>
-                     <td>@{{log.deduction_amount || 0}}</td>
-                     <td><strong>@{{log.net_amount || 0}}</strong></td>
-                     <td>@{{log.payment_date || '-'}}</td>
-                     <td>@{{log.payment_mode || '-'}}</td>
-                     <td>@{{log.transaction_ref || '-'}}</td>
-                  </tr>
-                  <tr ng-if="!salaryLogs.length">
-                     <td colspan="9" class="text-center py-4 text-secondary">No salary logs found.</td>
-                  </tr>
-               </tbody>
-            </table>
+            <div id="dataTable_wrapper" class="dt-container">
+               <div class="dt-layout-row dt-layout-table">
+                  <div class="dt-layout-cell">
+                     <table class="table bordered-table mb-0 data-table dataTable" style="width: 1260.47px;">
+                        <thead>
+                           <tr role="row">
+                              <th>
+                                 <span class="dt-column-title" role="button">S.L</span>
+                                 <span class="dt-column-order"></span>
+                              </th>
+                              <th>
+                                 <span class="dt-column-title" role="button">Name</span><span class="dt-column-order"></span>
+                              </th>
+                              <th>
+                                 <span class="dt-column-title" role="button">DOB</span><span class="dt-column-order"></span>
+                              </th>
+                              <th>
+                                 <span class="dt-column-title" role="button">Gender</span><span class="dt-column-order"></span>
+                              </th>
+                              <th>
+                                 <span class="dt-column-title" role="button">Mobile Number</span><span class="dt-column-order"></span>
+                              </th>
+                              <th>
+                                 <span class="dt-column-title" role="button">Email</span><span class="dt-column-order"></span>
+                              </th>
+                              <th>
+                                 <span class="dt-column-title" role="button">Status</span><span class="dt-column-order"></span>
+                              </th>
+                              <th>
+                                 <span class="dt-column-title" role="button">Action</span><span class="dt-column-order"></span>
+                              </th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr ng-repeat="item in teachers track by $index">
+                              <td>
+                                 <span>@{{ (currentPage - 1) * filters.limit + $index + 1 }}</span>
+                              </td>
+                              <td>
+                                 <div class="">
+                                    <h6 class="text-md mb-0 fw-medium flex-grow-1">@{{item.first_name || item.name || '-' }} @{{item.last_name || ''}}</h6>
+                                 </div>
+                              </td>
+                              <td>@{{item.dob || '-'}}</td>
+                              <td>@{{item.gender || '-'}}</td>
+                              <td>@{{item.mobile || '-'}}</td>
+                              <td>@{{item.email || '-'}}</td>
+                              <td>
+                                 <span class="px-24 py-4 radius-4 fw-medium text-sm" ng-class="item.active == 0 ? 'bg-danger-100 text-danger-600' : 'bg-success-100 text-success-600'">
+                                    @{{item.active == 0 ? 'Inactive' : 'Active'}}
+                                 </span>
+                              </td>
+                              <td>
+                                 <div class="btn-group">
+                                    <button type="button" class="text-primary-light text-xl" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                                       <iconify-icon icon="tabler:dots-vertical"></iconify-icon>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-lg-end border p-12">
+                                       <li>
+                                          <a ng-if="item.unique_id" ng-href="@{{ baseUrl + '/admin/teachers/add/' + item.unique_id }}" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
+                                          <i class="ri-edit-2-line"></i>
+                                          Edit
+                                          </a>
+                                       </li>
+                                    </ul>
+                                 </div>
+                              </td>
+                           </tr>
+                           <tr ng-if="!teachers.length">
+                              <td colspan="8" class="text-center py-4 text-secondary">No teachers found.</td>
+                           </tr>
+                        </tbody>
+                        <tfoot></tfoot>
+                     </table>
+                  </div>
+               </div>
+
+               <modern-pagination
+                  current-page="currentPage"
+                  total-pages="totalPages"
+                  total-records="totalRecords"
+                  on-page-change="changePage(page)">
+               </modern-pagination>
+            </div>
          </div>
       </div>
    </div>
-   @endif
-</div>
 @endsection
