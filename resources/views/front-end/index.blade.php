@@ -45,13 +45,16 @@
       <img src="{{url('assets/img/sx1-logo.png')}}">
       
     </a>
-    <ul class="nav-links">
-      <li><a href="#features">Features</a></li>
-      <li><a href="#audience">Who It's For</a></li>
-      <li><a href="#how">How It Works</a></li>
-      <li><a href="#testimonials">Reviews</a></li>
-      <li><a href="{{url('login')}}" class="nav-cta">Login</a></li>
+    <ul class="nav-links"  id="navLinks">
+      <li><a class="scroll-link" href="#features">Features</a></li>
+      <li><a class="scroll-link" href="#audience">Who It's For</a></li>
+      <li><a class="scroll-link" href="#how">How It Works</a></li>
+      <li><a class="scroll-link" href="#testimonials">Reviews</a></li>
+      <li><a  href="{{url('login')}}" class="nav-cta">Login</a></li>
     </ul>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
   <!-- HERO -->
@@ -440,6 +443,40 @@
       <p>📧 <a href="mailto:aadhyasriwebsolutions@gmail.com">aadhyasriwebsolutions@gmail.com</a> &nbsp; 📞 <a href="tel:7351334717">+91-7351334717</a>,&nbsp;<a href="tel:7088262941">+91-7088262941</a></p>
     </div>
   </footer>
+  <script src="https://aadhyasriwebsolutions.com/front-end/js/jquery.min.js"></script>
+  <script>
+    var mobile_site = false;
+    if($(window).width() <= 768) {
+      mobile_site = true;
+    }
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      const btn = document.getElementById('hamburger');
+      nav.classList.toggle('open');
+      btn.classList.toggle('open');
+    }
+    function closeMenu() {
+      document.getElementById('navLinks').classList.remove('open');
+      document.getElementById('hamburger').classList.remove('open');
+    }
+
+    $("a.scroll-link").click(function (e) {
+      e.preventDefault();
+
+      var hash = $(this).attr("href");
+      var target = $(hash);
+
+      if (hash && target.length) {
+          $('html, body').animate({
+              scrollTop: target.offset().top - 30
+          }, 800);
+      }
+      if(mobile_site){
+        closeMenu();
+      }
+     
+  });
+  </script>
 
 </body>
 </html>

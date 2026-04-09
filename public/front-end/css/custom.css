@@ -891,4 +891,113 @@ footer {
     .footer-grid .footer-brand p {
       max-width: 100% !important; }
 
+/* ── HAMBURGER ── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
+  position: absolute;
+  top: 15px;
+  right: 10px; }
+
+.hamburger:hover {
+  background: rgba(52, 58, 160, 0.08); }
+
+.hamburger span {
+  display: block;
+  height: 2.5px;
+  width: 100%;
+  background: var(--brand);
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+  transform-origin: center; }
+
+.hamburger.open span:nth-child(1) {
+  transform: translateY(7.5px) rotate(45deg); }
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0); }
+
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-7.5px) rotate(-45deg); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex; }
+
+  nav {
+    position: fixed;
+    flex-wrap: wrap;
+    height: auto;
+    padding: 0 5%;
+    align-items: center; }
+
+  .nav-logo {
+    height: 70px; }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    padding: 12px 0 20px;
+    gap: 0;
+    border-top: 1px solid var(--border); }
+
+  .nav-links.open {
+    display: flex; }
+
+  .nav-links li {
+    width: 100%; }
+
+  .nav-links a {
+    display: block;
+    padding: 13px 4px;
+    font-size: 1rem;
+    color: var(--text);
+    border-bottom: 1px solid var(--border); }
+
+  .nav-links a:hover {
+    color: var(--brand);
+    background: none; }
+
+  .nav-links .nav-cta {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    background: var(--brand);
+    color: white;
+    text-align: center;
+    width: 100%;
+    border-bottom: none; }
+
+  .mockup-body {
+    grid-template-columns: 1fr; }
+
+  .mockup-sidebar {
+    display: none; }
+
+  .dash-cards {
+    grid-template-columns: repeat(2, 1fr); }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr; }
+
+  .hero-stats .stat-divider {
+    display: none; }
+
+  .cta-box {
+    padding: 36px 24px; } }
+
 /*# sourceMappingURL=custom.css.map */
