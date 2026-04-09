@@ -70,8 +70,8 @@ class SuperAdminController extends Controller {
         }
 
         $type_row = DB::table("privileges")->where("plural_name", $request->type)->first();
-        
-        $sql = User::select(User::selectUsersColumns())->where("priv", $type_row->priv)->get();
+
+        $sql = User::select(User::selectUsersColumns())->where("users.priv", $type_row->priv)->get();
 
         $data["dataSet"] = $sql;
         $data["success"] = true;

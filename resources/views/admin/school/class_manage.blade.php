@@ -10,15 +10,15 @@
          <ul class="p-12 nav nav-pills bordered-tab" id="pills-tab" role="tablist">
 
             <li class="nav-item">
-               <a href="javascript:;" ng-click="type = 'fee'; initClass()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'fee'}">  <i class="ri-money-dollar-box-line"></i>Fee</a>
-            </li>            
-
-            <li class="nav-item">
                <a href="javascript:;" ng-click="type = 'students'; initClass()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'students'}">  <i class="ri-group-line"></i>Students</a>
             </li>            
 
             <li class="nav-item">
                <a href="javascript:;" ng-click="type = 'subjects'; initClass()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'subjects'}">  <i class="ri-book-line"></i>Subjects</a>
+            </li>
+
+            <li class="nav-item">
+               <a href="javascript:;" ng-click="type = 'fee'; initClass()" class="nav-link d-flex align-items-center gap-8 text-secondary-light fw-medium text-sm text-hover-primary-600 text-capitalize bg-transparent px-20 py-12 " ng-class="{'active': type == 'fee'}">  <i class="ri-money-dollar-box-line"></i>Fee</a>
             </li>
         </ul>
       </div>

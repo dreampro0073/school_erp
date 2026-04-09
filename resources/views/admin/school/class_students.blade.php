@@ -3,14 +3,12 @@
         <div>
             <h1 class="fw-semibold mb-4 h6 text-primary-light">Students List </h1>
         </div>
-        <button type="button"
-                class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6"
-                ng-click="openAddModal()">
+        <a href="{{url('admin/students/add')}}" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6">
             <span class="d-flex text-md">
-                <i class="ri-add-large-line"></i>
+                 <i class="ri-add-large-line"></i>
             </span>
-            Add Students
-        </button>
+            Add Student
+         </a>
     </div>
 
     <div class="card-body p-20">
@@ -120,22 +118,3 @@
     </div>
 </div>
 
-<div class="my-sidebar theme-bg-white position-fixed end-0 top-0 h-100vh overflow-y-auto z-99 max-w-700-px w-100 translate-x-full duration-300"
-     ng-class="{'active active-translate-0': isSidebarOpen}" style="z-index: 9999!;">
-
-    <div class="px-20 py-12 border-bottom d-flex align-items-center justify-content-between gap-20">
-        <h5 class="text-lg mb-0">@{{ isEditMode ? 'Edit Class' : 'Add New Class' }}</h5>
-        <button type="button" class="close-my-sidebar text-danger-600 text-lg d-flex" ng-click="closeSidebar()">
-            <i class="ri-close-large-line"></i>
-        </button>
-    </div>
-
-    <form ng-submit="submitClass()" class="d-flex flex-column p-20">
-        <div class="row g-3">
-
-
-        </div>
-    </form>
-</div>
-
-<div class="overlay" ng-class="{'active': isSidebarOpen}" ng-click="closeSidebar()"></div>

@@ -25,6 +25,9 @@
                       </th>                      
                       <th>
                          <span class="dt-column-title" role="button">Frequency</span><span class="dt-column-order"></span>
+                      </th>                      
+                      <th>
+                         <span class="dt-column-title" role="button">Einancial Year</span><span class="dt-column-order"></span>
                       </th>
                       <th>
                          <span class="dt-column-title" role="button">Amount</span><span class="dt-column-order"></span>
@@ -50,6 +53,9 @@
                       </td>
                       <td>
                          @{{item.fee_frequency}}
+                      </td>                      
+                      <td>
+                         @{{item.period}}
                       </td>
                       <td>@{{item.amount}}</td>
                       <td>
@@ -98,8 +104,16 @@
             <div class="col-sm-12 form-group">
                 <label class="text-sm fw-semibold text-primary-light mb-8">Frequency</label>
                 <select class="form-select" ng-model="formData.frequency_id" convert-to-number>
-                    <option value="">None</option>
+                    <option value="">Select</option>
                     <option value="@{{item.value}}" ng-repeat="item in fee_frequencies">@{{item.label}}</option>
+                </select>
+            </div>            
+
+            <div class="col-sm-12 form-group">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Financial year</label>
+                <select class="form-select" ng-model="formData.fin_year" required convert-to-number>
+                    <option value="">Select</option>
+                    <option value="@{{key}}" ng-repeat="(key, value) in years">@{{value}}</option>
                 </select>
             </div>
 

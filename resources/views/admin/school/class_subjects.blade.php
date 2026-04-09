@@ -3,7 +3,7 @@
         <div>
             <h1 class="fw-semibold mb-4 h6 text-primary-light">Class Subjects</h1>
         </div>
-        <button type="button" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6" ng-click="addFeeRow()"> <span class="d-flex text-md"> <i class="ri-add-large-line"></i> </span> Add Subject </button>
+        <button type="button" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6" ng-click="addSubRow()"> <span class="d-flex text-md"> <i class="ri-add-large-line"></i> </span> Add Subject </button>
     </div>
 
     <div class="card-body p-20">
@@ -89,12 +89,26 @@
 
     <form ng-submit="updateSubRow()" class="d-flex flex-column p-20">
         <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label form-label-sm">Subject</label>
+                <select class="form-select form-control-sm" ng-model="formData.subject_id" ng-options="sub.id as sub.name for sub in subjects_list" required>
+                    <option value="">Select Subject</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <label class="form-label form-label-sm">Book Name</label>
+                <input type="text" class="form-control form-control-sm" ng-model="formData.book_name" placeholder="Book Name" required>
+            </div>
+            <div class="col-12">
+                <label class="form-label form-label-sm">Published By</label>
+                <input type="text" class="form-control form-control-sm" ng-model="formData.published_by" placeholder="Published By">
+            </div>
 
             <div class="col-12">
                 <div class="d-flex justify-content-center gap-3 mt-8">
                     <button type="button" ng-click="resetForm()" class="border border-danger-600 text-danger-600 px-50 py-11 radius-8"> Cancel </button>
 
-                    <button type="submit" class="btn btn-primary-600 px-28 py-12 radius-8 w-100">
+                    <button type="submit" class="btn btn-primary-600 px-28 py-12 radius-8 w-100" ng-disabled="processing">
                         @{{ isEditMode ? 'Update' : 'Save' }}
                     </button>
                 </div>
