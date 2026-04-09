@@ -104,7 +104,7 @@
             <div class="col-sm-12 form-group">
                 <label class="text-sm fw-semibold text-primary-light mb-8">Frequency</label>
                 <select class="form-select" ng-model="formData.frequency_id" convert-to-number>
-                    <option value="">None</option>
+                    <option value="">Select</option>
                     <option value="@{{item.value}}" ng-repeat="item in fee_frequencies">@{{item.label}}</option>
                 </select>
             </div>            
