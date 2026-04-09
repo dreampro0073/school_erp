@@ -316,10 +316,12 @@ class SchoolManagementController extends Controller {
                 "fee_structures.*",
                 "fee_frequencies.name as fee_frequency",
                 "fee_types.name as fee_type",
-                "fee_types.description"
+                "fee_types.description",
+                "years.period"
             )
             ->leftJoin("fee_types", "fee_types.id", "=", "fee_structures.fee_type_id")
             ->leftJoin("fee_frequencies", "fee_frequencies.id", "=", "fee_structures.frequency_id")
+            ->leftJoin("years", "years.year", "=", "fee_structures.fin_year")
             ->where("fee_structures.school_id", $auth_user->client_id)
             ->where("fee_structures.class_id", $classId)
             ->orderBy("fee_structures.id", "DESC")
@@ -494,6 +496,7 @@ class SchoolManagementController extends Controller {
                 "fee_type_id" => $request->fee_type_id,
                 "frequency_id" => $frequencyId,
                 "amount" => $request->amount,
+                "fin_year" => $request->fin_year,
                 "updated_at" => now(),
             ];
 

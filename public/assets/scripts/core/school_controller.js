@@ -293,6 +293,7 @@ app.controller('classManagementCtrl', function($scope , DBService){
         frequency_id: '',
         amount: ''
     };
+    $scope.years = [];
 
     $scope.initClass = function() {
         $scope.list_loading = true;
@@ -304,6 +305,7 @@ app.controller('classManagementCtrl', function($scope , DBService){
                 $scope.fee_types = data.fee_types || [];
                 $scope.fee_frequencies = data.fee_frequencies || [];
             }
+            $scope.years = data.years;
             $scope.list_loading = false;
         }, function () {
             $scope.list_loading = false;
