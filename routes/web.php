@@ -18,7 +18,10 @@ use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SchoolManagementController;
 
-Route::get('/', [UserController::class, 'login'])->name('login');
+Route::get('/', function () {
+    return view('front-end.index');
+});
+Route::get('/login', [UserController::class, 'login'])->name('login');
 Route::get('/login/captcha', [UserController::class, 'captcha'])->name('login.captcha');
 Route::post('/login', [UserController::class, 'postLogin']);
 Route::get('/logout', [UserController::class, 'logout']);
