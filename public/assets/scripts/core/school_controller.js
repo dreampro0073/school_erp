@@ -302,6 +302,7 @@ app.controller('classManagementCtrl', function($scope , DBService){
                 console.log($scope.standard)
                 $scope.standard = data.standard; 
                 $scope.dataList = data.dataList;
+                $scope.subjects_list = data.subjects || [];
                 $scope.fee_types = data.fee_types || [];
                 $scope.fee_frequencies = data.fee_frequencies || [];
             }
@@ -412,16 +413,27 @@ app.controller('classManagementCtrl', function($scope , DBService){
 
     $scope.addSubRow = function() {
         $scope.isEditMode = false;
-        $scope.formData = {};
+        $scope.formData = {
+            class_id: $scope.class_id,
+            subject_id: '',
+            book_name: '',
+            published_by: ''
+        };
         $scope.isSidebarOpen = true;
     };
 
-    $scope.editSubRow = function() {
+    $scope.editSubRow = function(item, index) {
         $scope.processing = true;
-        DBService.erpPostCall($scope.formData, '/api/admin/school/sub-row-edit').then(function(data){
-            $scope.isEditMode = true;
-            $scope.formData = {};
-            $scope.isSidebarOpen = true;
+        DBService.erpPostCall({id: item.id}, '/api/admin/school/sub-row-edit').then(function(data){
+            $scope.processing = false;
+            if(data.success){
+                $scope.isEditMode = true;
+                $scope.formData = data.row || {};
+                $scope.formData.class_id = $scope.formData.class_id || $scope.class_id;
+                $scope.isSidebarOpen = true;
+            } else {
+                alert(data.message || 'Data not found');
+            }
         });
     }
 
@@ -429,14 +441,37 @@ app.controller('classManagementCtrl', function($scope , DBService){
         $scope.processing = true;
         DBService.erpPostCall($scope.formData, '/api/admin/school/sub-row-store').then(function(data){
             $scope.processing = false;
-            $scope.formData = data.row;
+            if(data.success) {
+                alert(data.message || 'Saved Successfully');
+                $scope.closeSidebar();
+                $scope.initClass();
+            } else {
+                if (data.errors) {
+                    let firstError = Object.values(data.errors)[0][0];
+                    alert(firstError);
+                } else {
+                    alert(data.message || 'Something went wrong');
+                }
+            }
         });
     }    
 
-    $scope.deleteSubRow = function() {
+    $scope.deleteSubRow = function(item, index) {
+        if (!item || !item.id) {
+            return;
+        }
+        var authConf = confirm("Are you sure you want to delete?");
+        if(!authConf) return;
+
         $scope.processing = true;
-        DBService.erpPostCall($scope.formData, '/api/admin/school/sub-row-delete').then(function(data){
+        DBService.erpPostCall({id: item.id}, '/api/admin/school/sub-row-delete').then(function(data){
             $scope.processing = false;
+            if(data.success) {
+                alert(data.message || 'Deleted Successfully');
+                $scope.initClass();
+            } else {
+                alert(data.message || 'Something went wrong');
+            }
         });
     }
 
