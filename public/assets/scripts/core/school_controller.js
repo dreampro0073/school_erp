@@ -52,7 +52,7 @@ app.controller('schoolManagementCtrl', function($scope, DBService) {
                 $scope.students = data.students || [];
                 $scope.days = data.days || [];
             }
-            $scope.edit_flag = false;
+            $scope.edit_flag = data.edit_flag;
             $scope.loading = false;
         }, function() {
             $scope.loading = false;
@@ -282,7 +282,8 @@ app.controller('classManagementCtrl', function($scope , DBService){
     $scope.dataList = [];
     $scope.fee_types = [];
     $scope.fee_frequencies = [];
-    $scope.type = "fee";
+    $scope.subjects_list = [];
+    $scope.type = "students";
     $scope.list_loading = false;
     $scope.isSidebarOpen = false;
     $scope.isEditMode = false;
@@ -297,6 +298,7 @@ app.controller('classManagementCtrl', function($scope , DBService){
 
     $scope.initClass = function() {
         $scope.list_loading = true;
+        $scope.dataList = [];
         DBService.postCall({type : $scope.type, class_id : $scope.class_id}, '/api/admin/school/class-manage-init').then(function(data) {
             if(data.success){
                 console.log($scope.standard)

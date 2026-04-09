@@ -110,7 +110,7 @@
             </div>            
 
             <div class="col-sm-12 form-group">
-                <label class="text-sm fw-semibold text-primary-light mb-8">Frequency</label>
+                <label class="text-sm fw-semibold text-primary-light mb-8">Financial year</label>
                 <select class="form-select" ng-model="formData.fin_year" required convert-to-number>
                     <option value="">Select</option>
                     <option value="@{{key}}" ng-repeat="(key, value) in years">@{{value}}</option>

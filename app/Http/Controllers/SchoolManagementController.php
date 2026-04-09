@@ -53,9 +53,7 @@ class SchoolManagementController extends Controller {
 
         $schedule = $schedule->orderBy('start_time', 'asc')->get();
 
-        $subjects = DB::table("subjects")
-            ->where("client_id", $auth_user->client_id)
-            ->get();
+        $subjects = DB::table("subjects")->select("subjects.id", "subjects.name")->join("class_subjects", "subjects.id", "=", "class_subjects.subject_id")->where("class_id", $request->standard_id)->where("subjects.client_id", $auth_user->client_id)->get();
 
         $data["success"] = true;
         $data["schedule"] = $schedule;
@@ -301,12 +299,12 @@ class SchoolManagementController extends Controller {
         ->where("standards.client_id", $auth_user->client_id)->where("standards.status", 0)->first();
 
         if($request->type == "students"){
-            $dataList = DB::table("class_students")->where("school_id", $auth_user->client_id)->where("class_id", $classId)->get();
+            $dataList = DB::table("students")->where("school_id", $auth_user->client_id)->where("standard_id", $classId)->get();
             $data["dataList"] = $dataList;
         }
 
         if($request->type == "subjects"){
-            $dataList = DB::table("class_subjects")->select("class_subjects.*", "subjects.name as sub_name")->join("subjects", "subjects.id", "class_subjects.subject_id")->where("class_subjects.school_id", $auth_user->client_id)->where("class_subjects.class_id", $classId)->get();
+            $dataList = DB::table("class_subjects")->select("class_subjects.*", "subjects.name as sub_name")->join("subjects", "subjects.id", "class_subjects.subject_id")->where("class_subjects.school_id", $auth_user->client_id)->where("class_subjects.class_id", $classId)->where("class_subjects.status", "0")->get();
             $data["dataList"] = $dataList;
             $data["subjects"] = DB::table("subjects")->select("id", "name")->where("status", 0)->get();
         }
@@ -325,6 +323,7 @@ class SchoolManagementController extends Controller {
             ->leftJoin("years", "years.year", "=", "fee_structures.fin_year")
             ->where("fee_structures.school_id", $auth_user->client_id)
             ->where("fee_structures.class_id", $classId)
+            ->where("fee_structures.status", 0)
             ->orderBy("fee_structures.id", "DESC")
             ->get();
             
@@ -499,6 +498,7 @@ class SchoolManagementController extends Controller {
                 "amount" => $request->amount,
                 "fin_year" => $request->fin_year,
                 "updated_at" => now(),
+                "status" => 0,
             ];
 
             if($request->id){
@@ -584,10 +584,10 @@ class SchoolManagementController extends Controller {
             ],200,[]);
         }
 
-        DB::table("fee_structures")
-            ->where("school_id", $auth_user->client_id)
-            ->where("id", $request->id)
-            ->delete();
+        DB::table("fee_structures") ->where("school_id", $auth_user->client_id)->where("id", $request->id)
+            ->update([
+                "status" => 1
+            ]);
 
         return response()->json([
             "success" => true,
@@ -634,6 +634,7 @@ class SchoolManagementController extends Controller {
             "book_name" => $request->book_name,
             "published_by" => $request->published_by,
             "school_id" => $auth_user->client_id,
+            "status" => 0,
         ];
 
         if($request->id){
@@ -654,7 +655,9 @@ class SchoolManagementController extends Controller {
         $apiToken = $request->header("apiToken");
         $auth_user = User::authUser($apiToken);
 
-        DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("id", $request->id)->delete();
+        DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("id", $request->id)->update([
+            "status" => 1,
+        ]);
 
         $data["success"] = true;
         $data["message"] = "Deleted Successfully";
