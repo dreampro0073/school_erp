@@ -306,8 +306,9 @@ class SchoolManagementController extends Controller {
         }
 
         if($request->type == "subjects"){
-            $dataList = DB::table("class_subjects")->select("class_subjects.*", "subjects.name as sub_name")->join("subjects", "subjects.id", "class_subjects.subject_id")->where("school_id", $auth_user->client_id)->where("class_id", $classId)->where("class_subjects.status", 0)->get();
+            $dataList = DB::table("class_subjects")->select("class_subjects.*", "subjects.name as sub_name")->join("subjects", "subjects.id", "class_subjects.subject_id")->where("class_subjects.school_id", $auth_user->client_id)->where("class_subjects.class_id", $classId)->get();
             $data["dataList"] = $dataList;
+            $data["subjects"] = DB::table("subjects")->select("id", "name")->where("status", 0)->get();
         }
 
         if($request->type == "fee"){
@@ -593,32 +594,67 @@ class SchoolManagementController extends Controller {
 
     // *** FEE ***
 
-    public function feeSubEdit(Request $request){
+    public function subRowEdit(Request $request){
         $apiToken = $request->header("apiToken");
         $auth_user = User::authUser($apiToken);
         $row = DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("id", $request->id)->first();
 
-        $data["success"] = true;
-        $data["row"] = $row;
+        if($row){
+            $data["success"] = true;
+            $data["row"] = $row;
+        } else {
+            $data["success"] = false;
+            $data["message"] = "Data not found";
+        }
         return response()->json($data,200,[]);
     }
-    public function feeSubStore(Request $request){
+    public function subRowStore(Request $request){
         $apiToken = $request->header("apiToken");
         $auth_user = User::authUser($apiToken);
 
-
-        $data["success"] = true;
-        return response()->json($data,200,[]);
-    }
-    public function feeSubDelete(Request $request){
-        $apiToken = $request->header("apiToken");
-        $auth_user = User::authUser($apiToken);
-
-        DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("id", $request->id)->update([
-            "status" => 1
+        $validator = Validator::make($request->all(), [
+            'class_id' => ['required'],
+            'subject_id' => ['required'],
         ]);
 
+        if($validator->fails()){
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+                'message' => $validator->errors()->first(),
+            ],422);
+        }
+
+        $payload = [
+            "class_id" => $request->class_id,
+            "subject_id" => $request->subject_id,
+            "book_name" => $request->book_name,
+            "published_by" => $request->published_by,
+            "school_id" => $auth_user->client_id,
+        ];
+
+        if($request->id){
+            DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("id", $request->id)->update($payload);
+            $message = "Updated Successfully";
+        } else {
+            $payload["created_at"] = now();
+            $payload["added_by"] = $auth_user->id;
+            DB::table("class_subjects")->insert($payload);
+            $message = "Saved Successfully";
+        }
+
         $data["success"] = true;
+        $data["message"] = $message;
+        return response()->json($data,200,[]);
+    }
+    public function subRowDelete(Request $request){
+        $apiToken = $request->header("apiToken");
+        $auth_user = User::authUser($apiToken);
+
+        DB::table("class_subjects")->where("school_id", $auth_user->client_id)->where("id", $request->id)->delete();
+
+        $data["success"] = true;
+        $data["message"] = "Deleted Successfully";
         return response()->json($data,200,[]);
     }
 
