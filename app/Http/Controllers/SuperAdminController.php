@@ -20,6 +20,12 @@ class SuperAdminController extends Controller {
         return view('super-admin.dashboard');
     }
 
+    public function addSchool(){
+        return view('super-admin.schools.add_school', [
+            'isEdit' => true,
+        ]);
+    }
+
     public function initDashboard(Request $request) {
 
         $apiToken = $request->header('apiToken');

@@ -110,7 +110,8 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/students', 'usersList');
                 Route::get('/parents', 'usersList');
                 // Route::get('/users/profile/{id}', 'userProfile');
-    //             Route::get('/schools/create', 'createSchoolPage');
+                // Route::get('/schools/create', 'createSchoolPage');
+                Route::get('/school/add', 'addSchool');
     //             Route::get('/schools/{id}/edit', 'editSchoolPage');
     //             Route::get('/schools/{id}/services', 'schoolServicesPage');
     //             Route::post('/schools/{id}/services', 'saveSchoolServices');

@@ -65,6 +65,8 @@ app.controller('superAdminUsersCtrl', function($scope , DBService){
             }
         });
     };
+
+    
 });
 
 // *** Doubt ***
