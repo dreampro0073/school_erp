@@ -51,8 +51,10 @@ app.controller('suparAdminDashboardCtrl', function($scope , DBService){
 
 app.controller('superAdminUsersCtrl', function($scope , DBService){
     $scope.loading = true;
+    $scope.processing = false;
     $scope.type = "";
     $scope.dataSet = [];
+    $scope.formData = {};
     // $scope.today = '';
     // $scope.children = [];
 
@@ -66,6 +68,16 @@ app.controller('superAdminUsersCtrl', function($scope , DBService){
         });
     };
 
+    $scope.submit = function(){
+        $scope.processing = true;
+        DBService.postCall($scope.formData, '/api/super-admin/users/submit-users').then(function(data){
+            if (data.success) {
+                $scope.init();
+                alert(data.message || 'Saved successfully.');
+            }
+            $scope.processing = false;
+        })
+    }
     
 });
 
