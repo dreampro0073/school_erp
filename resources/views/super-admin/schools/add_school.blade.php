@@ -23,7 +23,7 @@
                     <!-- School Name -->
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">School Name  <span class="text-danger-600">* </span> </label>
-                        <input type="text" class="form-control" ng-model="formData.client_name">
+                        <input type="text" class="form-control" ng-model="formData.school_name">
                     </div>
 
                     <!-- Owner Name -->

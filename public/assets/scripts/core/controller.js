@@ -71,9 +71,9 @@ app.controller('superAdminUsersCtrl', function($scope , DBService){
     $scope.submit = function(){
         $scope.processing = true;
         DBService.postCall($scope.formData, '/api/super-admin/users/submit-users').then(function(data){
+                alert(data.message);
             if (data.success) {
                 $scope.init();
-                alert(data.message || 'Saved successfully.');
             }
             $scope.processing = false;
         })
