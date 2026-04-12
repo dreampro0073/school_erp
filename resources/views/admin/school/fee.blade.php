@@ -3,7 +3,9 @@
         <div>
             <h1 class="fw-semibold mb-4 h6 text-primary-light">Fee Manage</h1>
         </div>
-        <button type="button" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6" ng-click="addFeeRow()"> <span class="d-flex text-md"> <i class="ri-add-large-line"></i> </span> Add Fee </button>
+        <button type="button" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6" ng-click="addFeeRow()">
+            <span class="d-flex text-md"> <i class="ri-add-large-line"></i> </span> Add Fee
+        </button>
     </div>
 
     <div class="card-body p-20">
@@ -101,9 +103,9 @@
                 </select>
             </div>
 
-            <div class="col-sm-12 form-group">
-                <label class="text-sm fw-semibold text-primary-light mb-8">Frequency</label>
-                <select class="form-select" ng-model="formData.frequency_id" convert-to-number>
+            <div class="col-sm-12 form-group" ng-if="formData.fee_type_id == 2 || formData.fee_type_id == 3">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Frequency <span class="text-danger-600">* </span></label>
+                <select class="form-select" ng-model="formData.frequency_id" convert-to-number required>
                     <option value="">Select</option>
                     <option value="@{{item.value}}" ng-repeat="item in fee_frequencies">@{{item.label}}</option>
                 </select>

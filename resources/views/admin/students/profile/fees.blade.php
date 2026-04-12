@@ -244,7 +244,13 @@
 					<option value="@{{item.value}}" ng-repeat="item in months">@{{item.label}}</option>
 				</select>
 			</div>
-
+			<div class="col-sm-12 form-group">
+                <label class="text-sm fw-semibold text-primary-light mb-8">Financial year</label>
+                <select class="form-select" ng-model="formData.fin_year" required convert-to-number required>
+                    <option value="">Select</option>
+                    <option value="@{{item.value}}" ng-repeat="item in years">@{{item.label}}</option>
+                </select>
+            </div>
 			<div class="col-sm-12 form-group">
 				<label class="text-sm fw-semibold text-primary-light mb-8">Amount <span class="text-danger-600">* </span></label>
 				<input type="text" class="form-control" ng-model="formData.amount" readonly required>

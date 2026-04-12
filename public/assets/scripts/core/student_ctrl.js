@@ -203,6 +203,8 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
         $scope.tab = tab;
     }
 
+    $scope.years = [];
+
     $scope.formData = {
         fee_type_id:'',
         frequency_id:'',
@@ -307,6 +309,7 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
                 $scope.fee_types = data.fee_types;
                 $scope.fee_frequencies = data.fee_frequencies;
                 $scope.payment_modes = data.payment_modes;
+                $scope.years = data.years;
                 $scope.months = data.months;
             }
         });
