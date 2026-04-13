@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @section('main')
-<div ng-controller="superAdminUsersCtrl" class="mt-24">
+<div ng-controller="superAdminUsersCtrl" ng-init="sch_id = {{$sch_id}}; addSchool();" class="mt-24">
     <div class="d-flex justify-content-between align-items-center mb-16">
         <h4 class="fw-bold text-lg">
             @{{formData.sch_id ? 'Edit School' : 'Add School'}}

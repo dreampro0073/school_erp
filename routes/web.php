@@ -109,16 +109,12 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/teachers', 'usersList');
                 Route::get('/students', 'usersList');
                 Route::get('/parents', 'usersList');
+                Route::get('/school/add/{id?}', 'addSchool');
+                Route::get('/users/{type}', 'usersByType');
                 // Route::get('/users/profile/{id}', 'userProfile');
-                // Route::get('/schools/create', 'createSchoolPage');
-                Route::get('/school/add', 'addSchool');
-    //             Route::get('/schools/{id}/edit', 'editSchoolPage');
-    //             Route::get('/schools/{id}/services', 'schoolServicesPage');
-    //             Route::post('/schools/{id}/services', 'saveSchoolServices');
-    //             Route::get('/users/{type}', 'usersByType');
-    //             Route::post('/users/{id}/status', 'updateUserStatus');
-    //             Route::post('/schools', 'createSchool');
-    //             Route::post('/schools/{id}', 'updateSchool');
+                // Route::get('/schools/{id}/services', 'schoolServicesPage');
+                // Route::post('/schools/{id}/services', 'saveSchoolServices');
+                // Route::post('/users/{id}/status', 'updateUserStatus');
             });
 
             Route::controller(ServicesController::class)->group(function () {

@@ -21,111 +21,124 @@ class SuperAdminController extends Controller {
         return view('super-admin.dashboard');
     }
 
-    public function addSchool(){
-        return view('super-admin.schools.add_school', [
-            'isEdit' => true,
-        ]);
+    public function addSchool($id = 0){
+        return view('super-admin.schools.add_school', ['sch_id'=>$id]);
     }
 
-public function submitUsers(Request $request)
-{
-    $authUser = User::resolveApiUser($request);
-
-    $school = School::find($request->id);
-    $user = null;
-
-    if ($school) {
-        $user = User::where('client_id', $school->id)->where('priv', 2)->first();
-    }
-
-    $user_id = $user ? $user->id : 'NULL';
-    $message = $school ? "User details successfully updated!" : "User details successfully saved!";
-
-    $validator = Validator::make($request->all(), [
-        'school_name' => ['required', 'string', 'max:255'],
-        'name' => ['required', 'string', 'max:100'],
-        'email' => 'required|email|unique:users,email,' . $user_id,
-        'mobile' => ['nullable', 'string', 'max:50'],
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'errors' => $validator->errors(),
-        ], 422);
-    }
-
-    DB::beginTransaction();
-    try {
-
-        if (!$school) {
-            $school = new School;
+    public function editUsers(Request $request){
+        $user = DB::table('schools')->select('schools.name','schools.id','schools.school_name','schools.email','schools.mobile','schools.status','schools.gst','schools.address','users.start_date','users.end_date')
+            ->leftJoin('users','users.id','=','schools.user_id')
+            ->where('schools.user_id',$request->id)->first();
+        if ($user) {
+            $data['success'] = true;
+            $data['user'] = $user;
+        } else{
+            $data['success'] = false;
+            $data['message'] = "Not found";
         }
 
-        $school->name = $request->name;
-        $school->school_name = $request->school_name;
-        $school->email = $request->email;
-        $school->mobile = $request->mobile;
-        $school->address = $request->address;
-        $school->org_id = $authUser->org_id;
-        $school->max_users = $request->max_users ?? 0;
-        $school->max_logins = $request->max_logins ?? 0;
-        $school->status = $request->status ?? 0;
-        $school->save();
+        return response()->json($data);
+    }
 
-        if (!$user) {
-            $password = User::getRandPassword();
+    public function submitUsers(Request $request)
+    {
+        $authUser = User::resolveApiUser($request);
 
-            $user = new User;
-            $user->org_id = $authUser->org_id;
-            $user->client_id = $school->id;
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->mobile = $request->mobile;
-            $user->address = $request->address;
-            $user->password = Hash::make($password);
-            $user->password_check = $password;
-            $user->priv = 2;
-            $user->active = $request->status ?? 0;
-            $user->added_by = $authUser->id;
-            $user->start_date = $request->start_date;
-            $user->end_date = $request->end_date;
-            $user->save();
+        $school = School::find($request->id);
+        $user = null;
 
-            $school->user_id = $user->id;
+        if ($school) {
+            $user = User::where('client_id', $school->id)->where('priv', 2)->first();
+        }
+
+        $user_id = $user ? $user->id : 'NULL';
+        $message = $school ? "User details successfully updated!" : "User details successfully saved!";
+
+        $validator = Validator::make($request->all(), [
+            'school_name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:100'],
+            'email' => 'required|email|unique:Users,email,' . $user_id,
+            'mobile' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        if ($validator->fails()) {
+            $data['message'] = $validator->errors()->first();
+            $data['success'] = false;
+            return response()->json($data);
+        }
+
+        DB::beginTransaction();
+        try {
+
+            if (!$school) {
+                $school = new School;
+            }
+
+            $school->name = $request->name;
+            $school->school_name = $request->school_name;
+            $school->email = $request->email;
+            $school->mobile = $request->mobile;
+            $school->address = $request->address;
+            $school->org_id = $authUser->org_id;
+            $school->max_users = $request->max_users ?? 0;
+            $school->max_logins = $request->max_logins ?? 0;
+            $school->status = $request->status ?? 0;
             $school->save();
 
-            $user->parent_user_id = $user->id;
-            $user->save();
-        } else {
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->mobile = $request->mobile;
-            $user->address = $request->address;
-            $user->active = $request->status ?? 0;
-            $user->start_date = $request->start_date;
-            $user->end_date = $request->end_date;
-            $user->save();
+            if (!$user) {
+                $password = User::getRandPassword();
+
+                $user = new User;
+                $user->org_id = $authUser->org_id;
+                $user->client_id = $school->id;
+                $user->name = $request->name;
+                $user->email = $request->email;
+                $user->mobile = $request->mobile;
+                $user->address = $request->address;
+                $user->password = Hash::make($password);
+                $user->password_check = $password;
+                $user->priv = 2;
+                $user->active = $request->status ?? 0;
+                $user->added_by = $authUser->id;
+                $user->start_date = $request->start_date;
+                $user->end_date = $request->end_date;
+                $user->save();
+
+                $school->user_id = $user->id;
+                $school->save();
+
+                $user->parent_user_id = $user->id;
+                $user->save();
+            } else {
+                $user->name = $request->name;
+                $user->email = $request->email;
+                $user->mobile = $request->mobile;
+                $user->address = $request->address;
+                $user->active = $request->status ?? 0;
+                $user->start_date = $request->start_date;
+                $user->end_date = $request->end_date;
+                $user->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'school' => $school,
+                'user' => $user,
+                'url' => '/super-admin/schools',
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-            'school' => $school,
-            'user' => $user
-        ]);
-
-    } catch (\Exception $e) {
-        DB::rollback();
-
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 500);
     }
-}
 
     public function initDashboard(Request $request) {
 
@@ -190,53 +203,6 @@ public function submitUsers(Request $request)
     }
 
     // *** Doubt ***
-
-    public function createSchoolPage() {
-        $services = $this->getSelectableServices();
-        $standards = $this->getSelectableStandards();
-
-        return view('super-admin.create_school', [
-            'isEdit' => false,
-            'school' => null,
-            'services' => $services,
-            'standards' => $standards,
-            'selectedServiceIds' => $this->extractSelectedIdsFromInput(old('services', [])),
-            'selectedStandardIds' => $this->extractSelectedIdsFromInput(old('standards', [])),
-        ]);
-    }
-
-    public function editSchoolPage($id) {
-        if (!Schema::hasTable('users')) {
-            return back()->with('failure', 'Users table not found.');
-        }
-
-        $query = User::query()->where('id', $id);
-        $privColumn = $this->resolvePrivilegeColumnOnUsers();
-        if ($privColumn) {
-            $query->where($privColumn, 2);
-        }
-
-        $school = $query->first();
-        if (!$school) {
-            return back()->with('failure', 'School not found.');
-        }
-
-        $services = $this->getSelectableServices();
-        $standards = $this->getSelectableStandards();
-
-        return view('super-admin.create_school', [
-            'isEdit' => true,
-            'school' => $school,
-            'services' => $services,
-            'standards' => $standards,
-            'selectedServiceIds' => $this->extractSelectedIdsFromInput(
-                old('services', $this->getSelectedServiceIdsForSchool((int) $id))
-            ),
-            'selectedStandardIds' => $this->extractSelectedIdsFromInput(
-                old('standards', $this->getSelectedStandardIdsForSchool((int) $id))
-            ),
-        ]);
-    }
 
     public function schoolServicesPage($id) {
         if (!Schema::hasTable('users') || !Schema::hasTable('services') || !Schema::hasTable('client_services')) {

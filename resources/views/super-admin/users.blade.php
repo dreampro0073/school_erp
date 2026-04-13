@@ -72,6 +72,9 @@
                                     </th>
                                     <th>
                                         <span class="dt-column-title" role="button">Name</span><span class="dt-column-order"></span>
+                                    </th>                                    
+                                    <th>
+                                        <span class="dt-column-title" role="button">School Name</span><span class="dt-column-order"></span>
                                     </th>
                                     <th>
                                         <span class="dt-column-title" role="button">Email</span><span class="dt-column-order"></span>
@@ -102,6 +105,15 @@
                                                 <h6 class="text-md mb-0 fw-medium flex-grow-1">@{{item.name}}</h6>
                                             </div>
                                         </div>
+                                    </td>                                    
+
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="assets/images/thumbs/avatar-img1.png" alt="Image" class="flex-shrink-0 me-12 radius-8">
+                                            <div class="">
+                                                <h6 class="text-md mb-0 fw-medium flex-grow-1">@{{item.school_name}}</h6>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>@{{item.email}}</td>
                                     <td>@{{item.mobile}}</td>
@@ -113,28 +125,15 @@
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-lg-end border p-12">
                                                 <li>
-                                                    <a href="teacher-list.html" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
-                                                        <i class="ri-user-3-line"></i>View
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="edit-student.html" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
+                                                    <a href="{{ url('/super-admin/school/add/') }}/@{{item.id}}" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
                                                         <i class="ri-edit-2-line"></i>Edit
                                                     </a>
-                                                </li>
-                                                <li>
-                                                    <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
-                                                        <i class="ri-money-dollar-box-line"></i>Collect Fees
-                                                    </button>
                                                 </li>
                                                 <li>
                                                     <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
                                                         <i class="ri-error-warning-line"></i>
                                                         Inactive
                                                     </button>
-                                                </li>
-                                                <li>
-                                                    <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" data-bs-toggle="modal" data-bs-target="#exampleModalDelete"><i class="ri-delete-bin-6-line"></i>Delete</button>
                                                 </li>
                                             </ul>
                                         </div>
@@ -145,11 +144,7 @@
                     </table>
                 </div>
             </div>
-            <modern-pagination 
-                current-page="currentPage"
-                total-pages="totalPages"
-                total-records="totalRecords"
-                on-page-change="changePage(page)">
+            <modern-pagination  current-page="currentPage" total-pages="totalPages" total-records="totalRecords" on-page-change="changePage(page)">
             </modern-pagination>
         </div>
     </div>

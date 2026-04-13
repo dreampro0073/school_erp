@@ -62,6 +62,7 @@ use App\Http\Controllers\SchoolManagementController;
 
         Route::prefix('users')->controller(SuperAdminController::class)->group(function () {
             Route::post('/init', 'initUsers');
+            Route::post('/edit', 'editUsers');
             Route::post('/submit-users', 'submitUsers');
         });
     });

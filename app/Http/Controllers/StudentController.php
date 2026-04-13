@@ -44,7 +44,6 @@ class StudentController extends Controller
         ]);
 
     }
-
    
     public function storeStudent(Request $request){
         $authUser = User::resolveApiUser($request);

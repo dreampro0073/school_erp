@@ -57,6 +57,7 @@ app.controller('superAdminUsersCtrl', function($scope , DBService){
     $scope.formData = {};
     // $scope.today = '';
     // $scope.children = [];
+    $scope.sch_id = 0;
 
     $scope.init = function() {
         DBService.postCall({type : $scope.type}, '/api/super-admin/users/init').then(function(res) {
@@ -68,12 +69,24 @@ app.controller('superAdminUsersCtrl', function($scope , DBService){
         });
     };
 
+    $scope.addSchool = function() {
+        if ($scope.sch_id > 0) {
+            DBService.postCall({ id: $scope.sch_id }, '/api/super-admin/users/edit').then(function(data) {
+                if (data.success) {
+                    $scope.formData = data.user;
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+    };
+
     $scope.submit = function(){
         $scope.processing = true;
         DBService.postCall($scope.formData, '/api/super-admin/users/submit-users').then(function(data){
-                alert(data.message);
+            alert(data.message);
             if (data.success) {
-                $scope.init();
+                window.location.href = base_url + data.url;
             }
             $scope.processing = false;
         })
