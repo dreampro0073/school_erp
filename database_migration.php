@@ -468,3 +468,9 @@ ALTER TABLE `transport_routes` ADD `status` TINYINT NOT NULL DEFAULT '0' AFTER `
 
 ALTER TABLE `transport_routes` ADD `frequency_id` INT NOT NULL DEFAULT '0' AFTER `school_id`;
 
+// Devendra
+ALTER TABLE `teachers`
+  DROP `pravious_school`,
+  DROP `pravios_school_address`;
+
+ALTER TABLE `teachers` ADD `previous_school` VARCHAR(255) NULL DEFAULT NULL AFTER `mobile`, ADD `previous_school_address` VARCHAR(255) NULL DEFAULT NULL AFTER `previous_school`;

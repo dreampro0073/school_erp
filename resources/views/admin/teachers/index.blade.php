@@ -37,8 +37,8 @@
 
                      <select class="form-select teacher-filter-select" ng-model="filters.status" ng-change="applyFilters()">
                         <option value="">All Status</option>
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
+                        <option value="0">Active</option>
+                        <option value="1">Inactive</option>
                      </select>
 
                      <button type="button" class="btn btn-outline-secondary btn-sm flex-shrink-0" ng-click="resetFilters()">
@@ -111,8 +111,8 @@
                               <td>@{{item.mobile || '-'}}</td>
                               <td>@{{item.email || '-'}}</td>
                               <td>
-                                 <span class="px-24 py-4 radius-4 fw-medium text-sm" ng-class="item.active == 0 ? 'bg-danger-100 text-danger-600' : 'bg-success-100 text-success-600'">
-                                    @{{item.active == 0 ? 'Inactive' : 'Active'}}
+                                 <span class="px-24 py-4 radius-4 fw-medium text-sm" ng-class="item.active == 1 ? 'bg-danger-100 text-danger-600' : 'bg-success-100 text-success-600'">
+                                    @{{item.active == 0 ? 'Active' : 'Inactive'}}
                                  </span>
                               </td>
                               <td>
