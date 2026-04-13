@@ -47,7 +47,7 @@
                     <!-- GST -->
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">GST Number</label>
-                        <input type="text" class="form-control" ng-model="formData.gst_number">
+                        <input type="text" class="form-control" ng-model="formData.gst">
                     </div>
 
                     <!-- Email -->
@@ -65,7 +65,7 @@
                     <!-- Address -->
                     <div class="form-group col-md-6">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Address</label>
-                        <input type="text" class="form-control" ng-model="formData.previous_school_address">
+                        <input type="text" class="form-control" ng-model="formData.address">
                     </div>
 
                 </div>

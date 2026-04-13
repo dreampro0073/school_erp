@@ -80,6 +80,7 @@ class SuperAdminController extends Controller {
             $school->mobile = $request->mobile;
             $school->address = $request->address;
             $school->org_id = $authUser->org_id;
+            $school->gst = $request->gst;
             $school->max_users = $request->max_users ?? 0;
             $school->max_logins = $request->max_logins ?? 0;
             $school->status = $request->status ?? 0;
