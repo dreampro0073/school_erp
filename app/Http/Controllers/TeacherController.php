@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
 use App\Models\AttendanceStatus;
 use App\Models\MasterData;
 use App\Models\ModelHelper;
@@ -98,15 +99,22 @@ class TeacherController extends Controller {
         ]);
     }
 
-    public function addTeacherPage(Request $request, $teacher_token=0) {
-        $apiToken = $request->header('apiToken');
-        $auth_user = User::authUser($apiToken);
-        if($teacher_token > 0){
+    public function addTeacherPage($teacher_token=0) {
+        $auth_user = Auth::user();
+        if ($teacher_token > 0) {
             $teacher = Teacher::where('unique_id', $teacher_token)->first();
-            $check = User::where("id", $teacher->user_id)->where("priv", 3)->where("parent_user_id", $auth_user->parent_user_id)->first();
 
-            if(!$teacher || !$check){
-                die("You are not authorised for edit this profile!");
+            if (!$teacher) {
+                die("Teacher not found!");
+            }
+
+            $check = User::where("id", $teacher->user_id)
+                ->where("priv", 3)
+                ->where("parent_user_id", $auth_user->parent_user_id)
+                ->first();
+
+            if (!$check) {
+                die("You are not authorised to edit this profile!");
             }
         }
 
