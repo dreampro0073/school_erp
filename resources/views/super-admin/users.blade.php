@@ -100,7 +100,7 @@
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="assets/images/thumbs/avatar-img1.png" alt="Image" class="flex-shrink-0 me-12 radius-8">
+                                            <!-- <img src="assets/images/thumbs/avatar-img1.png" alt="Image" class="flex-shrink-0 me-12 radius-8"> -->
                                             <div class="">
                                                 <h6 class="text-md mb-0 fw-medium flex-grow-1">@{{item.name}}</h6>
                                             </div>
@@ -109,7 +109,7 @@
 
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="assets/images/thumbs/avatar-img1.png" alt="Image" class="flex-shrink-0 me-12 radius-8">
+                                            <!-- <img src="assets/images/thumbs/avatar-img1.png" alt="Image" class="flex-shrink-0 me-12 radius-8"> -->
                                             <div class="">
                                                 <h6 class="text-md mb-0 fw-medium flex-grow-1">@{{item.school_name}}</h6>
                                             </div>

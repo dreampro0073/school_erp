@@ -60,10 +60,10 @@ app.controller('superAdminUsersCtrl', function($scope , DBService){
     $scope.sch_id = 0;
 
     $scope.init = function() {
+        $scope.dataSet = [];
         DBService.postCall({type : $scope.type}, '/api/super-admin/users/init').then(function(res) {
             if(res.success){
                 data = res.data;
-                console.log(data);
                 $scope.dataSet = data.dataSet;
             }
         });
