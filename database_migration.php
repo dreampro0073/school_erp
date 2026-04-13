@@ -443,3 +443,7 @@ ALTER TABLE `fee_structures`
 RENAME TABLE `clients` TO `r_school_erp`.`schools`;
 ALTER TABLE `schools` CHANGE `client_name` `school_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 ALTER TABLE `schools` ADD `user_id` INT NULL DEFAULT NULL AFTER `id`;
+
+//Dipanshu Chauhan 12th April 2026
+
+ALTER TABLE `fee_payments` CHANGE `year` `fin_year` YEAR(4) NULL DEFAULT NULL;

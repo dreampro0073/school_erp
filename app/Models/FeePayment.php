@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;
-use App\Models\FeeType,App\Models\PaymentMode,App\Models\Student;
+use App\Models\FeeType,App\Models\PaymentMode,App\Models\Student,App\Models\FinYear,App\Models\School;
 
 class FeePayment extends Model
 {
@@ -23,6 +23,10 @@ class FeePayment extends Model
 
     public function paymentMode(){
         return $this->belongsTo(PaymentMode::class, 'payment_mode');
+    }
+
+    public function school(){
+        return $this->belongsTo(School::class, 'school_id');
     }
 
     public static function getFeeFrequencies($school_id){

@@ -338,6 +338,8 @@ class StudentController extends Controller
             "fee_frequencies" => FeePayment::getFeeFrequencies($user->client_id),
             "payment_modes" => FeePayment::getPaymentModes(),
             "months" => FeePayment::getMonths(),
+
+            "years" => DB::table("years")->select("period as label", "year as value")->get(),
         ]); 
 
     }  
@@ -415,6 +417,7 @@ class StudentController extends Controller
             'standard_id' => ['required'],
             'fee_type_id' => ['required'],
             'payment_mode' => ['required'],
+            'fin_year' => ['required'],
             
         ]);
 
@@ -430,6 +433,7 @@ class StudentController extends Controller
             'fee_type_id',
             'payment_mode',
             'amount',
+            'fin_year',
             'month',
         ]);
 
@@ -580,17 +584,27 @@ class StudentController extends Controller
 
 
     public function generateReceipt($id){
-        $fee = FeePayment::with(['feeType:id,name','student:id,name','paymentMode:id,name'])
+        $fee = FeePayment::with(['feeType:id,name','student:id,name','paymentMode:id,name','school:id,name,address'])
             ->where('id', $id)
             ->first();
+
 
         if (!$fee) {
             abort(404, 'Receipt not found');
         }
+
+        $years = DB::table("years")->pluck("period", "year")->toArray();
+
         $months = [
             1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'May',6=>'Jun',
             7=>'Jul',8=>'Aug',9=>'Sep',10=>'Oct',11=>'Nov',12=>'Dec'
         ];
+
+        $path = public_path('assets/img/gyan_logo1.png');
+        $type = pathinfo($path, PATHINFO_EXTENSION);
+        $dataImg = file_get_contents($path);
+        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($dataImg);
+
 
         $data = (object) [
             'id' => $fee->id,
@@ -599,12 +613,15 @@ class StudentController extends Controller
             'student_name' => $fee->student->name ?? null,
             'fee_type_name' => $fee->feeType->name ?? null,
             'payment_mode' => $fee->paymentMode->name ?? null,
-
+            'school_name' => $fee->school->name ?? null,
+            'school_address' => $fee->school->address ?? null,
+            'logo' => $base64,
             'amount' => $fee->amount,
             // 'payment_mode' => ucfirst($fee->payment_mode),
 
             'month' => $fee->month,
             'month_name' => $months[$fee->month] ?? null,
+            'period' => $years[$fee->fin_year] ?? null,
 
             'paid_date' => date("d-m-Y",strtotime($fee->paid_date)),
         ];
