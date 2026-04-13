@@ -447,3 +447,24 @@ ALTER TABLE `schools` ADD `user_id` INT NULL DEFAULT NULL AFTER `id`;
 //Dipanshu Chauhan 12th April 2026
 
 ALTER TABLE `fee_payments` CHANGE `year` `fin_year` YEAR(4) NULL DEFAULT NULL;
+
+//Uppper code deployed to PROD 
+
+//Dipanshu Chauhan 13th April 2026
+CREATE TABLE transport_routes (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    school_id BIGINT UNSIGNED NOT NULL,
+
+    route_name VARCHAR(100),
+    amount DECIMAL(10,2),
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+ALTER TABLE `transport_routes` ADD `description` TEXT NULL DEFAULT NULL AFTER `amount`;
+
+ALTER TABLE `transport_routes` ADD `status` TINYINT NOT NULL DEFAULT '0' AFTER `description`;
+
+ALTER TABLE `transport_routes` ADD `frequency_id` INT NOT NULL DEFAULT '0' AFTER `school_id`;
+

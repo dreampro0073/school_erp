@@ -73,6 +73,13 @@ class UserController extends Controller {
 
             $user = Auth::user();
 
+           
+            if(!$user->api_token || $user->api_token == ''){
+                $api_token = Hash::make($user->id.strtotime("now"));
+                $user->api_token = $api_token;
+                $user->save();
+            }
+
             if ($user->priv == 1) {
                 return redirect()->to('/super-admin/dashboard');
             }

@@ -7,7 +7,7 @@ use App\Models\FeeType;
 use App\Models\FeePayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Standard, App\Models\Section, App\Models\Teacher, App\Models\Student, DB;
+use App\Models\Standard, App\Models\Section, App\Models\Teacher, App\Models\Student,App\Models\TransportRoute,App\Models\FinYear,DB;
 use Illuminate\Support\Facades\Validator;
 
 class SchoolManagementController extends Controller {
@@ -661,6 +661,132 @@ class SchoolManagementController extends Controller {
 
         $data["success"] = true;
         $data["message"] = "Deleted Successfully";
+        return response()->json($data,200,[]);
+    }
+
+
+    // ** Transport **
+    public function initTransport(Request $request){
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+
+        $limit = $request->has('limit')?$request->limit:10;
+        $query = TransportRoute::where('school_id', $user->client_id);
+        $transport_routes = $query->orderBy('id', 'DESC')->paginate($limit);
+        
+        $fee_frequencies = FeePayment::getFeeFrequencies($user->client_id);
+        return response()->json([
+            "success" => true,
+            "data" => $transport_routes,
+            "fee_frequencies" => $fee_frequencies,            
+            "years" => FinYear::getFinYears(),
+        ]);
+    }
+
+    public function editTransport(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+        $transport = TransportRoute::where('id',$request->id)->first();
+
+       
+
+        return response()->json([
+            "success" => true,
+            "transport" => $transport,
+        ]);
+    }
+
+    public function storeTransport(Request $request){
+        $authUser = User::resolveApiUser($request);
+        $message = "Transport details Successfully saved!";
+        $transport = TransportRoute::find($request->id);
+
+        $validator = Validator::make($request->all(), [
+            'route_name' => ['required','string','max:255'],
+            'description' => ['required'],
+            'amount' => ['required'],
+            'frequency_id' => ['required'],
+            
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success'=>false,
+                'errors'=>$validator->errors(),
+            ],422);
+        }
+
+        $data = $request->only([
+            'route_name',
+            'description',
+            'amount',
+            'frequency_id',
+        ]);
+
+        $data['school_id'] = $authUser->client_id;
+
+        DB::beginTransaction();
+        try {
+
+            if(!$transport){
+                $transport = TransportRoute::create($data);
+            }else{
+                $message = "Transport details Successfully Updated!";
+                $transport->update($data);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'transport' => $transport
+            ]);
+
+        } catch (\Exception $e){
+            DB::rollback();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function changeTransportStatus(Request $request){
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        $transport = TransportRoute::find($request->entry_id);
+
+        $status = $request->status;
+
+        DB::beginTransaction();
+        try {
+            if(!$transport){
+                $message = "Data not found";
+            }else{
+                $data['status'] = $status;
+                $message = "Status updated successfully";
+                $transport->update($data);
+            }
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'status' => $transport->status,
+            ]);
+
+        } catch (\Exception $e){
+            DB::rollback();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+        
         return response()->json($data,200,[]);
     }
 

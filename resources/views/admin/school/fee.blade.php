@@ -69,9 +69,9 @@
                               <li>
                                   <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" ng-click="editFeeRow(item, $index)"><i class="ri-edit-2-line"></i>Edit</button>
                                </li>
-                               <li>
+                               <!-- <li>
                                   <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6" ng-click="deleteFeeRow(item, $index)"><i class="ri-delete-bin-6-line"></i>Remove</button>
-                               </li>
+                               </li> -->
 
                             </ul>
                          </div>

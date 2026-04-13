@@ -11,6 +11,11 @@ class FinYear extends Model
 
     protected $guarded = [];
 
+
+    public static function getFinYears(){
+       return FinYear::select("period as label", "year as value")->get();
+    }
+
   
 }
 

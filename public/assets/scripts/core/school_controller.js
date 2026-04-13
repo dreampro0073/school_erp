@@ -16,10 +16,21 @@ app.controller('schoolManagementCtrl', function($scope, DBService) {
     $scope.scheduleRows = [];
     $scope.edit_flag = false;
 
+    $scope.transport_routes = [];
+    $scope.years = [];
+    $scope.fee_frequencies = [];
+
 
     $scope.schedule = {
         day_id: '8',
         standard_id: ''
+    };
+
+
+    $scope.filter = {
+        page:1,
+        search:"",
+        limit:10,
     };
 
     $scope.addRow = function () {
@@ -209,6 +220,7 @@ app.controller('schoolManagementCtrl', function($scope, DBService) {
     };
 
 
+
     $scope.submitClass = function () {
         DBService.postCall($scope.formData, '/api/admin/school/class-store').then(function(data) {
             alert(data.message);
@@ -219,7 +231,80 @@ app.controller('schoolManagementCtrl', function($scope, DBService) {
             }
         });
     };
-  
+
+    // Transport
+
+    $scope.typeTransport = function() {
+        $scope.list_loading = true;
+        DBService.postCall($scope.filter,'/api/admin/school/transport/init')
+        .then(function(res){
+            if(res.success){
+                $scope.transport_routes = res.data.data;
+                $scope.currentPage = res.data.current_page;
+                $scope.totalPages = res.data.last_page;
+                $scope.totalRecords = res.data.total;
+
+                $scope.years = res.years;
+                $scope.fee_frequencies = res.fee_frequencies;
+            }
+            $scope.loading = false;
+        });
+    };
+
+    $scope.changeTransportStatus = function (item, status) {
+        var result = confirm("Are you sure?");
+        if(result){
+            DBService.postCall({entry_id : item.id, status : status}, '/api/admin/school/transport/change-status').then(function(data) {
+                alert(data.message);
+                if(data.success){
+                    item.status = data.status;
+                }
+            });
+        }
+    }
+    $scope.openAddTransportModal = function () {
+
+
+        $scope.isEditMode = false;
+        $scope.formData = {};
+        $scope.isSidebarOpen = true;
+    };
+
+    $scope.openEditTransportModal = function(item) {
+        $scope.isSidebarOpen = false;
+        DBService.postCall({id : item.id}, '/api/admin/school/transport/edit').then(function(data) {
+            if(data.success){
+                
+                if(data.transport){
+                    $scope.formData = data.transport;
+                }
+                $scope.isEditMode = true;
+                $scope.isSidebarOpen = true;
+            } else {
+                alert(data.message);
+            }
+        });
+    };
+
+    $scope.submitTransport = function () {
+      
+
+        DBService.erpPostCall($scope.formData, '/api/admin/school/transport/store').then(function(data){
+
+            $scope.processing = false;
+
+            if (data.success) {
+                $scope.formData = {};
+                $scope.resetForm();
+                $scope.typeTransport();
+            } else {
+                let firstError = Object.values(data.errors)[0][0];
+                alert(firstError);
+            }
+
+        });
+    };
+    // End Transport
 
     $scope.typeExams = function() {
         $scope.list_loading = true;
@@ -272,6 +357,10 @@ app.controller('schoolManagementCtrl', function($scope, DBService) {
     }    
     if($scope.type == "results"){
         $scope.typeResults();
+    }
+
+    if($scope.type == "transport"){
+        $scope.typeTransport();
     }
 
 });

@@ -158,6 +158,13 @@ use App\Http\Controllers\SchoolManagementController;
             Route::post('/sub-row-store', 'subRowStore');
             Route::post('/sub-row-delete', 'subRowDelete');
         });
+
+        Route::prefix('school/transport')->controller(SchoolManagementController::class)->group(function () {
+            Route::post('/init', 'initTransport');
+            Route::post('/edit', 'editTransport');
+            Route::post('/change-status', 'changeTransportStatus');
+            Route::post('/store', 'storeTransport');
+        });
     });
 
     Route::prefix('teachers')->group(function () {

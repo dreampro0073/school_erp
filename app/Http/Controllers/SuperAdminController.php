@@ -57,7 +57,7 @@ class SuperAdminController extends Controller {
         $validator = Validator::make($request->all(), [
             'school_name' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:100'],
-            'email' => 'required|email|unique:Users,email,' . $user_id,
+            'email' => 'required|email|unique:users,email,' . $user_id,
             'mobile' => ['nullable', 'string', 'max:50'],
         ]);
 
