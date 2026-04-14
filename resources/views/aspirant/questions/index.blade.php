@@ -115,12 +115,7 @@
                                     <option value="B">B</option>
                                     <option value="C">C</option>
                                     <option value="D">D</option>
-                                    <option value="TEXT">Text</option>
                                  </select>
-                              </div>
-                              <div class="col-md-4" ng-if="answerMode == 'TEXT'">
-                                 <label class="form-label">Answer Text</label>
-                                 <input type="text" class="form-control" ng-model="answerText" placeholder="Type answer">
                               </div>
                               <div class="col-md-4">
                                  <label class="form-label">Total Marks</label>
