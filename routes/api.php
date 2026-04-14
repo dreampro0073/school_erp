@@ -200,6 +200,7 @@ use App\Http\Controllers\AspirantController;
     Route::prefix('aspirant/questions')->controller(AspirantController::class)->group(function () {
         Route::post('/init', 'initQuestions');
         Route::post('/store', 'storeQuestion');
+        Route::post('/upload-image', 'uploadQuestionImage');
     });
 
     Route::prefix('worklog')->controller(WorklogController::class)->group(function () {

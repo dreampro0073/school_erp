@@ -1053,7 +1053,7 @@ app.controller('addTeacherCtrl', function($scope , DBService){
 
 
 // *** aspirantDashboardCtrl ***
-app.controller('aspirantDashboardCtrl', function($scope , DBService){
+app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
     $scope.loading = false;
     $scope.today = '';
     $scope.aspirant = {};
@@ -1072,7 +1072,6 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService){
         subject_id: null,
         topic_id: null,
         question: '',
-        question_hi: '',
         remarks: '',
         opt_a: '',
         opt_b: '',
@@ -1082,8 +1081,12 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService){
         negative_marks: '',
         paragraph_id: '',
         image_file: '',
-        total_marks: 0
+        total_marks: 0,
+        image_file_link: ''
     };
+    $scope.answerMode = 'A';
+    $scope.answerText = '';
+    $scope.questionUploading = false;
 
     $scope.init = function() {
         $scope.loading = true;
@@ -1198,13 +1201,16 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService){
             $scope.questionForm = angular.copy(question);
             $scope.questionForm.subject_id = subjectId;
             $scope.questionForm.topic_id = topicId;
+            $scope.questionForm.image_file_link = $scope.questionForm.image_file || '';
+            if ($scope.questionForm.image_file_link && $scope.questionForm.image_file_link.indexOf('http') !== 0) {
+                $scope.questionForm.image_file_link = base_url + '/' + $scope.questionForm.image_file_link;
+            }
         } else {
             $scope.questionForm = {
                 id: null,
                 subject_id: subjectId,
                 topic_id: topicId,
                 question: '',
-                question_hi: '',
                 remarks: '',
                 opt_a: '',
                 opt_b: '',
@@ -1214,10 +1220,71 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService){
                 negative_marks: '',
                 paragraph_id: '',
                 image_file: '',
-                total_marks: 0
+                total_marks: 0,
+                image_file_link: ''
             };
         }
+        $scope.syncAnswerMode();
         $('#questionModal').modal('show');
+    };
+
+    $scope.syncAnswerMode = function() {
+        var ans = ($scope.questionForm.answer || '').toString().trim();
+        if (['A', 'B', 'C', 'D'].indexOf(ans) !== -1) {
+            $scope.answerMode = ans;
+            $scope.answerText = '';
+        } else {
+            $scope.answerMode = 'TEXT';
+            $scope.answerText = ans;
+        }
+    };
+
+    $scope.onAnswerModeChange = function() {
+        if ($scope.answerMode !== 'TEXT') {
+            $scope.answerText = '';
+        }
+    };
+
+    $scope.applyAnswer = function() {
+        if ($scope.answerMode === 'TEXT') {
+            $scope.questionForm.answer = ($scope.answerText || '').toString();
+        } else {
+            $scope.questionForm.answer = $scope.answerMode;
+        }
+    };
+
+    $scope.uploadQuestionImage = function (file) {
+        if (!file) {
+            return;
+        }
+        if (file.size > 2 * 1024 * 1024) {
+            alert("File size must be less than 2MB");
+            return;
+        }
+        $scope.questionUploading = true;
+        var url = base_url + '/api/aspirant/questions/upload-image';
+        Upload.upload({
+            url: url,
+            data: {
+                media: file
+            }
+        }).then(function (resp) {
+            if (resp.data.success) {
+                $scope.questionForm.image_file = resp.data.data.media_link;
+                $scope.questionForm.image_file_link = resp.data.data.media_link;
+            } else {
+                alert(resp.data.message || 'Upload failed');
+            }
+            $scope.questionUploading = false;
+        }, function () {
+            $scope.questionUploading = false;
+            alert("Upload failed, please try again");
+        });
+    };
+
+    $scope.removeQuestionImage = function () {
+        $scope.questionForm.image_file = '';
+        $scope.questionForm.image_file_link = '';
     };
 
     $scope.saveQuestion = function() {
@@ -1225,6 +1292,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService){
             alert('Subject/Topic not selected');
             return;
         }
+        $scope.applyAnswer();
         $scope.questionProcessing = true;
         DBService.postCall($scope.questionForm, '/api/aspirant/questions/store').then(function(data) {
             $scope.questionProcessing = false;

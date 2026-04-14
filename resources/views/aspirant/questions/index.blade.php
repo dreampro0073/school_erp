@@ -50,67 +50,114 @@
    </div>
 
    <div class="modal fade" id="questionModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
          <div class="modal-content">
             <div class="modal-header">
                <div>
-                  <h5 class="modal-title mb-2">@{{ questionForm.id ? 'Edit Question' : 'Add Question' }}</h5>
-                  <p class="text-neutral-600 mb-0">Fill in the details below.</p>
+                  <h5 class="modal-title mb-1">@{{ questionForm.id ? 'Edit Question' : 'Add Question' }}</h5>
+                  <p class="text-neutral-600 mb-0">Question + options + marks in one place.</p>
                </div>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form ng-submit="saveQuestion()">
                <div class="modal-body">
-                  <div class="row g-3">
+                  <div class="row g-4">
                      <div class="col-12">
                         <label class="form-label">Question</label>
-                        <textarea class="form-control" ng-model="questionForm.question" rows="4" required></textarea>
-                     </div>
-                     <div class="col-12">
-                        <label class="form-label">Question (Hindi)</label>
-                        <textarea class="form-control" ng-model="questionForm.question_hi" rows="3"></textarea>
+                        <textarea class="form-control" ng-model="questionForm.question" rows="5" required placeholder="Type the question here..."></textarea>
                      </div>
                      <div class="col-12">
                         <label class="form-label">Remarks</label>
-                        <textarea class="form-control" ng-model="questionForm.remarks" rows="2"></textarea>
+                        <textarea class="form-control" ng-model="questionForm.remarks" rows="2" placeholder="Optional notes..."></textarea>
+                     </div>
+                     <div class="col-12">
+                        <div class="border rounded-3 p-16 bg-base">
+                           <div class="d-flex align-items-center justify-content-between mb-12">
+                              <h6 class="mb-0">Options</h6>
+                              <span class="text-xs text-neutral-500">Fill any that apply</span>
+                           </div>
+                           <div class="row g-3">
+                              <div class="col-md-6">
+                                 <label class="form-label">Option A</label>
+                                 <input type="text" class="form-control" ng-model="questionForm.opt_a">
+                              </div>
+                              <div class="col-md-6">
+                                 <label class="form-label">Option B</label>
+                                 <input type="text" class="form-control" ng-model="questionForm.opt_b">
+                              </div>
+                              <div class="col-md-6">
+                                 <label class="form-label">Option C</label>
+                                 <input type="text" class="form-control" ng-model="questionForm.opt_c">
+                              </div>
+                              <div class="col-md-6">
+                                 <label class="form-label">Option D</label>
+                                 <input type="text" class="form-control" ng-model="questionForm.opt_d">
+                              </div>
+                           </div>
+                        </div>
                      </div>
 
-                     <div class="col-md-6">
-                        <label class="form-label">Option A</label>
-                        <input type="text" class="form-control" ng-model="questionForm.opt_a">
-                     </div>
-                     <div class="col-md-6">
-                        <label class="form-label">Option B</label>
-                        <input type="text" class="form-control" ng-model="questionForm.opt_b">
-                     </div>
-                     <div class="col-md-6">
-                        <label class="form-label">Option C</label>
-                        <input type="text" class="form-control" ng-model="questionForm.opt_c">
-                     </div>
-                     <div class="col-md-6">
-                        <label class="form-label">Option D</label>
-                        <input type="text" class="form-control" ng-model="questionForm.opt_d">
-                     </div>
-
-                     <div class="col-md-6">
-                        <label class="form-label">Answer</label>
-                        <input type="text" class="form-control" ng-model="questionForm.answer">
-                     </div>
-                     <div class="col-md-6">
-                        <label class="form-label">Negative Marks</label>
-                        <input type="number" step="0.01" class="form-control" ng-model="questionForm.negative_marks">
-                     </div>
-                     <div class="col-md-6">
-                        <label class="form-label">Paragraph ID</label>
-                        <input type="number" class="form-control" ng-model="questionForm.paragraph_id">
-                     </div>
-                     <div class="col-md-6">
-                        <label class="form-label">Image File</label>
-                        <input type="text" class="form-control" ng-model="questionForm.image_file">
-                     </div>
-                     <div class="col-md-6">
-                        <label class="form-label">Total Marks</label>
-                        <input type="number" class="form-control" ng-model="questionForm.total_marks">
+                     <div class="col-12">
+                        <div class="border rounded-3 p-16 bg-base">
+                           <div class="d-flex align-items-center justify-content-between mb-12">
+                              <h6 class="mb-0">Scoring & Meta</h6>
+                              <span class="text-xs text-neutral-500">Marks + references</span>
+                           </div>
+                           <div class="row g-3">
+                              <div class="col-md-4">
+                                 <label class="form-label">Answer (A/B/C/D)</label>
+                                 <select class="form-control" ng-model="answerMode" ng-change="onAnswerModeChange()">
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="TEXT">Text</option>
+                                 </select>
+                              </div>
+                              <div class="col-md-4" ng-if="answerMode == 'TEXT'">
+                                 <label class="form-label">Answer Text</label>
+                                 <input type="text" class="form-control" ng-model="answerText" placeholder="Type answer">
+                              </div>
+                              <div class="col-md-4">
+                                 <label class="form-label">Total Marks</label>
+                                 <input type="number" class="form-control" ng-model="questionForm.total_marks">
+                              </div>
+                              <div class="col-md-4">
+                                 <label class="form-label">Negative Marks</label>
+                                 <input type="number" step="0.01" class="form-control" ng-model="questionForm.negative_marks">
+                              </div>
+                              <div class="col-md-6">
+                                 <label class="form-label">Paragraph ID</label>
+                                 <input type="number" class="form-control" ng-model="questionForm.paragraph_id">
+                              </div>
+                              <div class="col-md-6">
+                                 <label class="form-label">Question Image</label>
+                                 <div class="d-flex align-items-center gap-8 flex-wrap">
+                                    <button type="button"
+                                       class="btn btn-primary-600 border border-primary-600 text-md px-18 py-8 radius-8"
+                                       ngf-select="uploadQuestionImage($file)"
+                                       ng-hide="questionUploading">
+                                       Select Image
+                                    </button>
+                                    <a ng-href="@{{questionForm.image_file_link}}"
+                                       ng-show="questionForm.image_file_link"
+                                       class="btn btn-outline-primary text-md px-18 py-8 radius-8"
+                                       target="_blank">
+                                       View Image
+                                    </a>
+                                    <button ng-show="questionForm.image_file_link"
+                                       type="button"
+                                       class="btn btn-danger"
+                                       ng-click="removeQuestionImage()">
+                                       Remove
+                                    </button>
+                                 </div>
+                                 <div class="mt-12" ng-if="questionForm.image_file_link">
+                                    <img ng-src="@{{questionForm.image_file_link}}" alt="Question Image" class="img-fluid radius-8 border" style="max-height: 220px;">
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
                      </div>
                   </div>
                </div>
