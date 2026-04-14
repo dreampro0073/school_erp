@@ -124,11 +124,11 @@
                               </div>
                               <div class="col-md-4">
                                  <label class="form-label">Total Marks</label>
-                                 <input type="number" class="form-control" ng-model="questionForm.total_marks">
+                                 <input type="number" class="form-control" ng-model="questionForm.total_marks" disabled>
                               </div>
                               <div class="col-md-4">
                                  <label class="form-label">Negative Marks</label>
-                                 <input type="number" step="0.01" class="form-control" ng-model="questionForm.negative_marks">
+                                 <input type="number" step="0.01" class="form-control" ng-model="questionForm.negative_marks" disabled>
                               </div>
                               <div class="col-md-6">
                                  <label class="form-label">Paragraph ID</label>

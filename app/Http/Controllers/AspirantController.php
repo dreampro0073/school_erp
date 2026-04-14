@@ -158,10 +158,10 @@ class AspirantController extends Controller {
             $question->opt_c = $request->opt_c;
             $question->opt_d = $request->opt_d;
             $question->answer = $request->answer;
-            $question->negative_marks = $request->negative_marks;
+            $question->negative_marks = $request->negative_marks ?? 0.33;
             $question->paragraph_id = $request->paragraph_id;
             $question->image_file = $request->image_file;
-            $question->total_marks = $request->total_marks ?? 0;
+            $question->total_marks = $request->total_marks ?? 1;
             $question->subject_id = $request->subject_id;
             $question->topic_id = $request->topic_id;
             $question->created_at = date("Y-m-d H:i:s");

@@ -1079,10 +1079,10 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
         opt_c: '',
         opt_d: '',
         answer: '',
-        negative_marks: '',
+        negative_marks: 0.33,
         paragraph_id: '',
         image_file: '',
-        total_marks: 0,
+        total_marks: 1,
         image_file_link: ''
     };
     $scope.answerMode = 'A';
@@ -1219,10 +1219,10 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
                 opt_c: '',
                 opt_d: '',
                 answer: '',
-                negative_marks: '',
+                negative_marks: 0.33,
                 paragraph_id: '',
                 image_file: '',
-                total_marks: 0,
+                total_marks: 1,
                 image_file_link: ''
             };
         }
