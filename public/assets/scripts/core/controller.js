@@ -1049,3 +1049,19 @@ app.controller('addTeacherCtrl', function($scope , DBService){
         return Math.max(0, $scope.totalEarning() - $scope.totalDeduction());
     };
 });
+
+
+// *** aspirantDashboardCtrl ***
+app.controller('aspirantDashboardCtrl', function($scope , DBService){
+    $scope.loading = false;
+    $scope.today = '';
+    $scope.aspirant = {};
+
+    $scope.init = function() {
+        $scope.loading = true;
+        DBService.postCall({}, '/api/aspirant/dashboard/init').then(function(data) {
+            $scope.aspirant = data.aspirant;
+            $scope.loading = false;
+        });
+    };
+});

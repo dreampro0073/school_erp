@@ -11,6 +11,7 @@
       3 => 'Teacher',
       4 => 'Student',
       5 => 'Guardian',
+      6 => 'Aspirant',
    ];
    $roleLabel = $roleLabelMap[$authPriv] ?? 'User';
 
@@ -20,6 +21,7 @@
       3 => url('/teachers/dashboard'),
       4 => '#',
       5 => url('/gurdian/dashboard'),
+      6 => url('/aspirant/dashboard'),
    ];
 
    $dashboardUrl = $dashboardLinks[$authPriv] ?? url('/');
@@ -80,8 +82,10 @@
          @include('layout.student')
       @elseif ($authPriv === 5)
          @include('layout.parents')
+      @elseif ($authPriv === 6)
+         @include('layout.aspirants')
       @endif
-
+      
       <li>
          <a href="{{ url('chat') }}">
             <i class="ri-message-2-line"></i>
