@@ -60,7 +60,7 @@
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form ng-submit="saveQuestion()">
-               <div class="modal-body">
+               <div class="modal-body" style="overflow-y:auto; max-height: calc(100vh - 220px);">
                   <div class="row g-4">
                      <div class="col-12">
                         <label class="form-label">Question</label>
