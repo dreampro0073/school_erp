@@ -50,61 +50,68 @@
    </div>
 
    <div class="modal fade" id="questionModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
          <div class="modal-content">
             <div class="modal-header">
-               <h5 class="modal-title">@{{ questionForm.id ? 'Edit Question' : 'Add Question' }}</h5>
+               <div>
+                  <h5 class="modal-title mb-2">@{{ questionForm.id ? 'Edit Question' : 'Add Question' }}</h5>
+                  <p class="text-neutral-600 mb-0">Fill in the details below.</p>
+               </div>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form ng-submit="saveQuestion()">
                <div class="modal-body">
-                  <div class="mb-16">
-                     <label class="form-label">Question</label>
-                     <textarea class="form-control" ng-model="questionForm.question" rows="3" required></textarea>
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Question (Hindi)</label>
-                     <textarea class="form-control" ng-model="questionForm.question_hi" rows="2"></textarea>
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Remarks</label>
-                     <textarea class="form-control" ng-model="questionForm.remarks" rows="2"></textarea>
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Option A</label>
-                     <input type="text" class="form-control" ng-model="questionForm.opt_a">
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Option B</label>
-                     <input type="text" class="form-control" ng-model="questionForm.opt_b">
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Option C</label>
-                     <input type="text" class="form-control" ng-model="questionForm.opt_c">
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Option D</label>
-                     <input type="text" class="form-control" ng-model="questionForm.opt_d">
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Answer</label>
-                     <input type="text" class="form-control" ng-model="questionForm.answer">
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Negative Marks</label>
-                     <input type="number" step="0.01" class="form-control" ng-model="questionForm.negative_marks">
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Paragraph ID</label>
-                     <input type="number" class="form-control" ng-model="questionForm.paragraph_id">
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Image File</label>
-                     <input type="text" class="form-control" ng-model="questionForm.image_file">
-                  </div>
-                  <div class="mb-16">
-                     <label class="form-label">Total Marks</label>
-                     <input type="number" class="form-control" ng-model="questionForm.total_marks">
+                  <div class="row g-3">
+                     <div class="col-12">
+                        <label class="form-label">Question</label>
+                        <textarea class="form-control" ng-model="questionForm.question" rows="4" required></textarea>
+                     </div>
+                     <div class="col-12">
+                        <label class="form-label">Question (Hindi)</label>
+                        <textarea class="form-control" ng-model="questionForm.question_hi" rows="3"></textarea>
+                     </div>
+                     <div class="col-12">
+                        <label class="form-label">Remarks</label>
+                        <textarea class="form-control" ng-model="questionForm.remarks" rows="2"></textarea>
+                     </div>
+
+                     <div class="col-md-6">
+                        <label class="form-label">Option A</label>
+                        <input type="text" class="form-control" ng-model="questionForm.opt_a">
+                     </div>
+                     <div class="col-md-6">
+                        <label class="form-label">Option B</label>
+                        <input type="text" class="form-control" ng-model="questionForm.opt_b">
+                     </div>
+                     <div class="col-md-6">
+                        <label class="form-label">Option C</label>
+                        <input type="text" class="form-control" ng-model="questionForm.opt_c">
+                     </div>
+                     <div class="col-md-6">
+                        <label class="form-label">Option D</label>
+                        <input type="text" class="form-control" ng-model="questionForm.opt_d">
+                     </div>
+
+                     <div class="col-md-6">
+                        <label class="form-label">Answer</label>
+                        <input type="text" class="form-control" ng-model="questionForm.answer">
+                     </div>
+                     <div class="col-md-6">
+                        <label class="form-label">Negative Marks</label>
+                        <input type="number" step="0.01" class="form-control" ng-model="questionForm.negative_marks">
+                     </div>
+                     <div class="col-md-6">
+                        <label class="form-label">Paragraph ID</label>
+                        <input type="number" class="form-control" ng-model="questionForm.paragraph_id">
+                     </div>
+                     <div class="col-md-6">
+                        <label class="form-label">Image File</label>
+                        <input type="text" class="form-control" ng-model="questionForm.image_file">
+                     </div>
+                     <div class="col-md-6">
+                        <label class="form-label">Total Marks</label>
+                        <input type="number" class="form-control" ng-model="questionForm.total_marks">
+                     </div>
                   </div>
                </div>
                <div class="modal-footer">
