@@ -192,19 +192,19 @@ class AspirantController extends Controller {
                 $data['media_link'] = url($destination.$name);
 
                 return response()->json([
-                    \"success\" => true,
-                    \"data\" => $data,
+                    "success" => true,
+                    "data" => $data,
                 ]);
             }else{
                 return response()->json([
-                    \"success\" => false,
-                    \"message\" => \"Invalid file format for image , Valid extentions are  jpg , png ,jpeg\",
+                    "success" => false,
+                    "message" => "Invalid file format for image , Valid extentions are  jpg , png ,jpeg",
                 ]);
             }
         }else{
             return response()->json([
-                \"success\" => false,
-                \"message\" => \"Please select image\",
+                "success" => false,
+                "message" => "Please select image",
             ]);
         }
     }
