@@ -229,6 +229,17 @@
 					<option value="@{{item.value}}" ng-repeat="item in fee_types">@{{item.label}}</option>
 				</select>
 			</div>
+
+
+
+			<div class="col-sm-12 form-group" ng-if="formData.fee_type_id == 3">
+				<label class="text-sm fw-semibold text-primary-light mb-8">Route <span class="text-danger-600">* </span></label>
+				<select class="form-select" ng-model="formData.route_id" convert-to-number required>
+					<option value="">Select</option>
+					<option value="@{{item.value}}" ng-repeat="item in routes">@{{item.label}}</option>
+				</select>
+			</div>
+
 			<div class="col-sm-12 form-group" ng-if="formData.fee_type_id == 2 || formData.fee_type_id == 3">
 				<label class="text-sm fw-semibold text-primary-light mb-8">Fee Frequencies <span class="text-danger-600">* </span></label>
 				<select class="form-select" ng-model="formData.frequency_id" convert-to-number ng-change="getFeeSubs();" required>

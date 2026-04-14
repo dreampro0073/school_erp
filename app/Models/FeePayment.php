@@ -38,6 +38,10 @@ class FeePayment extends Model
         return DB::table('payment_modes')->select('id as value','name as label')->get();
     }
 
+    public static function getRoutes($school_id){
+        return TransportRoute::select('id as value','route_name as label')->where('school_id',$school_id)->get();
+    }
+
     public static function getMonths(){
         $months = [];
 
@@ -50,7 +54,42 @@ class FeePayment extends Model
 
         return $months;
     }
-    public static function getFeeAmount($school_id, $fee_type_id, $class_id, $frequency_id = null){
+    public static function getFeeAmount($school_id, $fee_type_id, $class_id, $student_id = null, $frequency_id = null,$route_id=null){
+        if ($fee_type_id == 3) {
+            
+            if (!$route_id) return 0;
+
+            $route = DB::table('transport_routes')
+             ->where('school_id', $school_id)
+                ->where('id', $route_id);
+
+            if (!empty($frequency_id)) {
+                $route->where('frequency_id', $frequency_id);
+            }
+               
+
+            $route = $route->orderBy('id','desc')->first();
+
+            return $route->amount ?? 0;
+        }
+
+        $fee_subs = DB::table('fee_structures')
+            ->select('id','amount')
+            ->where('school_id', $school_id)
+            ->where('fee_type_id', $fee_type_id)
+            ->where('class_id', $class_id);
+
+        if ($frequency_id === null || $frequency_id === '') {
+            $fee_subs->whereNull('frequency_id');
+        } else {
+            $fee_subs->where('frequency_id', $frequency_id);
+        }
+
+        $fee_subs = $fee_subs->orderBy('id', 'desc')->first();
+
+        return $fee_subs ? $fee_subs->amount : 0;
+    }
+    public static function getFeeAmountOld($school_id, $fee_type_id, $class_id, $frequency_id = null){
         $fee_subs = DB::table('fee_structures')
             ->select('id','amount')
             ->where('school_id', $school_id)

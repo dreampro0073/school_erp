@@ -208,6 +208,7 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
     $scope.formData = {
         fee_type_id:'',
         frequency_id:'',
+        route_id:'',
         month:'',
         payment_mode:'',
     };
@@ -218,6 +219,7 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
     $scope.fee_frequencies = [];
     $scope.fee_subs = [];
     $scope.payment_modes = [];
+    $scope.routes = [];
     $scope.fee_amount = 0;
 
     $scope.currentPage = 1;
@@ -308,6 +310,7 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
             if (data.success) {
                 $scope.fee_types = data.fee_types;
                 $scope.fee_frequencies = data.fee_frequencies;
+                $scope.routes = data.routes;
                 $scope.payment_modes = data.payment_modes;
                 $scope.years = data.years;
                 $scope.months = data.months;
@@ -335,10 +338,10 @@ app.controller('studentDetailsCtrl', function($scope , DBService){
         }
         if($scope.formData.frequency_id != 0 && ($scope.formData.fee_type_id == 2 || $scope.formData.fee_type_id == 3)){
             send_data.frequency_id = $scope.formData.frequency_id;
-
-            // console.log('logogogogogogo');
         }
-
+        if($scope.formData.fee_type_id == 3){
+            send_data.route_id = $scope.formData.route_id;
+        }
         DBService.postCall(send_data,'/api/admin/students/get-fee-subs').then(function(data) {
             if (data.success) {
                 $scope.formData.amount = data.amount;

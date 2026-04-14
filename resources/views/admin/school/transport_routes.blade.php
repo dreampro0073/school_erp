@@ -20,6 +20,7 @@
                     <tr>
                         <th>SN.</th>
                         <th>Route</th>
+                        <th>Frequency</th>
                         <th>Description</th>
                         <th>Amount</th>
                         <th>Status</th>
@@ -29,7 +30,12 @@
                 <tbody>
                     <tr ng-repeat="item in transport_routes">
                         <td>@{{$index + 1}}</td>
-                        <td>@{{item.route_name}}</td>
+                        <td>@{{item.route_name}}
+
+                        </td>
+                        <td>
+                            <span class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">@{{item.fee_frequency.name}}</span>
+                        </td>
                         <td>@{{item.description}}</td>
                         <td>@{{item.amount}}</td>
                         <td>

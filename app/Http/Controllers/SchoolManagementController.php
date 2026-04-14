@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Standard, App\Models\Section, App\Models\Teacher, App\Models\Student,App\Models\TransportRoute,App\Models\FinYear,DB;
 use Illuminate\Support\Facades\Validator;
 
+use Illuminate\Validation\Rule;
+
+
 class SchoolManagementController extends Controller {
     public function index(Request $request) {
 
@@ -671,7 +674,7 @@ class SchoolManagementController extends Controller {
         $user = User::authUser($apiToken);
 
         $limit = $request->has('limit')?$request->limit:10;
-        $query = TransportRoute::where('school_id', $user->client_id);
+        $query = TransportRoute::with(['feeFrequency:id,name'])->where('school_id', $user->client_id);
         $transport_routes = $query->orderBy('id', 'DESC')->paginate($limit);
         
         $fee_frequencies = FeePayment::getFeeFrequencies($user->client_id);
@@ -695,11 +698,113 @@ class SchoolManagementController extends Controller {
             "transport" => $transport,
         ]);
     }
-
     public function storeTransport(Request $request){
+        $authUser = User::resolveApiUser($request);
+        $message = "Transport details successfully saved!";
+
+        $frequencyId = ($request->frequency_id === '' || $request->frequency_id === null) 
+            ? null 
+            : $request->frequency_id;
+
+        $validator = Validator::make($request->all(), [
+            'route_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('transport_routes')->where(function ($query) use ($authUser, $frequencyId) {
+                    return $query->where('school_id', $authUser->client_id)
+                        ->where(function ($q) use ($frequencyId) {
+                        if ($frequencyId === null) {
+                                $q->whereNull('frequency_id');
+                        } else {
+                            $q->where('frequency_id', $frequencyId);
+                        }
+                    });
+                })->ignore($request->id)
+            ],
+            'description'   => ['required'],
+            'amount'        => ['required', 'numeric'],
+            'frequency_id'  => ['nullable', 'exists:fee_frequencies,id'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+        $data = $request->only([
+            'route_name',
+            'description',
+            'amount',
+            'frequency_id',
+        ]);
+
+        $data['frequency_id'] = $frequencyId;
+        $data['school_id'] = $authUser->client_id;
+
+        DB::beginTransaction();
+        try {
+            $existing = TransportRoute::where("school_id", $authUser->client_id)
+                ->where('route_name', $request->route_name)
+                ->when($frequencyId === null, function ($q) {
+                    $q->whereNull("frequency_id");
+                }, function ($q) use ($frequencyId) {
+                    $q->where("frequency_id", $frequencyId);
+                })
+                ->first();
+
+            if ($request->id) {
+                $transport = TransportRoute::where('id', $request->id)
+                    ->where('school_id', $authUser->client_id)
+                    ->first();
+
+                if (!$transport) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Transport record not found'
+                    ], 404);
+                }
+
+                $transport->update($data);
+                $message = "Transport details successfully updated!";
+
+            } else {
+
+                if ($existing) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This route already exists for selected frequency'
+                    ], 409);
+                }
+
+                $transport = TransportRoute::create($data);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success'   => true,
+                'message'   => $message,
+                'transport' => $transport
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function storeTransportOld(Request $request){
         $authUser = User::resolveApiUser($request);
         $message = "Transport details Successfully saved!";
         $transport = TransportRoute::find($request->id);
+
+        $frequencyId = ($request->frequency_id === '' || $request->frequency_id === null) ? null : $request->frequency_id;
 
         $validator = Validator::make($request->all(), [
             'route_name' => ['required','string','max:255'],
@@ -727,8 +832,15 @@ class SchoolManagementController extends Controller {
 
         DB::beginTransaction();
         try {
+            $existing = TransportRoute::where("school_id", $authUser->client_id)
+            ->when($frequencyId === null, function ($q) {
+                $q->whereNull("frequency_id");
+            }, function ($q) use ($frequencyId) {
+                $q->where("frequency_id", $frequencyId);
+            })
+            ->first();
 
-            if(!$transport){
+            if(!$existing){
                 $transport = TransportRoute::create($data);
             }else{
                 $message = "Transport details Successfully Updated!";

@@ -338,7 +338,7 @@ class StudentController extends Controller
             "fee_frequencies" => FeePayment::getFeeFrequencies($user->client_id),
             "payment_modes" => FeePayment::getPaymentModes(),
             "months" => FeePayment::getMonths(),
-
+            "routes" => FeePayment::getRoutes($user->client_id),
             "years" => DB::table("years")->select("period as label", "year as value")->get(),
         ]); 
 
@@ -396,10 +396,12 @@ class StudentController extends Controller
         $standard_id = $request->standard_id;
         $fee_type_id = $request->fee_type_id;
         $frequency_id = $request->has('frequency_id')?$request->frequency_id:null;
+        $route_id = $request->has('route_id')?$request->route_id:null;
+
         
         return response()->json([
             "success" => true,
-            "amount" => FeePayment::getFeeAmount($user->client_id,$fee_type_id,$standard_id,$frequency_id),
+            "amount" => FeePayment::getFeeAmount($user->client_id,$fee_type_id,$standard_id,$student_id,$frequency_id,$route_id),
         ]); 
 
     }    
@@ -441,6 +443,7 @@ class StudentController extends Controller
         $data['student_id'] = $student_id;
         $data['paid_date'] = now();
         $data['added_by'] = $authUser->id;
+        $data['route_id'] = $request->has('route_id')?$request->route_id:0;
 
         DB::beginTransaction();
         try {
