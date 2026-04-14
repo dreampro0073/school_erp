@@ -21,6 +21,14 @@ class AspirantController extends Controller {
         return view('aspirant.subjects.index');
     }
 
+    public function topicsIndex($subjectId)
+    {
+        $subject = Subject::find($subjectId);
+        return view('aspirant.topics.index', [
+            'subject' => $subject,
+        ]);
+    }
+
     public function initDashboard(Request $request) {
         $apiToken = $request->header('apiToken');
         $user = User::authUser($apiToken);

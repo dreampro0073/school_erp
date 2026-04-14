@@ -1103,6 +1103,13 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService){
         });
     };
 
+    $scope.initTopicsPage = function(subject) {
+        $scope.selectedSubject = subject || null;
+        if (subject && subject.id) {
+            $scope.initTopics(subject.id);
+        }
+    };
+
     $scope.openTopicSidebar = function(topic) {
         $scope.isTopicEditMode = !!(topic && topic.id);
         if ($scope.isTopicEditMode) {
