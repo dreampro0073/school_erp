@@ -49,14 +49,14 @@
 
          <div class="row g-3 mb-16">
             <div class="col-md-6" ng-repeat="opt in getOptionList()">
-               <button type="button" class="btn w-100 text-start border radius-8 px-12 py-12" ng-class="optionClass(opt.key)" ng-click="selectOption(opt.key)">
+               <button type="button" class="btn w-100 text-start border radius-8 px-12 py-12" ng-class="optionClass(opt.key)" ng-click="selectOption(opt.key)" ng-disabled="showAnswer">
                   <strong class="me-8">@{{ opt.key }}.</strong> @{{ opt.text }}
                </button>
             </div>
          </div>
 
          <div class="d-flex align-items-center gap-8 mb-16" ng-if="!showAnswer">
-            <button type="button" class="btn btn-success-600" ng-click="submitAnswer()">Submit</button>
+            <button type="button" class="btn btn-success-600" ng-click="submitAnswer()" ng-disabled="showAnswer">Submit</button>
          </div>
 
          <div class="alert alert-light border" ng-if="showAnswer">
