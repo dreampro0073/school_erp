@@ -186,7 +186,7 @@ class AspirantController extends Controller {
                 $name_file = pathinfo($request->file('media')->getClientOriginalName(), PATHINFO_FILENAME);
                 $name_file = preg_replace('/[^a-zA-Z0-9]/', '', $name_file);
 
-                $name = 'question'.$name_file.'_'.strtotime(\"now\").'.'.strtolower($extension);
+                $name = 'question'.$name_file.'_'.strtotime("now").'.'.strtolower($extension);
                 $file = $file->move($destination, $name);
                 $data['media'] = $destination.$name;
                 $data['media_link'] = url($destination.$name);
