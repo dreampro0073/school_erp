@@ -440,7 +440,7 @@ ALTER TABLE `fee_structures`
 
 
 // Devendra
-RENAME TABLE `clients` TO `r_school_erp`.`schools`;
+RENAME TABLE `clients` TO `schools`;
 ALTER TABLE `schools` CHANGE `client_name` `school_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 ALTER TABLE `schools` ADD `user_id` INT NULL DEFAULT NULL AFTER `id`;
 
@@ -467,4 +467,12 @@ ALTER TABLE `transport_routes` ADD `description` TEXT NULL DEFAULT NULL AFTER `a
 ALTER TABLE `transport_routes` ADD `status` TINYINT NOT NULL DEFAULT '0' AFTER `description`;
 
 ALTER TABLE `transport_routes` ADD `frequency_id` INT NOT NULL DEFAULT '0' AFTER `school_id`;
+
+// Devendra
+ALTER TABLE `teachers`
+  DROP `pravious_school`,
+  DROP `pravios_school_address`;
+
+ALTER TABLE `teachers` ADD `previous_school` VARCHAR(255) NULL DEFAULT NULL AFTER `mobile`, ADD `previous_school_address` VARCHAR(255) NULL DEFAULT NULL AFTER `previous_school`;
+ALTER TABLE `fee_payments` ADD `route_id` INT NOT NULL DEFAULT '0' AFTER `fee_type_id`;
 

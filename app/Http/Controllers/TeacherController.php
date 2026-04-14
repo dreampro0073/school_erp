@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
 use App\Models\AttendanceStatus;
 use App\Models\MasterData;
 use App\Models\ModelHelper;
@@ -99,6 +100,23 @@ class TeacherController extends Controller {
     }
 
     public function addTeacherPage($teacher_token=0) {
+        $auth_user = Auth::user();
+        if ($teacher_token > 0) {
+            $teacher = Teacher::where('unique_id', $teacher_token)->first();
+
+            if (!$teacher) {
+                die("Teacher not found!");
+            }
+
+            $check = User::where("id", $teacher->user_id)
+                ->where("priv", 3)
+                ->where("parent_user_id", $auth_user->parent_user_id)
+                ->first();
+
+            if (!$check) {
+                die("You are not authorised to edit this profile!");
+            }
+        }
 
         return view('admin.teachers.form', [
             'teacher_token' => $teacher_token,
@@ -124,10 +142,8 @@ class TeacherController extends Controller {
     public function initDetails(Request $request)
     {
         $apiToken = $request->header('apiToken');
-        $user = User::authUser($apiToken);
+        $auth_user = User::authUser($apiToken);
 
-
-        // ✅ ADD MODE
         if (!$request->teacher_token || $request->teacher_token == 0) {
             return response()->json([
                 "success" => true,
@@ -167,7 +183,9 @@ class TeacherController extends Controller {
 
         $teacher = Teacher::where('unique_id', $request->teacher_token)->first();
 
-        if(!$teacher){
+        $check = User::where("id", $teacher->user_id)->where("parent_user_id", $auth_user->parent_user_id)->first();
+
+        if(!$teacher || !$check){
             return response()->json([
                 "success" => false,
                 "message" => "Teacher not found"
@@ -176,8 +194,8 @@ class TeacherController extends Controller {
 
         $bank = DB::table('bank_details')->where('user_id', $teacher->user_id)->first();
 
-           $salary = DB::table('teacher_salary_structures')
-        ->where('teacher_id', $teacher->id)
+           $salary = DB::table('salary_structures')
+        ->where('user_id', $teacher->user_id)
         ->get();
 
         $response = [
@@ -242,43 +260,6 @@ class TeacherController extends Controller {
 
             'active' => (string) $teacher->active,
         ];
-
-
-        // $response = [
-        //     'enc_id' => $teacher->unique_id,
-
-        //     'first_name' => $teacher->first_name,
-        //     'last_name' => $teacher->last_name,
-        //     'email' => $teacher->email,
-        //     'mobile' => $teacher->mobile,
-        //     'gender' => $teacher->gender,
-        //     'dob' => $teacher->dob,
-        //     'aadhar_no' => $teacher->aadhar_no,
-
-        //     'residential_address' => $teacher->residential_address,
-        //     'permanent_address' => $teacher->permanent_address,
-
-        //     // Parent
-        //     'father_name' => $teacher->father_name,
-        //     'father_mobile' => $teacher->father_mobile,
-        //     'father_aadhar_no' => $teacher->father_aadhar_no,
-
-        //     'mother_name' => $teacher->mother_name,
-        //     'mother_mobile' => $teacher->mother_mobile,
-        //     'mother_aadhar_no' => $teacher->mother_aadhar_no,
-
-        //     // Bank (IMPORTANT change)
-        //     'bank_details' => [
-        //         'account_holder_name' => $bank->account_holder_name ?? null,
-        //         'bank_name' => $bank->bank_name ?? null,
-        //         'account_number' => $bank->account_number ?? null,
-        //         'ifsc_code' => $bank->ifsc_code ?? null,
-        //         'branch_name' => $bank->branch_name ?? null,
-        //         'upi_id' => $bank->upi_id ?? null,
-        //     ],
-
-        //     'active' => $teacher->active,
-        // ];
 
         return response()->json([
             "success" => true,
@@ -369,6 +350,7 @@ class TeacherController extends Controller {
                 $user->added_by = $authUser->id;
                 $user->org_id = $authUser->org_id;
                 $user->client_id = $authUser->client_id;
+                $user->parent_user_id = $authUser->parent_user_id;
                 $user->save();
 
 
@@ -450,8 +432,8 @@ class TeacherController extends Controller {
 
 
             // ✅ Delete old salary (for update case)
-                DB::table('teacher_salary_structures')
-                    ->where('teacher_id', $teacher->id)
+                DB::table('salary_structures')
+                    ->where('user_id', $teacher->user_id)
                     ->delete();
                 // ✅ Insert new salary components
 
@@ -461,7 +443,7 @@ class TeacherController extends Controller {
                    foreach ($request->salary_components as $index => $item) {
                         $salaryInsert[] = [
                             'client_id' => $authUser->client_id, // required
-                            'teacher_id' => $teacher->id,
+                            'user_id' => $teacher->user_id,
                             'component_name' => $item['component_name'],
                             'component_type' => $item['component_type'],
                             'amount' => $item['amount'],
@@ -472,7 +454,7 @@ class TeacherController extends Controller {
                         ];
                     }
 
-                    DB::table('teacher_salary_structures')->insert($salaryInsert);
+                    DB::table('salary_structures')->insert($salaryInsert);
                 }
 
             DB::commit();

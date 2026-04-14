@@ -136,8 +136,8 @@
                  <div class="form-group col-md-4">
                      <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Status </label>
                      <select class="form-select" ng-model="formData.active">
-                         <option value="1">Active</option>
-                         <option value="0">Inactive</option>
+                         <option value="0">Active</option>
+                         <option value="1">Inactive</option>
                      </select>
                  </div>
 
