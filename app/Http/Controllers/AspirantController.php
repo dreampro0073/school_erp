@@ -30,6 +30,11 @@ class AspirantController extends Controller {
         ]);
     }
 
+    public function practiceIndex()
+    {
+        return view('aspirant.practice.index');
+    }
+
     public function questionsIndex($subjectId, $topicId)
     {
         $subject = Subject::find($subjectId);
@@ -58,6 +63,54 @@ class AspirantController extends Controller {
         $data["success"] = true;
 
         return response()->json($data,200,[]);
+    }
+
+    public function initPractice(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+
+        $subjects = Subject::get();
+        $data["subjects"] = $subjects;
+        $data["success"] = true;
+
+        return response()->json($data,200,[]);
+    }
+
+    public function randomQuestion(Request $request) {
+        $apiToken = $request->header('apiToken');
+        $user = User::authUser($apiToken);
+
+        $subjectId = (int) $request->subject_id;
+        $topicIds = $request->topic_ids ?: [];
+        $excludeIds = $request->exclude_ids ?: [];
+
+        if (!$subjectId || !is_array($topicIds) || !count($topicIds)) {
+            return response()->json([
+                "success" => false,
+                "message" => "Subject and topics required",
+            ],200,[]);
+        }
+
+        $query = Question::where('subject_id', $subjectId)
+            ->whereIn('topic_id', $topicIds);
+
+        if (is_array($excludeIds) && count($excludeIds)) {
+            $query->whereNotIn('id', $excludeIds);
+        }
+
+        $question = $query->inRandomOrder()->first();
+
+        if (!$question) {
+            return response()->json([
+                "success" => false,
+                "message" => "No more questions found",
+            ],200,[]);
+        }
+
+        return response()->json([
+            "success" => true,
+            "question" => $question,
+        ],200,[]);
     }
 
     public function initTopics(Request $request) {

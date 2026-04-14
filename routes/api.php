@@ -203,6 +203,11 @@ use App\Http\Controllers\AspirantController;
         Route::post('/upload-image', 'uploadQuestionImage');
     });
 
+    Route::prefix('aspirant/practice')->controller(AspirantController::class)->group(function () {
+        Route::post('/init', 'initPractice');
+        Route::post('/random-question', 'randomQuestion');
+    });
+
     Route::prefix('worklog')->controller(WorklogController::class)->group(function () {
         Route::post('/init', 'initWorkLog');
         Route::post('/edit', 'getDayData');
