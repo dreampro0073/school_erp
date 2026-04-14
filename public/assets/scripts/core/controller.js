@@ -1,3 +1,4 @@
+
 // function confirmAction(title, text, onConfirm) {
 //     if (typeof window.Swal !== 'undefined' && typeof window.Swal.fire === 'function') {
 //         window.Swal.fire({
@@ -1047,5 +1048,500 @@ app.controller('addTeacherCtrl', function($scope , DBService){
 
     $scope.totalNet = function() {
         return Math.max(0, $scope.totalEarning() - $scope.totalDeduction());
+    };
+});
+
+
+// *** aspirantDashboardCtrl ***
+app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
+    $scope.loading = false;
+    $scope.today = '';
+    $scope.aspirant = {};
+    $scope.subjects = [];
+    $scope.topics = [];
+    $scope.selectedSubject = null;
+    $scope.isTopicSidebarOpen = false;
+    $scope.isTopicEditMode = false;
+    $scope.topicProcessing = false;
+    $scope.topicForm = { id: null, subject_id: null, name: '', status: 0 };
+    $scope.questions = [];
+    $scope.selectedTopic = null;
+    $scope.questionProcessing = false;
+    $scope.questionForm = {
+        id: null,
+        subject_id: null,
+        topic_id: null,
+        question: '',
+        remarks: '',
+        reference: '',
+        opt_a: '',
+        opt_b: '',
+        opt_c: '',
+        opt_d: '',
+        answer: '',
+        negative_marks: 0.33,
+        paragraph_id: '',
+        image_file: '',
+        total_marks: 1,
+        image_file_link: ''
+    };
+    $scope.answerMode = '';
+    $scope.answerText = '';
+    $scope.questionUploading = false;
+
+    $scope.init = function() {
+        $scope.loading = true;
+        DBService.postCall({}, '/api/aspirant/dashboard/init').then(function(data) {
+            $scope.aspirant = data.aspirant;
+            $scope.loading = false;
+        });
+    };
+
+    $scope.initSubjects = function() {
+        $scope.loading = true;
+        DBService.postCall({}, '/api/aspirant/subjects/init').then(function(data) {
+            $scope.subjects = data.subjects || [];
+            $scope.loading = false;
+        });
+    };
+
+    $scope.openTopics = function(subject) {
+        if (!subject || !subject.id) {
+            return;
+        }
+        $scope.selectedSubject = subject;
+        $scope.topics = [];
+        $scope.initTopics(subject.id);
+    };
+
+    $scope.initTopics = function(subjectId) {
+        if (!subjectId) {
+            return;
+        }
+        $scope.loading = true;
+        DBService.postCall({ subject_id: subjectId }, '/api/aspirant/topics/init').then(function(data) {
+            $scope.topics = data.topics || [];
+            $scope.loading = false;
+        }, function () {
+            $scope.loading = false;
+        });
+    };
+
+    $scope.initTopicsPage = function(subject) {
+        $scope.selectedSubject = subject || null;
+        if (subject && subject.id) {
+            $scope.initTopics(subject.id);
+        }
+    };
+
+    $scope.openTopicSidebar = function(topic) {
+        $scope.isTopicEditMode = !!(topic && topic.id);
+        if ($scope.isTopicEditMode) {
+            $scope.topicForm = angular.copy(topic);
+        } else {
+            $scope.topicForm = { id: null, subject_id: ($scope.selectedSubject ? $scope.selectedSubject.id : null), name: '', status: 0 };
+        }
+        $scope.isTopicSidebarOpen = true;
+    };
+
+    $scope.closeTopicSidebar = function() {
+        $scope.isTopicSidebarOpen = false;
+        $scope.isTopicEditMode = false;
+        $scope.topicForm = { id: null, subject_id: ($scope.selectedSubject ? $scope.selectedSubject.id : null), name: '', status: 0 };
+    };
+
+    $scope.saveTopic = function() {
+        if (!$scope.topicForm.subject_id) {
+            alert('Subject not selected');
+            return;
+        }
+        $scope.topicProcessing = true;
+        DBService.postCall($scope.topicForm, '/api/aspirant/topics/store').then(function(data) {
+            $scope.topicProcessing = false;
+            if (data.success) {
+                alert(data.message || 'Saved Successfully');
+                $scope.closeTopicSidebar();
+                $scope.initTopics($scope.selectedSubject ? $scope.selectedSubject.id : null);
+            } else {
+                alert(data.message || 'Something went wrong');
+            }
+        }, function () {
+            $scope.topicProcessing = false;
+        });
+    };
+
+    $scope.initQuestionsPage = function(subject, topic) {
+        $scope.selectedSubject = subject || null;
+        $scope.selectedTopic = topic || null;
+        if (subject && topic && subject.id && topic.id) {
+            $scope.initQuestions(subject.id, topic.id);
+        }
+    };
+
+    $scope.initQuestions = function(subjectId, topicId) {
+        if (!subjectId || !topicId) {
+            return;
+        }
+        $scope.loading = true;
+        DBService.postCall({ subject_id: subjectId, topic_id: topicId }, '/api/aspirant/questions/init').then(function(data) {
+            $scope.questions = data.questions || [];
+            $scope.loading = false;
+        }, function () {
+            $scope.loading = false;
+        });
+    };
+
+    $scope.openQuestionModal = function(question) {
+        var subjectId = $scope.selectedSubject ? $scope.selectedSubject.id : null;
+        var topicId = $scope.selectedTopic ? $scope.selectedTopic.id : null;
+        if (!subjectId || !topicId) {
+            alert('Subject/Topic not selected');
+            return;
+        }
+        if (question && question.id) {
+            $scope.questionForm = angular.copy(question);
+            $scope.questionForm.subject_id = subjectId;
+            $scope.questionForm.topic_id = topicId;
+            $scope.questionForm.image_file_link = $scope.questionForm.image_file || '';
+            if ($scope.questionForm.image_file_link && $scope.questionForm.image_file_link.indexOf('http') !== 0) {
+                $scope.questionForm.image_file_link = base_url + '/' + $scope.questionForm.image_file_link;
+            }
+        } else {
+            $scope.questionForm = {
+                id: null,
+                subject_id: subjectId,
+                topic_id: topicId,
+                question: '',
+                remarks: '',
+                reference: '',
+                opt_a: '',
+                opt_b: '',
+                opt_c: '',
+                opt_d: '',
+                answer: '',
+                negative_marks: 0.33,
+                paragraph_id: '',
+                image_file: '',
+                total_marks: 1,
+                image_file_link: ''
+            };
+        }
+        $scope.syncAnswerMode();
+        $('#questionModal').modal('show');
+    };
+
+    $scope.syncAnswerMode = function() {
+        var ans = ($scope.questionForm.answer || '').toString().trim();
+        if (['A', 'B', 'C', 'D'].indexOf(ans) !== -1) {
+            $scope.answerMode = ans;
+            $scope.answerText = '';
+        } else {
+            $scope.answerMode = 'TEXT';
+            $scope.answerText = ans;
+        }
+    };
+
+    $scope.onAnswerModeChange = function() {
+        if ($scope.answerMode !== 'TEXT') {
+            $scope.answerText = '';
+        }
+    };
+
+    $scope.applyAnswer = function() {
+        if ($scope.answerMode === 'TEXT') {
+            $scope.questionForm.answer = ($scope.answerText || '').toString();
+        } else {
+            $scope.questionForm.answer = $scope.answerMode;
+        }
+    };
+
+    $scope.uploadQuestionImage = function (file) {
+        if (!file) {
+            return;
+        }
+        if (file.size > 2 * 1024 * 1024) {
+            alert("File size must be less than 2MB");
+            return;
+        }
+        $scope.questionUploading = true;
+        var url = base_url + '/api/aspirant/questions/upload-image';
+        Upload.upload({
+            url: url,
+            data: {
+                media: file
+            }
+        }).then(function (resp) {
+            if (resp.data.success) {
+                $scope.questionForm.image_file = resp.data.data.media_link;
+                $scope.questionForm.image_file_link = resp.data.data.media_link;
+            } else {
+                alert(resp.data.message || 'Upload failed');
+            }
+            $scope.questionUploading = false;
+        }, function () {
+            $scope.questionUploading = false;
+            alert("Upload failed, please try again");
+        });
+    };
+
+    $scope.removeQuestionImage = function () {
+        $scope.questionForm.image_file = '';
+        $scope.questionForm.image_file_link = '';
+    };
+
+    $scope.saveQuestion = function() {
+        if (!$scope.questionForm.subject_id || !$scope.questionForm.topic_id) {
+            alert('Subject/Topic not selected');
+            return;
+        }
+        $scope.applyAnswer();
+        $scope.questionProcessing = true;
+        DBService.postCall($scope.questionForm, '/api/aspirant/questions/store').then(function(data) {
+            $scope.questionProcessing = false;
+            if (data.success) {
+                $('#questionModal').modal('hide');
+                alert(data.message || 'Saved Successfully');
+                $scope.initQuestions($scope.selectedSubject.id, $scope.selectedTopic.id);
+            } else {
+                alert(data.message || 'Something went wrong');
+            }
+        }, function () {
+            $scope.questionProcessing = false;
+        });
+    };
+});
+
+// *** practiceCtrl ***
+app.controller('practiceCtrl', function($scope , DBService, $interval){
+    $scope.subjects = [];
+    $scope.topics = [];
+    $scope.selectedSubjectId = '';
+    $scope.selectedTopicIds = {};
+    $scope.questions = [];
+    $scope.currentIndex = -1;
+    $scope.currentQuestion = null;
+    $scope.timeLeft = 30;
+    $scope.timerHandle = null;
+    $scope.loading = false;
+    $scope.showAnswer = false;
+    $scope.userAnswer = '';
+    $scope.answerMode = 'A';
+    $scope.answerText = '';
+    $scope.referenceQuestion = null;
+
+    $scope.init = function() {
+        DBService.postCall({}, '/api/aspirant/practice/init').then(function(data) {
+            if (data.success) {
+                $scope.subjects = data.subjects || [];
+            }
+        });
+    };
+
+    $scope.onSubjectChange = function() {
+        $scope.topics = [];
+        $scope.selectedTopicIds = {};
+        $scope.questions = [];
+        $scope.currentIndex = -1;
+        $scope.currentQuestion = null;
+        $scope.stopTimer();
+        if (!$scope.selectedSubjectId) {
+            return;
+        }
+        DBService.postCall({ subject_id: $scope.selectedSubjectId }, '/api/aspirant/topics/init').then(function(data) {
+            $scope.topics = data.topics || [];
+        });
+    };
+
+    $scope.toggleTopic = function(topicId) {
+        $scope.selectedTopicIds[topicId] = !$scope.selectedTopicIds[topicId];
+    };
+
+    $scope.getSelectedTopicIds = function() {
+        return Object.keys($scope.selectedTopicIds).filter(function(id){
+            return $scope.selectedTopicIds[id];
+        }).map(function(id){ return parseInt(id, 10); });
+    };
+
+    $scope.startPractice = function() {
+        if (!$scope.selectedSubjectId) {
+            alert('Select subject');
+            return;
+        }
+        if ($scope.getSelectedTopicIds().length === 0) {
+            alert('Select at least one topic');
+            return;
+        }
+        if ($scope.currentQuestion) {
+            return;
+        }
+        $scope.fetchNextQuestion();
+    };
+
+    $scope.fetchNextQuestion = function() {
+        var topicIds = $scope.getSelectedTopicIds();
+        var excludeIds = $scope.questions.map(function(q){ return q.id; });
+        $scope.loading = true;
+        DBService.postCall({
+            subject_id: $scope.selectedSubjectId,
+            topic_ids: topicIds,
+            exclude_ids: excludeIds
+        }, '/api/aspirant/practice/random-question').then(function(data) {
+            $scope.loading = false;
+            if (!data.success) {
+                alert(data.message || 'No question found');
+                return;
+            }
+            var q = data.question;
+            q._user_answer = '';
+            q._show_answer = false;
+            q._is_correct = false;
+            $scope.questions.push(q);
+            $scope.currentIndex = $scope.questions.length - 1;
+            $scope.loadCurrentQuestion();
+        }, function () {
+            $scope.loading = false;
+        });
+    };
+
+    $scope.loadCurrentQuestion = function() {
+        $scope.currentQuestion = $scope.questions[$scope.currentIndex] || null;
+        if (!$scope.currentQuestion) {
+            return;
+        }
+        $scope.userAnswer = $scope.currentQuestion._user_answer || '';
+        $scope.showAnswer = $scope.currentQuestion._show_answer || false;
+        $scope.resetAnswerMode();
+        if ($scope.showAnswer) {
+            $scope.stopTimer();
+        } else {
+            $scope.startTimer();
+        }
+    };
+
+    $scope.resetAnswerMode = function() {
+        var ans = ($scope.userAnswer || '').toString().trim();
+        if (['A','B','C','D'].indexOf(ans) !== -1) {
+            $scope.answerMode = ans;
+            $scope.answerText = '';
+        } else {
+            $scope.answerMode = ans ? 'TEXT' : '';
+            $scope.answerText = ans;
+        }
+    };
+
+    $scope.onAnswerModeChange = function() {
+        if ($scope.answerMode !== 'TEXT') {
+            $scope.answerText = '';
+        }
+    };
+
+    $scope.applyAnswer = function() {
+        if ($scope.answerMode === 'TEXT') {
+            $scope.userAnswer = ($scope.answerText || '').toString();
+        } else {
+            $scope.userAnswer = $scope.answerMode;
+        }
+    };
+
+    $scope.startTimer = function() {
+        $scope.stopTimer();
+        $scope.timeLeft = 30;
+        $scope.timerHandle = $interval(function(){
+            $scope.timeLeft -= 1;
+            if ($scope.timeLeft <= 0) {
+                $scope.timeLeft = 0;
+                $scope.revealAnswer();
+            }
+        }, 1000);
+    };
+
+    $scope.stopTimer = function() {
+        if ($scope.timerHandle) {
+            $interval.cancel($scope.timerHandle);
+            $scope.timerHandle = null;
+        }
+    };
+
+    $scope.selectOption = function(letter) {
+        if ($scope.showAnswer) {
+            return;
+        }
+        $scope.answerMode = letter;
+        $scope.onAnswerModeChange();
+        $scope.applyAnswer();
+    };
+
+    $scope.submitAnswer = function() {
+        if ($scope.showAnswer) {
+            return;
+        }
+        $scope.applyAnswer();
+        $scope.revealAnswer();
+    };
+
+    $scope.revealAnswer = function() {
+        if (!$scope.currentQuestion) {
+            return;
+        }
+        $scope.stopTimer();
+        var correct = ($scope.currentQuestion.answer || '').toString().trim();
+        var user = ($scope.userAnswer || '').toString().trim();
+        $scope.currentQuestion._user_answer = user;
+        $scope.currentQuestion._show_answer = true;
+        $scope.currentQuestion._is_correct = (user !== '' && user === correct);
+        $scope.showAnswer = true;
+    };
+
+    $scope.nextQuestion = function() {
+        if ($scope.currentIndex < $scope.questions.length - 1) {
+            $scope.currentIndex += 1;
+            $scope.loadCurrentQuestion();
+            return;
+        }
+        $scope.fetchNextQuestion();
+    };
+
+    $scope.prevQuestion = function() {
+        if ($scope.currentIndex > 0) {
+            $scope.currentIndex -= 1;
+            $scope.loadCurrentQuestion();
+        }
+    };
+
+    $scope.getOptionList = function() {
+        if (!$scope.currentQuestion) {
+            return [];
+        }
+        var q = $scope.currentQuestion;
+        var options = [
+            { key: 'A', text: q.opt_a },
+            { key: 'B', text: q.opt_b },
+            { key: 'C', text: q.opt_c },
+            { key: 'D', text: q.opt_d }
+        ];
+        return options.filter(function(opt){ return opt.text && opt.text !== ''; });
+    };
+
+    $scope.optionClass = function(letter) {
+        if (!$scope.showAnswer) {
+            return ($scope.answerMode === letter ? 'border-primary-600 text-primary-600' : '');
+        }
+        var correct = ($scope.currentQuestion.answer || '').toString().trim();
+        var user = ($scope.currentQuestion._user_answer || '').toString().trim();
+        if (letter === correct) {
+            return 'border-success-600 text-success-600';
+        }
+        if (letter === user && user !== correct) {
+            return 'border-danger-600 text-danger-600';
+        }
+        return '';
+    };
+
+    $scope.showReference = function() {
+        if (!$scope.currentQuestion) {
+            return;
+        }
+        $scope.referenceQuestion = $scope.currentQuestion;
+        $('#referenceModal').modal('show');
     };
 });

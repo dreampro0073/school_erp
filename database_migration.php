@@ -475,8 +475,49 @@ ALTER TABLE `teachers`
 
 ALTER TABLE `teachers` ADD `previous_school` VARCHAR(255) NULL DEFAULT NULL AFTER `mobile`, ADD `previous_school_address` VARCHAR(255) NULL DEFAULT NULL AFTER `previous_school`;
 ALTER TABLE `fee_payments` ADD `route_id` INT NOT NULL DEFAULT '0' AFTER `fee_type_id`;
+ 
+// Devendra 14Apr2026
+INSERT INTO `privileges` (`priv`, `name`, `plural_name`) VALUES ('6', 'Aspirant', 'aspirants');
+
+
+
+INSERT INTO `users` (`id`, `erp_id`, `org_id`, `client_id`, `parent_user_id`, `name`, `email`, `mobile`, `address`, `password`, `password_check`, `profile_pic`, `priv`, `active`, `end_date`, `remember_token`, `api_token`, `last_login`, `added_by`, `start_date`, `updated_at`, `created_at`) VALUES (NULL, '', '0', '0', '1', 'Aspirant', 'aspi29@yahoo.com', '7088262941', 'Check', '$2y$12$UdXXv.ylOCh/qhWyhNRzIekn1EsmGmUz.uGtq1.GtMm/qmagli/XW', 'sample', NULL, '6', '0', NULL, NULL, '$2y$10$OJ27LcRAALeqvdRkOZ0HeeJLVkRMv4bMMgPx2ElRANQq6SIwkB0MS', '2026-01-10 22:32:59', '0', NULL, '2026-03-03 10:12:54', NULL);
+
+CREATE TABLE IF NOT EXISTS `topics` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `subject_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `status` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=>active,1=>inactive',
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `topics_subject_id_index` (`subject_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `questions` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `question` MEDIUMTEXT NOT NULL,
+  `question_hi` MEDIUMTEXT NULL,
+  `remarks` MEDIUMTEXT NULL,
+  `reference` VARCHAR(255) NULL,
+  `opt_a` VARCHAR(255) NULL,
+  `opt_b` VARCHAR(255) NULL,
+  `opt_c` VARCHAR(255) NULL,
+  `opt_d` VARCHAR(255) NULL,
+  `answer` VARCHAR(20) NULL,
+  `negative_marks` FLOAT NULL,
+  `paragraph_id` INT(11) NULL,
+  `image_file` VARCHAR(255) NULL,
+  `total_marks` INT(11) NOT NULL DEFAULT 0,
+  `subject_id` INT(11) NULL,
+  `topic_id` INT(11) NULL,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `questions_subject_id_index` (`subject_id`),
+  KEY `questions_topic_id_index` (`topic_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 
 //Uppper code deployed to PROD 
-

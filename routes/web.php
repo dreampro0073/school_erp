@@ -17,6 +17,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SchoolManagementController;
+use App\Http\Controllers\AspirantController;
 
 Route::get('/', function () {
     return view('front-end.index');
@@ -54,6 +55,15 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['guardian'])->prefix('gurdian')->controller(GuardianController::class)->group(function () {
         Route::get('/dashboard', 'dashboard');
+
+    });    
+
+    Route::middleware(['aspirant'])->prefix('aspirant')->controller(AspirantController::class)->group(function () {
+        Route::get('/dashboard', 'dashboard');
+        Route::get('/subjects/index', 'subjectsIndex');
+        Route::get('/subjects/{subjectId}/topics', 'topicsIndex');
+        Route::get('/subjects/{subjectId}/topics/{topicId}/questions', 'questionsIndex');
+        Route::get('/practice/index', 'practiceIndex');
 
     });
 

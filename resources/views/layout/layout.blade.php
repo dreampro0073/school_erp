@@ -36,6 +36,7 @@
                 3 => 'Teacher Panel',
                 4 => 'Student Panel',
                 5 => 'Guardian Panel',
+                6 => 'Aspirant Panel',
             ];
             $panelLabel = $dashboardLabels[$authPriv] ?? 'Dashboard';
         @endphp

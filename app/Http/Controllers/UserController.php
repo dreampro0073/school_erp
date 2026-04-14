@@ -94,6 +94,10 @@ class UserController extends Controller {
 
             if ($user->priv == 5) {
                 return redirect()->to('/gurdian/dashboard');
+            }            
+
+            if ($user->priv == 6) {
+                return redirect()->to('/aspirant/dashboard');
             }
 
             return redirect()->to('students');
