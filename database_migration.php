@@ -479,6 +479,8 @@ ALTER TABLE `fee_payments` ADD `route_id` INT NOT NULL DEFAULT '0' AFTER `fee_ty
 // Devendra 14Apr2026
 INSERT INTO `privileges` (`priv`, `name`, `plural_name`) VALUES ('6', 'Aspirant', 'aspirants');
 
+
+
 INSERT INTO `users` (`id`, `erp_id`, `org_id`, `client_id`, `parent_user_id`, `name`, `email`, `mobile`, `address`, `password`, `password_check`, `profile_pic`, `priv`, `active`, `end_date`, `remember_token`, `api_token`, `last_login`, `added_by`, `start_date`, `updated_at`, `created_at`) VALUES (NULL, '', '0', '0', '1', 'Aspirant', 'aspi29@yahoo.com', '7088262941', 'Check', '$2y$12$UdXXv.ylOCh/qhWyhNRzIekn1EsmGmUz.uGtq1.GtMm/qmagli/XW', 'sample', NULL, '6', '0', NULL, NULL, '$2y$10$OJ27LcRAALeqvdRkOZ0HeeJLVkRMv4bMMgPx2ElRANQq6SIwkB0MS', '2026-01-10 22:32:59', '0', NULL, '2026-03-03 10:12:54', NULL);
 
 CREATE TABLE IF NOT EXISTS `topics` (
@@ -515,3 +517,7 @@ CREATE TABLE IF NOT EXISTS `questions` (
   KEY `questions_subject_id_index` (`subject_id`),
   KEY `questions_topic_id_index` (`topic_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+//Uppper code deployed to PROD 
