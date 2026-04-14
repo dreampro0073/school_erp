@@ -71,6 +71,10 @@
                         <textarea class="form-control" ng-model="questionForm.remarks" rows="2" placeholder="Optional notes..."></textarea>
                      </div>
                      <div class="col-12">
+                        <label class="form-label">Reference</label>
+                        <input type="text" class="form-control" ng-model="questionForm.reference" placeholder="Book/URL/Source">
+                     </div>
+                     <div class="col-12">
                         <div class="border rounded-3 p-16 bg-base">
                            <div class="d-flex align-items-center justify-content-between mb-12">
                               <h6 class="mb-0">Options</h6>

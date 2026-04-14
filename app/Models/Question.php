@@ -12,6 +12,7 @@ class Question extends Model
         'question',
         'question_hi',
         'remarks',
+        'reference',
         'opt_a',
         'opt_b',
         'opt_c',

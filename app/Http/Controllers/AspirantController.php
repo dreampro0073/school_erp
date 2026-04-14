@@ -152,6 +152,7 @@ class AspirantController extends Controller {
             $question->question = $request->question;
             $question->question_hi = $request->question_hi;
             $question->remarks = $request->remarks;
+            $question->reference = $request->reference;
             $question->opt_a = $request->opt_a;
             $question->opt_b = $request->opt_b;
             $question->opt_c = $request->opt_c;

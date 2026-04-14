@@ -497,6 +497,7 @@ CREATE TABLE IF NOT EXISTS `questions` (
   `question` MEDIUMTEXT NOT NULL,
   `question_hi` MEDIUMTEXT NULL,
   `remarks` MEDIUMTEXT NULL,
+  `reference` VARCHAR(255) NULL,
   `opt_a` VARCHAR(255) NULL,
   `opt_b` VARCHAR(255) NULL,
   `opt_c` VARCHAR(255) NULL,
