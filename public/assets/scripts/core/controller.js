@@ -1,3 +1,4 @@
+
 // function confirmAction(title, text, onConfirm) {
 //     if (typeof window.Swal !== 'undefined' && typeof window.Swal.fire === 'function') {
 //         window.Swal.fire({
@@ -1056,11 +1057,20 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService){
     $scope.loading = false;
     $scope.today = '';
     $scope.aspirant = {};
+    $scope.subjects = [];
 
     $scope.init = function() {
         $scope.loading = true;
         DBService.postCall({}, '/api/aspirant/dashboard/init').then(function(data) {
             $scope.aspirant = data.aspirant;
+            $scope.loading = false;
+        });
+    };
+
+    $scope.initSubjects = function() {
+        $scope.loading = true;
+        DBService.postCall({}, '/api/aspirant/subjects/init').then(function(data) {
+            $scope.subjects = data.subjects || [];
             $scope.loading = false;
         });
     };

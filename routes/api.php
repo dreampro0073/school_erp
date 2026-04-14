@@ -17,6 +17,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\WorklogController;
 use App\Http\Controllers\SchoolManagementController;
+use App\Http\Controllers\AspirantController;
 
 // Grouped structure for middleware-based organization (no behavior change).
 // Route::middleware(['api-token-user'])->group(function () {
@@ -181,6 +182,14 @@ use App\Http\Controllers\SchoolManagementController;
 
     Route::prefix('gurdian/dashboard')->controller(GuardianController::class)->group(function () {
         Route::post('/init', 'initDashboard');
+    });
+
+    Route::prefix('aspirant/dashboard')->controller(AspirantController::class)->group(function () {
+        Route::post('/init', 'initDashboard');
+    });
+
+    Route::prefix('aspirant/subjects')->controller(AspirantController::class)->group(function () {
+        Route::post('/init', 'initSubjects');
     });
 
     Route::prefix('worklog')->controller(WorklogController::class)->group(function () {

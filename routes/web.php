@@ -60,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['aspirant'])->prefix('aspirant')->controller(AspirantController::class)->group(function () {
         Route::get('/dashboard', 'dashboard');
+        Route::get('/subjects/index', 'subjectsIndex');
 
     });
 
