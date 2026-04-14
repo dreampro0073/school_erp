@@ -491,3 +491,26 @@ CREATE TABLE IF NOT EXISTS `topics` (
   PRIMARY KEY (`id`),
   KEY `topics_subject_id_index` (`subject_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `questions` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `question` MEDIUMTEXT NOT NULL,
+  `question_hi` MEDIUMTEXT NULL,
+  `remarks` MEDIUMTEXT NULL,
+  `opt_a` VARCHAR(255) NULL,
+  `opt_b` VARCHAR(255) NULL,
+  `opt_c` VARCHAR(255) NULL,
+  `opt_d` VARCHAR(255) NULL,
+  `answer` VARCHAR(20) NULL,
+  `negative_marks` FLOAT NULL,
+  `paragraph_id` INT(11) NULL,
+  `image_file` VARCHAR(255) NULL,
+  `total_marks` INT(11) NOT NULL DEFAULT 0,
+  `subject_id` INT(11) NULL,
+  `topic_id` INT(11) NULL,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `questions_subject_id_index` (`subject_id`),
+  KEY `questions_topic_id_index` (`topic_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

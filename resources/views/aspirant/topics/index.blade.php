@@ -39,10 +39,11 @@
                      </td>
                      <td>
                         <button type="button" class="btn btn-sm btn-info-100 text-info-600" ng-click="openTopicSidebar(topic)">Edit</button>
+                        <a class="btn btn-sm btn-primary-600" href="{{ url('/aspirant/subjects') }}/@{{selectedSubject.id}}/topics/@{{topic.id}}/questions">Questions</a>
                      </td>
                   </tr>
                   <tr ng-if="!topics.length">
-                     <td colspan="4" class="text-center py-4">No topics found.</td>
+                     <td colspan="5" class="text-center py-4">No topics found.</td>
                   </tr>
                </tbody>
             </table>
