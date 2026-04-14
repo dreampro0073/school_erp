@@ -1058,6 +1058,12 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService){
     $scope.today = '';
     $scope.aspirant = {};
     $scope.subjects = [];
+    $scope.topics = [];
+    $scope.selectedSubject = null;
+    $scope.isTopicSidebarOpen = false;
+    $scope.isTopicEditMode = false;
+    $scope.topicProcessing = false;
+    $scope.topicForm = { id: null, subject_id: null, name: '', status: 0 };
 
     $scope.init = function() {
         $scope.loading = true;
@@ -1072,6 +1078,64 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService){
         DBService.postCall({}, '/api/aspirant/subjects/init').then(function(data) {
             $scope.subjects = data.subjects || [];
             $scope.loading = false;
+        });
+    };
+
+    $scope.openTopics = function(subject) {
+        if (!subject || !subject.id) {
+            return;
+        }
+        $scope.selectedSubject = subject;
+        $scope.topics = [];
+        $scope.initTopics(subject.id);
+    };
+
+    $scope.initTopics = function(subjectId) {
+        if (!subjectId) {
+            return;
+        }
+        $scope.loading = true;
+        DBService.postCall({ subject_id: subjectId }, '/api/aspirant/topics/init').then(function(data) {
+            $scope.topics = data.topics || [];
+            $scope.loading = false;
+        }, function () {
+            $scope.loading = false;
+        });
+    };
+
+    $scope.openTopicSidebar = function(topic) {
+        $scope.isTopicEditMode = !!(topic && topic.id);
+        if ($scope.isTopicEditMode) {
+            $scope.topicForm = angular.copy(topic);
+        } else {
+            $scope.topicForm = { id: null, subject_id: ($scope.selectedSubject ? $scope.selectedSubject.id : null), name: '', status: 0 };
+        }
+        $scope.isTopicSidebarOpen = true;
+    };
+
+    $scope.closeTopicSidebar = function() {
+        $scope.isTopicSidebarOpen = false;
+        $scope.isTopicEditMode = false;
+        $scope.topicForm = { id: null, subject_id: ($scope.selectedSubject ? $scope.selectedSubject.id : null), name: '', status: 0 };
+    };
+
+    $scope.saveTopic = function() {
+        if (!$scope.topicForm.subject_id) {
+            alert('Subject not selected');
+            return;
+        }
+        $scope.topicProcessing = true;
+        DBService.postCall($scope.topicForm, '/api/aspirant/topics/store').then(function(data) {
+            $scope.topicProcessing = false;
+            if (data.success) {
+                alert(data.message || 'Saved Successfully');
+                $scope.closeTopicSidebar();
+                $scope.initTopics($scope.selectedSubject ? $scope.selectedSubject.id : null);
+            } else {
+                alert(data.message || 'Something went wrong');
+            }
+        }, function () {
+            $scope.topicProcessing = false;
         });
     };
 });

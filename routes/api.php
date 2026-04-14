@@ -192,6 +192,11 @@ use App\Http\Controllers\AspirantController;
         Route::post('/init', 'initSubjects');
     });
 
+    Route::prefix('aspirant/topics')->controller(AspirantController::class)->group(function () {
+        Route::post('/init', 'initTopics');
+        Route::post('/store', 'storeTopic');
+    });
+
     Route::prefix('worklog')->controller(WorklogController::class)->group(function () {
         Route::post('/init', 'initWorkLog');
         Route::post('/edit', 'getDayData');

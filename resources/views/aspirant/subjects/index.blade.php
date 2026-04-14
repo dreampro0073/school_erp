@@ -13,7 +13,7 @@
       </div>
    </div>
 
-   <div class="card">
+   <div class="card mb-24">
       <div class="card-body p-0">
          <div class="table-responsive">
             <table class="table bordered-table mb-0">
@@ -22,6 +22,7 @@
                      <th>SN.</th>
                      <th>Subject</th>
                      <th>Status</th>
+                     <th>Topics</th>
                   </tr>
                </thead>
                <tbody>
@@ -32,14 +33,88 @@
                         <span ng-if="item.status != 1" class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">Active</span>
                         <span ng-if="item.status == 1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Inactive</span>
                      </td>
+                     <td>
+                        <button type="button" class="btn btn-sm btn-primary-600" ng-click="openTopics(item)">Topics</button>
+                     </td>
                   </tr>
                   <tr ng-if="!subjects.length">
-                     <td colspan="3" class="text-center py-4">No subjects found.</td>
+                     <td colspan="4" class="text-center py-4">No subjects found.</td>
                   </tr>
                </tbody>
             </table>
          </div>
       </div>
    </div>
+
+   <div class="card" ng-if="selectedSubject">
+      <div class="card-body p-0">
+         <div class="d-flex flex-wrap align-items-center justify-content-between gap-12 p-16">
+            <div>
+               <h6 class="fw-semibold mb-0">Topics for @{{ selectedSubject.name }}</h6>
+            </div>
+            <button type="button" class="btn btn-sm btn-primary-600" ng-click="openTopicSidebar()">
+               <i class="ri-add-line"></i> Add Topic
+            </button>
+         </div>
+         <div class="table-responsive">
+            <table class="table bordered-table mb-0">
+               <thead>
+                  <tr>
+                     <th>SN.</th>
+                     <th>Topic</th>
+                     <th>Status</th>
+                     <th>Action</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr ng-repeat="topic in topics track by topic.id">
+                     <td>@{{$index + 1}}</td>
+                     <td>@{{topic.name}}</td>
+                     <td>
+                        <span ng-if="topic.status != 1" class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">Active</span>
+                        <span ng-if="topic.status == 1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Inactive</span>
+                     </td>
+                     <td>
+                        <button type="button" class="btn btn-sm btn-info-100 text-info-600" ng-click="openTopicSidebar(topic)">Edit</button>
+                     </td>
+                  </tr>
+                  <tr ng-if="!topics.length">
+                     <td colspan="4" class="text-center py-4">No topics found.</td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+
+   <div class="my-sidebar theme-bg-white position-fixed end-0 top-0 h-100vh overflow-y-auto z-99 max-w-700-px w-100 translate-x-full duration-300"
+     ng-class="{'active active-translate-0': isTopicSidebarOpen}" style="z-index: 9999!;">
+      <div class="d-flex align-items-center justify-content-between p-16 border-bottom">
+         <h5 class="mb-0">@{{ isTopicEditMode ? 'Edit Topic' : 'Add Topic' }}</h5>
+         <button type="button" class="close-my-sidebar text-danger-600 text-lg d-flex" ng-click="closeTopicSidebar()">
+            <i class="ri-close-line"></i>
+         </button>
+      </div>
+      <form class="p-16" ng-submit="saveTopic()">
+         <div class="mb-16">
+            <label class="form-label">Topic Name</label>
+            <input type="text" class="form-control" ng-model="topicForm.name" required>
+         </div>
+         <div class="mb-16">
+            <label class="form-label">Status</label>
+            <select class="form-control" ng-model="topicForm.status">
+               <option value="0">Active</option>
+               <option value="1">Inactive</option>
+            </select>
+         </div>
+         <div class="d-flex justify-content-end gap-8">
+            <button type="button" class="btn btn-light" ng-click="closeTopicSidebar()">Cancel</button>
+            <button type="submit" class="btn btn-primary-600" ng-disabled="topicProcessing">
+               @{{ topicProcessing ? 'Saving...' : 'Save' }}
+            </button>
+         </div>
+      </form>
+   </div>
+   <div class="overlay" ng-class="{'active': isTopicSidebarOpen}" ng-click="closeTopicSidebar()"></div>
 </div>
 @endsection
