@@ -4,7 +4,7 @@
 <div ng-controller="aspirantDashboardCtrl" ng-init='initQuestionsPage(@json($subject), @json($topic))'>
    <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
       <div>
-         <h6 class="fw-semibold mb-0">Questions</h6>
+         <h6 class="fw-semibold mb-0 text-primary-light">Questions</h6>
          <p class="text-neutral-600 mt-4 mb-0">Subject: @{{ selectedSubject.name || '-' }} | Topic: @{{ selectedTopic.name || '-' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
@@ -17,10 +17,10 @@
       </div>
    </div>
 
-   <div class="card">
+   <div class="card bg-base">
       <div class="card-body p-0">
          <div class="table-responsive">
-            <table class="table bordered-table mb-0">
+            <table class="table bordered-table table-heading-dark-mode mb-0">
                <thead>
                   <tr>
                      <th>SN.</th>
@@ -36,15 +36,15 @@
                      <td>@{{question.question}}</td>
                      <td>@{{question.right_answer}}</td>
                      <td>
-                        <small>Remark: @{{question.remarks}}</small><br>
-                        <small>Ref: @{{question.reference}}</small>
+                        <small class="text-secondary-light">Remark: @{{question.remarks}}</small><br>
+                        <small class="text-secondary-light">Ref: @{{question.reference}}</small>
                      </td>
                      <td>
                         <button type="button" class="btn btn-sm btn-info-100 text-info-600" ng-click="openQuestionModal(question)">Edit</button>
                      </td>
                   </tr>
                   <tr ng-if="!questions.length">
-                     <td colspan="4" class="text-center py-4">No questions found.</td>
+                     <td colspan="4" class="text-center py-4 text-secondary-light">No questions found.</td>
                   </tr>
                </tbody>
             </table>
@@ -53,11 +53,11 @@
    </div>
 
    <div class="modal fade" id="questionModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-xl modal-dialog-scrollable">
-         <div class="modal-content">
+         <div class="modal-dialog modal-xl modal-dialog-scrollable">
+         <div class="modal-content bg-base">
             <div class="modal-header">
                <div>
-                  <h5 class="modal-title mb-1">@{{ questionForm.id ? 'Edit Question' : 'Add Question' }}</h5>
+                  <h5 class="modal-title mb-1 text-primary-light">@{{ questionForm.id ? 'Edit Question' : 'Add Question' }}</h5>
                   <p class="text-neutral-600 mb-0">Question + options + marks in one place.</p>
                </div>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -80,7 +80,7 @@
                      <div class="col-12">
                         <div class="border rounded-3 p-16 bg-base">
                            <div class="d-flex align-items-center justify-content-between mb-12">
-                              <h6 class="mb-0">Options</h6>
+                              <h6 class="mb-0 text-primary-light">Options</h6>
                               <span class="text-xs text-neutral-500">Fill any that apply</span>
                            </div>
                            <div class="row g-3">
@@ -107,7 +107,7 @@
                      <div class="col-12">
                         <div class="border rounded-3 p-16 bg-base">
                            <div class="d-flex align-items-center justify-content-between mb-12">
-                              <h6 class="mb-0">Scoring & Meta</h6>
+                              <h6 class="mb-0 text-primary-light">Scoring & Meta</h6>
                               <span class="text-xs text-neutral-500">Marks + references</span>
                            </div>
                            <div class="row g-3">
@@ -164,7 +164,7 @@
                   </div>
                </div>
                <div class="modal-footer">
-                  <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancel</button>
                   <button type="submit" class="btn btn-primary-600" ng-disabled="questionProcessing">
                      @{{ questionProcessing ? 'Saving...' : 'Save' }}
                   </button>

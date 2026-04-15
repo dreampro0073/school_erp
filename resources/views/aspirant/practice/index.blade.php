@@ -4,12 +4,12 @@
 <div ng-controller="practiceCtrl" ng-init="init()" class="container-fluid px-0">
    <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
       <div>
-         <h6 class="fw-semibold mb-0">Practice</h6>
+         <h6 class="fw-semibold mb-0 text-primary-light">Practice</h6>
          <p class="text-neutral-600 mt-4 mb-0">Select subject and topics to start.</p>
       </div>
    </div>
 
-   <div class="card mb-24">
+   <div class="card mb-24 bg-base">
       <div class="card-body">
          <div class="row g-3">
             <div class="col-md-4">
@@ -36,20 +36,20 @@
       </div>
    </div>
 
-   <div class="card" ng-if="currentQuestion">
+   <div class="card bg-base" ng-if="currentQuestion">
       <div class="card-body">
          <div class="d-flex justify-content-between align-items-start gap-12 mb-16">
             <div>
-               <h6 class="mb-8">Question @{{ currentIndex + 1 }}</h6>
-               <p class="mb-0">@{{ currentQuestion.question }}</p>
+               <h6 class="mb-8 text-primary-light">Question @{{ currentIndex + 1 }}</h6>
+               <p class="mb-0 text-primary-light">@{{ currentQuestion.question }}</p>
             </div>
-            <div class="text-bg-light px-3">Time: @{{ timeLeft }}s</div>
+            <div class="bg-base border text-primary-light px-3 py-2 radius-8">Time: @{{ timeLeft }}s</div>
             <button type="button" class="btn btn-sm btn-outline-secondary" ng-click="showReference()">Reference</button>
          </div>
 
          <div class="row g-3 mb-16">
             <div class="col-md-6" ng-repeat="opt in getOptionList()">
-               <button type="button" class="btn w-100 text-start border radius-8 px-12 py-12" ng-class="optionClass(opt.key)" ng-click="selectOption(opt.key)" ng-disabled="showAnswer">
+               <button type="button" class="btn w-100 text-start border radius-8 px-12 py-12 aspirant-practice-option" ng-class="optionClass(opt.key)" ng-click="selectOption(opt.key)" ng-disabled="showAnswer">
                   <strong class="me-8">@{{ opt.key }}.</strong> @{{ opt.text }}
                </button>
             </div>
@@ -59,7 +59,7 @@
             <button type="button" class="btn btn-success-600" ng-click="submitAnswer()" ng-disabled="showAnswer">Submit</button>
          </div>
 
-         <div class="alert alert-light border" ng-if="showAnswer">
+         <div class="alert alert-light border aspirant-practice-answer" ng-if="showAnswer">
             <div class="mb-8">
                <span class="fw-semibold">Your Answer:</span>
                <span ng-class="currentQuestion._is_correct ? 'text-success-600' : 'text-danger-600'">
@@ -81,20 +81,36 @@
 
    <div class="modal fade" id="referenceModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
-         <div class="modal-content">
+         <div class="modal-content bg-base">
             <div class="modal-header">
-               <h5 class="modal-title">Reference</h5>
+               <h5 class="modal-title text-primary-light">Reference</h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-               <p class="mb-12"><strong>Reference:</strong> @{{ referenceQuestion.reference || '-' }}</p>
-               <p class="mb-0"><strong>Remarks:</strong> @{{ referenceQuestion.remarks || '-' }}</p>
+               <p class="mb-12 text-primary-light"><strong>Reference:</strong> @{{ referenceQuestion.reference || '-' }}</p>
+               <p class="mb-0 text-primary-light"><strong>Remarks:</strong> @{{ referenceQuestion.remarks || '-' }}</p>
             </div>
             <div class="modal-footer">
-               <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+               <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Close</button>
             </div>
          </div>
       </div>
    </div>
 </div>
+@endsection
+
+@section('footer_scripts')
+<style>
+   [data-theme=dark] .aspirant-practice-option {
+      background-color: #1f2937;
+      border-color: #4b5563;
+      color: #f3f4f6 !important;
+   }
+
+   [data-theme=dark] .aspirant-practice-answer {
+      background-color: #1b2431;
+      border-color: #4b5563;
+      color: #f3f4f6;
+   }
+</style>
 @endsection

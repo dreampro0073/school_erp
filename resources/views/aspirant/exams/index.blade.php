@@ -4,26 +4,26 @@
 <div ng-controller="examCtrl" ng-init="init()" class="container-fluid px-0">
     <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
         <div>
-            <h6 class="fw-semibold mb-0">Online Examination</h6>
+            <h6 class="fw-semibold mb-0 text-primary-light">Online Examination</h6>
             <p class="text-neutral-600 mt-4 mb-0">Pick at least three subjects, start a 100-question exam, and continue safely even after a reload.</p>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap" ng-if="examState === 'running'">
-            <span class="badge text-bg-light px-3 py-2">Progress: @{{ currentQuestionIndex + 1 }}/@{{ questions.length || 100 }}</span>
-            <span class="badge text-bg-light px-3 py-2">Answered: @{{ getAnsweredCount() }}</span>
+            <span class="badge bg-base border text-primary-light px-3 py-2">Progress: @{{ currentQuestionIndex + 1 }}/@{{ questions.length || 100 }}</span>
+            <span class="badge bg-base border text-primary-light px-3 py-2">Answered: @{{ getAnsweredCount() }}</span>
             <span class="badge bg-danger-100 text-danger-600 px-3 py-2">Time Left: @{{ formatTime(timeLeft) }}</span>
         </div>
     </div>
 
-    <div class="card shadow-1 radius-12 border-0" ng-if="loading">
+    <div class="card shadow-1 radius-12 border-0 bg-base" ng-if="loading">
         <div class="card-body py-5 text-center">Loading exam data...</div>
     </div>
 
     <div ng-if="!loading && examState === 'entry'">
-        <div class="card shadow-1 radius-12 border-0">
+        <div class="card shadow-1 radius-12 border-0 bg-base">
             <div class="card-body p-24">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-20">
                     <div>
-                        <h6 class="mb-4">Choose Subjects</h6>
+                        <h6 class="mb-4 text-primary-light">Choose Subjects</h6>
                         <p class="text-secondary-light mb-0">Minimum 3 subjects are required to generate a full exam paper.</p>
                     </div>
                     <button type="button" class="btn btn-primary-600" ng-click="startExam()" ng-disabled="processing">
@@ -41,7 +41,7 @@
                                 ng-click="toggleSubject(subject.id)"
                                 ng-disabled="processing">
                             <span>
-                                <span class="d-block fw-semibold text-dark">@{{ subject.name }}</span>
+                                <span class="d-block fw-semibold text-primary-light">@{{ subject.name }}</span>
                                 <span class="d-block text-secondary-light text-sm">Subject ID: @{{ subject.id }}</span>
                             </span>
                         </label>
@@ -58,10 +58,10 @@
 
     <div ng-if="!loading && examState === 'running'" class="row g-4">
         <div class="col-xl-3">
-            <div class="card shadow-1 radius-12 border-0 exam-palette-card">
+            <div class="card shadow-1 radius-12 border-0 exam-palette-card bg-base">
                 <div class="card-body p-20">
                     <div class="d-flex align-items-center justify-content-between mb-16">
-                        <h6 class="mb-0">Question Palette</h6>
+                        <h6 class="mb-0 text-primary-light">Question Palette</h6>
                         <span class="text-sm text-secondary-light">@{{ getAnsweredCount() }}/@{{ questions.length }}</span>
                     </div>
 
@@ -85,12 +85,12 @@
         </div>
 
         <div class="col-xl-9">
-            <div class="card shadow-1 radius-12 border-0" ng-if="getCurrentQuestion()">
+            <div class="card shadow-1 radius-12 border-0 bg-base" ng-if="getCurrentQuestion()">
                 <div class="card-body p-24">
                     <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-20">
                         <div>
                             <p class="text-sm text-secondary-light mb-2">Question @{{ currentQuestionIndex + 1 }} of @{{ questions.length }}</p>
-                            <h5 class="mb-0">@{{ getCurrentQuestion().question }}</h5>
+                            <h5 class="mb-0 text-primary-light">@{{ getCurrentQuestion().question }}</h5>
                         </div>
                         <button type="button" class="btn btn-danger" ng-click="submitExam(false)" ng-disabled="processing">Submit Exam</button>
                     </div>
@@ -125,15 +125,15 @@
     <div ng-if="!loading && examState === 'result' && result">
         <div class="row g-3 mb-24">
             <div class="col-md-4">
-                <div class="card shadow-1 radius-12 border-0 h-100">
+                <div class="card shadow-1 radius-12 border-0 h-100 bg-base">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Total Score</p>
-                        <h3 class="mb-0">@{{ result.total_score }}</h3>
+                        <h3 class="mb-0 text-primary-light">@{{ result.total_score }}</h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <div class="card shadow-1 radius-12 border-0 h-100">
+                <div class="card shadow-1 radius-12 border-0 h-100 bg-base">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Correct</p>
                         <h4 class="mb-0 text-success-600">@{{ result.correct }}</h4>
@@ -141,7 +141,7 @@
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <div class="card shadow-1 radius-12 border-0 h-100">
+                <div class="card shadow-1 radius-12 border-0 h-100 bg-base">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Wrong</p>
                         <h4 class="mb-0 text-danger-600">@{{ result.wrong }}</h4>
@@ -149,27 +149,27 @@
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <div class="card shadow-1 radius-12 border-0 h-100">
+                <div class="card shadow-1 radius-12 border-0 h-100 bg-base">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Attempted</p>
-                        <h4 class="mb-0">@{{ result.attempted }}</h4>
+                        <h4 class="mb-0 text-primary-light">@{{ result.attempted }}</h4>
                     </div>
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <div class="card shadow-1 radius-12 border-0 h-100">
+                <div class="card shadow-1 radius-12 border-0 h-100 bg-base">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Unattempted</p>
-                        <h4 class="mb-0">@{{ result.unattempted }}</h4>
+                        <h4 class="mb-0 text-primary-light">@{{ result.unattempted }}</h4>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card shadow-1 radius-12 border-0 mb-24">
+        <div class="card shadow-1 radius-12 border-0 mb-24 bg-base">
             <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div>
-                    <h6 class="mb-2">Exam Submitted</h6>
+                    <h6 class="mb-2 text-primary-light">Exam Submitted</h6>
                     <p class="text-secondary-light mb-0">Your answers are locked and the result has been calculated with negative marking.</p>
                 </div>
                 <div class="d-flex gap-2">
@@ -181,13 +181,13 @@
             </div>
         </div>
 
-        <div class="card shadow-1 radius-12 border-0" ng-if="showAnswerKey">
+        <div class="card shadow-1 radius-12 border-0 bg-base" ng-if="showAnswerKey">
             <div class="card-body p-0">
                 <div class="p-20 border-bottom">
-                    <h6 class="mb-0">Answer Key</h6>
+                    <h6 class="mb-0 text-primary-light">Answer Key</h6>
                 </div>
                 <div class="table-responsive">
-                    <table class="table bordered-table mb-0">
+                    <table class="table bordered-table table-heading-dark-mode mb-0">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -215,7 +215,7 @@
                                 </td>
                             </tr>
                             <tr ng-if="!answerKey.length">
-                                <td colspan="5" class="text-center py-4">No answer key available.</td>
+                                <td colspan="5" class="text-center py-4 text-secondary-light">No answer key available.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -324,6 +324,31 @@
         border-color: #0e66aa;
         background: #eef7ff;
         box-shadow: 0 10px 30px rgba(14, 102, 170, 0.1);
+    }
+
+    [data-theme=dark] .exam-subject-card {
+        border-color: #4b5563;
+        background: linear-gradient(135deg, #1f2937 0%, #243447 100%);
+    }
+
+    [data-theme=dark] .exam-subject-card input {
+        accent-color: #60a5fa;
+    }
+
+    [data-theme=dark] .palette-legend {
+        color: #d1d5db;
+    }
+
+    [data-theme=dark] .exam-option-card {
+        background: #1f2937;
+        border-color: #4b5563;
+        color: #f3f4f6;
+    }
+
+    [data-theme=dark] .exam-option-card.selected {
+        border-color: #60a5fa;
+        background: rgba(29, 128, 252, 0.14);
+        box-shadow: 0 10px 30px rgba(14, 102, 170, 0.18);
     }
 
     @media (max-width: 1199px) {
