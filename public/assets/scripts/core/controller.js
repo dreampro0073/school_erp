@@ -1545,3 +1545,456 @@ app.controller('practiceCtrl', function($scope , DBService, $interval){
         $('#referenceModal').modal('show');
     };
 });
+
+app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window) {
+    var timerPromise = null;
+    var savePromises = {};
+    var localStorageKey = 'aspirant_exam_state';
+
+    $scope.loading = false;
+    $scope.processing = false;
+    $scope.answerKeyLoading = false;
+    $scope.subjects = [];
+    $scope.selectedSubjects = {};
+    $scope.questions = [];
+    $scope.answerMap = {};
+    $scope.visitedMap = {};
+    $scope.currentQuestionIndex = 0;
+    $scope.examId = '';
+    $scope.examState = 'entry';
+    $scope.timeLeft = 3600;
+    $scope.result = null;
+    $scope.answerKey = [];
+    $scope.showAnswerKey = false;
+    $scope.errorMessage = '';
+
+    function apiConfig(method, route, payload, params) {
+        return {
+            method: method,
+            url: base_url + route,
+            data: payload || {},
+            params: params || {},
+            headers: {
+                'apiToken': api_key
+            }
+        };
+    }
+
+    function setDraftState() {
+        if (!$scope.examId) {
+            return;
+        }
+
+        var payload = {
+            exam_id: $scope.examId,
+            answer_map: $scope.answerMap,
+            visited_map: $scope.visitedMap,
+            current_question_index: $scope.currentQuestionIndex,
+            exam_state: $scope.examState
+        };
+
+        $window.localStorage.setItem(localStorageKey, JSON.stringify(payload));
+    }
+
+    function readDraftState() {
+        try {
+            return JSON.parse($window.localStorage.getItem(localStorageKey) || 'null');
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function clearDraftState() {
+        $window.localStorage.removeItem(localStorageKey);
+    }
+
+    function beforeUnloadHandler(event) {
+        if ($scope.examState !== 'running') {
+            return;
+        }
+
+        event.preventDefault();
+        event.returnValue = 'Your exam is in progress.';
+        return event.returnValue;
+    }
+
+    function cancelSavePromises() {
+        angular.forEach(savePromises, function(promise) {
+            $timeout.cancel(promise);
+        });
+        savePromises = {};
+    }
+
+    function stopTimer() {
+        if (timerPromise) {
+            $interval.cancel(timerPromise);
+            timerPromise = null;
+        }
+    }
+
+    function startTimer() {
+        stopTimer();
+        timerPromise = $interval(function() {
+            if ($scope.timeLeft > 0) {
+                $scope.timeLeft -= 1;
+            }
+
+            if ($scope.timeLeft <= 0) {
+                $scope.timeLeft = 0;
+                stopTimer();
+                $scope.submitExam(true);
+            }
+        }, 1000);
+    }
+
+    function hydrateExamState(response) {
+        var exam = response.exam || {};
+        var draft = readDraftState();
+        var serverAnswerMap = response.answer_map || {};
+
+        $scope.examId = exam.exam_id || '';
+        $scope.questions = response.questions || [];
+        $scope.answerMap = angular.extend({}, serverAnswerMap, draft && draft.exam_id === exam.exam_id ? (draft.answer_map || {}) : {});
+        $scope.visitedMap = draft && draft.exam_id === exam.exam_id ? (draft.visited_map || {}) : {};
+        $scope.currentQuestionIndex = draft && draft.exam_id === exam.exam_id ? parseInt(draft.current_question_index || 0, 10) : 0;
+        $scope.timeLeft = parseInt(exam.remaining_seconds || 0, 10);
+        $scope.examState = exam.status === 'submitted' ? 'result' : 'running';
+        $scope.showAnswerKey = false;
+        $scope.answerKey = [];
+        $scope.errorMessage = '';
+
+        if ($scope.currentQuestionIndex >= $scope.questions.length) {
+            $scope.currentQuestionIndex = 0;
+        }
+
+        if ($scope.questions[$scope.currentQuestionIndex]) {
+            $scope.visitedMap[$scope.questions[$scope.currentQuestionIndex].id] = true;
+        }
+
+        setDraftState();
+
+        if ($scope.examState === 'running') {
+            startTimer();
+        } else {
+            stopTimer();
+            clearDraftState();
+            $scope.loadResult();
+        }
+    }
+
+    $scope.init = function() {
+        $scope.loading = true;
+        $window.addEventListener('beforeunload', beforeUnloadHandler);
+
+        $http(apiConfig('GET', '/api/subjects')).then(function(response) {
+            var data = response.data || {};
+            $scope.subjects = data.subjects || [];
+            $scope.loading = false;
+
+            var draft = readDraftState();
+            if (draft && draft.exam_id) {
+                $scope.restoreDraft();
+            }
+        }, function() {
+            $scope.loading = false;
+            $scope.errorMessage = 'Unable to load subjects.';
+        });
+    };
+
+    $scope.hasDraftExam = function() {
+        var draft = readDraftState();
+        return !!(draft && draft.exam_id);
+    };
+
+    $scope.restoreDraft = function() {
+        var draft = readDraftState();
+        if (!draft || !draft.exam_id) {
+            return;
+        }
+
+        $scope.loading = true;
+        $http(apiConfig('GET', '/api/get-questions', null, { exam_id: draft.exam_id })).then(function(response) {
+            $scope.loading = false;
+            if (response.data && response.data.success) {
+                hydrateExamState(response.data);
+            } else {
+                clearDraftState();
+                $scope.errorMessage = (response.data && response.data.message) ? response.data.message : 'Unable to resume exam.';
+            }
+        }, function() {
+            $scope.loading = false;
+            $scope.errorMessage = 'Unable to resume exam.';
+        });
+    };
+
+    $scope.toggleSubject = function(subjectId) {
+        $scope.selectedSubjects[subjectId] = !$scope.selectedSubjects[subjectId];
+        $scope.errorMessage = '';
+    };
+
+    $scope.getSelectedSubjectCount = function() {
+        return Object.keys($scope.selectedSubjects).filter(function(id) {
+            return $scope.selectedSubjects[id];
+        }).length;
+    };
+
+    $scope.getSelectedSubjectIds = function() {
+        return Object.keys($scope.selectedSubjects).filter(function(id) {
+            return $scope.selectedSubjects[id];
+        }).map(function(id) {
+            return parseInt(id, 10);
+        });
+    };
+
+    $scope.startExam = function() {
+        if ($scope.getSelectedSubjectCount() < 3) {
+            $scope.errorMessage = 'Please select at least 3 subjects.';
+            return;
+        }
+
+        $scope.processing = true;
+        $scope.errorMessage = '';
+
+        $http(apiConfig('POST', '/api/start-exam', {
+            subject_ids: $scope.getSelectedSubjectIds()
+        })).then(function(response) {
+            var data = response.data || {};
+            if (!data.success) {
+                $scope.processing = false;
+                $scope.errorMessage = data.message || 'Unable to start exam.';
+                return;
+            }
+
+            $scope.examId = data.exam_id;
+            $scope.questions = [];
+            $scope.answerMap = {};
+            $scope.visitedMap = {};
+            $scope.currentQuestionIndex = 0;
+            $scope.result = null;
+            $scope.answerKey = [];
+            $scope.showAnswerKey = false;
+            setDraftState();
+            $scope.loadQuestions();
+        }, function() {
+            $scope.processing = false;
+            $scope.errorMessage = 'Unable to start exam.';
+        });
+    };
+
+    $scope.loadQuestions = function() {
+        if (!$scope.examId) {
+            $scope.processing = false;
+            return;
+        }
+
+        $scope.loading = true;
+        $http(apiConfig('GET', '/api/get-questions', null, { exam_id: $scope.examId })).then(function(response) {
+            $scope.loading = false;
+            $scope.processing = false;
+            if (response.data && response.data.success) {
+                hydrateExamState(response.data);
+            } else {
+                $scope.errorMessage = (response.data && response.data.message) ? response.data.message : 'Unable to load questions.';
+            }
+        }, function() {
+            $scope.loading = false;
+            $scope.processing = false;
+            $scope.errorMessage = 'Unable to load questions.';
+        });
+    };
+
+    $scope.getCurrentQuestion = function() {
+        return $scope.questions[$scope.currentQuestionIndex] || null;
+    };
+
+    $scope.getQuestionOptions = function(question) {
+        if (!question) {
+            return [];
+        }
+
+        return [
+            { key: 'A', text: question.option1 },
+            { key: 'B', text: question.option2 },
+            { key: 'C', text: question.option3 },
+            { key: 'D', text: question.option4 }
+        ].filter(function(option) {
+            return option.text !== null && option.text !== undefined && option.text !== '';
+        });
+    };
+
+    $scope.goToQuestion = function(index) {
+        if (index < 0 || index >= $scope.questions.length) {
+            return;
+        }
+
+        $scope.currentQuestionIndex = index;
+        if ($scope.questions[index]) {
+            $scope.visitedMap[$scope.questions[index].id] = true;
+        }
+        setDraftState();
+    };
+
+    $scope.nextQuestion = function() {
+        if ($scope.currentQuestionIndex < $scope.questions.length - 1) {
+            $scope.goToQuestion($scope.currentQuestionIndex + 1);
+        }
+    };
+
+    $scope.previousQuestion = function() {
+        if ($scope.currentQuestionIndex > 0) {
+            $scope.goToQuestion($scope.currentQuestionIndex - 1);
+        }
+    };
+
+    $scope.selectAnswer = function(question, selectedOption) {
+        if (!question || !$scope.examId) {
+            return;
+        }
+
+        $scope.answerMap[question.id] = selectedOption;
+        $scope.visitedMap[question.id] = true;
+        setDraftState();
+
+        if (savePromises[question.id]) {
+            $timeout.cancel(savePromises[question.id]);
+        }
+
+        savePromises[question.id] = $timeout(function() {
+            $http(apiConfig('POST', '/api/save-answer', {
+                exam_id: $scope.examId,
+                question_id: question.id,
+                selected_option: selectedOption
+            })).then(function(response) {
+                var data = response.data || {};
+                if (data.auto_submitted) {
+                    $scope.result = data.result || null;
+                    $scope.examState = 'result';
+                    stopTimer();
+                    clearDraftState();
+                }
+            });
+        }, 500);
+    };
+
+    $scope.getPaletteClass = function(question, index) {
+        var classes = [];
+        if ($scope.answerMap[question.id]) {
+            classes.push('answered');
+        } else if ($scope.visitedMap[question.id]) {
+            classes.push('visited');
+        }
+        if (index === $scope.currentQuestionIndex) {
+            classes.push('current');
+        }
+        return classes.join(' ');
+    };
+
+    $scope.getAnsweredCount = function() {
+        return Object.keys($scope.answerMap).filter(function(questionId) {
+            return !!$scope.answerMap[questionId];
+        }).length;
+    };
+
+    $scope.formatTime = function(totalSeconds) {
+        var seconds = parseInt(totalSeconds || 0, 10);
+        var hrs = Math.floor(seconds / 3600);
+        var mins = Math.floor((seconds % 3600) / 60);
+        var secs = seconds % 60;
+
+        function pad(value) {
+            return value < 10 ? '0' + value : '' + value;
+        }
+
+        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs);
+    };
+
+    $scope.submitExam = function(isAutoSubmit) {
+        if (!$scope.examId) {
+            return;
+        }
+
+        cancelSavePromises();
+        $scope.processing = true;
+
+        $http(apiConfig('POST', '/api/submit-exam', {
+            exam_id: $scope.examId,
+            answers: $scope.answerMap
+        })).then(function(response) {
+            var data = response.data || {};
+            $scope.processing = false;
+            stopTimer();
+
+            if (!data.success) {
+                $scope.errorMessage = data.message || 'Unable to submit exam.';
+                return;
+            }
+
+            $scope.result = data.result || null;
+            $scope.examState = 'result';
+            $scope.showAnswerKey = false;
+            if (isAutoSubmit) {
+                $scope.errorMessage = 'Time is over. Exam submitted automatically.';
+            } else {
+                $scope.errorMessage = '';
+            }
+            clearDraftState();
+        }, function() {
+            $scope.processing = false;
+            $scope.errorMessage = 'Unable to submit exam.';
+        });
+    };
+
+    $scope.loadResult = function() {
+        if (!$scope.examId) {
+            return;
+        }
+
+        $http(apiConfig('GET', '/api/result', null, { exam_id: $scope.examId })).then(function(response) {
+            if (response.data && response.data.success) {
+                $scope.result = response.data.result || null;
+                $scope.examState = 'result';
+            }
+        });
+    };
+
+    $scope.loadAnswerKey = function() {
+        if (!$scope.examId) {
+            return;
+        }
+
+        $scope.answerKeyLoading = true;
+        $http(apiConfig('GET', '/api/answer-key', null, { exam_id: $scope.examId })).then(function(response) {
+            $scope.answerKeyLoading = false;
+            if (response.data && response.data.success) {
+                $scope.answerKey = response.data.answer_key || [];
+                $scope.showAnswerKey = true;
+            }
+        }, function() {
+            $scope.answerKeyLoading = false;
+        });
+    };
+
+    $scope.resetToEntry = function() {
+        stopTimer();
+        cancelSavePromises();
+        clearDraftState();
+        $scope.selectedSubjects = {};
+        $scope.questions = [];
+        $scope.answerMap = {};
+        $scope.visitedMap = {};
+        $scope.currentQuestionIndex = 0;
+        $scope.examId = '';
+        $scope.timeLeft = 3600;
+        $scope.result = null;
+        $scope.answerKey = [];
+        $scope.showAnswerKey = false;
+        $scope.examState = 'entry';
+        $scope.errorMessage = '';
+    };
+
+    $scope.$on('$destroy', function() {
+        stopTimer();
+        cancelSavePromises();
+        $window.removeEventListener('beforeunload', beforeUnloadHandler);
+    });
+});

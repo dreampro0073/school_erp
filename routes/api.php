@@ -208,6 +208,16 @@ use App\Http\Controllers\AspirantController;
         Route::post('/random-question', 'randomQuestion');
     });
 
+    Route::controller(AspirantController::class)->group(function () {
+        Route::get('/subjects', 'examSubjects');
+        Route::post('/start-exam', 'startExam');
+        Route::get('/get-questions', 'getQuestions');
+        Route::post('/save-answer', 'saveAnswer');
+        Route::post('/submit-exam', 'submitExam');
+        Route::get('/result', 'result');
+        Route::get('/answer-key', 'answerKey');
+    });
+
     Route::prefix('worklog')->controller(WorklogController::class)->group(function () {
         Route::post('/init', 'initWorkLog');
         Route::post('/edit', 'getDayData');

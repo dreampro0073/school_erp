@@ -515,3 +515,54 @@ CREATE TABLE IF NOT EXISTS `questions` (
   KEY `questions_subject_id_index` (`subject_id`),
   KEY `questions_topic_id_index` (`topic_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `exams` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `exam_id` VARCHAR(64) NOT NULL,
+  `selected_subject_ids` JSON NULL,
+  `start_time` TIMESTAMP NULL DEFAULT NULL,
+  `submitted_at` TIMESTAMP NULL DEFAULT NULL,
+  `duration_minutes` INT NOT NULL DEFAULT 60,
+  `total_questions` INT NOT NULL DEFAULT 100,
+  `status` VARCHAR(30) NOT NULL DEFAULT 'started',
+  `total_score` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `attempted` INT NOT NULL DEFAULT 0,
+  `correct` INT NOT NULL DEFAULT 0,
+  `wrong` INT NOT NULL DEFAULT 0,
+  `unattempted` INT NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `exams_exam_id_unique` (`exam_id`),
+  KEY `exams_user_id_index` (`user_id`),
+  KEY `exams_status_index` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `exam_papers` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `exam_id` VARCHAR(64) NOT NULL,
+  `question_id` BIGINT UNSIGNED NOT NULL,
+  `question_order` INT NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `exam_papers_exam_question_unique` (`exam_id`, `question_id`),
+  KEY `exam_papers_exam_id_index` (`exam_id`),
+  KEY `exam_papers_question_id_index` (`question_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `user_answers` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `exam_id` VARCHAR(64) NOT NULL,
+  `question_id` BIGINT UNSIGNED NOT NULL,
+  `selected_option` VARCHAR(50) NULL DEFAULT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_exam_question_unique` (`user_id`, `exam_id`, `question_id`),
+  KEY `user_answers_user_id_index` (`user_id`),
+  KEY `user_answers_exam_id_index` (`exam_id`),
+  KEY `user_answers_question_id_index` (`question_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
