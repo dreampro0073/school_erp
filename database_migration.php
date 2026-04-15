@@ -518,7 +518,8 @@ CREATE TABLE IF NOT EXISTS `questions` (
   KEY `questions_topic_id_index` (`topic_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-<<<<<<< HEAD
+//Uppper code deployed to PROD 
+
 CREATE TABLE IF NOT EXISTS `exams` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` BIGINT UNSIGNED NOT NULL,
@@ -569,8 +570,4 @@ CREATE TABLE IF NOT EXISTS `user_answers` (
   KEY `user_answers_exam_id_index` (`exam_id`),
   KEY `user_answers_question_id_index` (`question_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-=======
 
-
-//Uppper code deployed to PROD 
->>>>>>> ee9889e12103aac83f4e3ff8527be6d3604b40ed
