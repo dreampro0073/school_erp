@@ -4,7 +4,7 @@
 <div ng-controller="aspirantDashboardCtrl" ng-init='initTopicsPage(@json($subject))'>
    <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
       <div>
-         <h6 class="fw-semibold mb-0">Topics</h6>
+         <h6 class="fw-semibold mb-0 text-primary-light">Topics</h6>
          <p class="text-neutral-600 mt-4 mb-0">Subject: @{{ selectedSubject.name || '-' }}</p>
       </div>
       <div class="d-flex align-items-center gap-2">
@@ -17,10 +17,10 @@
       </div>
    </div>
 
-   <div class="card">
+   <div class="card bg-base">
       <div class="card-body p-0">
          <div class="table-responsive">
-            <table class="table bordered-table mb-0">
+            <table class="table bordered-table table-heading-dark-mode mb-0">
                <thead>
                   <tr>
                      <th>SN.</th>
@@ -43,7 +43,7 @@
                      </td>
                   </tr>
                   <tr ng-if="!topics.length">
-                     <td colspan="5" class="text-center py-4">No topics found.</td>
+                     <td colspan="5" class="text-center py-4 text-secondary-light">No topics found.</td>
                   </tr>
                </tbody>
             </table>
@@ -54,7 +54,7 @@
    <div class="my-sidebar theme-bg-white position-fixed end-0 top-0 h-100vh overflow-y-auto z-99 max-w-700-px w-100 translate-x-full duration-300"
      ng-class="{'active active-translate-0': isTopicSidebarOpen}" style="z-index: 9999!;">
       <div class="d-flex align-items-center justify-content-between p-16 border-bottom">
-         <h5 class="mb-0">@{{ isTopicEditMode ? 'Edit Topic' : 'Add Topic' }}</h5>
+         <h5 class="mb-0 text-primary-light">@{{ isTopicEditMode ? 'Edit Topic' : 'Add Topic' }}</h5>
          <button type="button" class="close-my-sidebar text-danger-600 text-lg d-flex" ng-click="closeTopicSidebar()">
             <i class="ri-close-line"></i>
          </button>
@@ -72,7 +72,7 @@
             </select>
          </div>
          <div class="d-flex justify-content-end gap-8">
-            <button type="button" class="btn btn-light" ng-click="closeTopicSidebar()">Cancel</button>
+            <button type="button" class="btn btn-light border" ng-click="closeTopicSidebar()">Cancel</button>
             <button type="submit" class="btn btn-primary-600" ng-disabled="topicProcessing">
                @{{ topicProcessing ? 'Saving...' : 'Save' }}
             </button>
