@@ -7,7 +7,6 @@
          <h6 class="fw-semibold mb-0">Practice</h6>
          <p class="text-neutral-600 mt-4 mb-0">Select subject and topics to start.</p>
       </div>
-      <div class="badge text-bg-light px-3 py-2">Time: @{{ timeLeft }}s</div>
    </div>
 
    <div class="card mb-24">
@@ -44,6 +43,7 @@
                <h6 class="mb-8">Question @{{ currentIndex + 1 }}</h6>
                <p class="mb-0">@{{ currentQuestion.question }}</p>
             </div>
+            <div class="text-bg-light px-3">Time: @{{ timeLeft }}s</div>
             <button type="button" class="btn btn-sm btn-outline-secondary" ng-click="showReference()">Reference</button>
          </div>
 
