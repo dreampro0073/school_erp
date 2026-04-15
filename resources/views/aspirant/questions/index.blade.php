@@ -17,7 +17,7 @@
       </div>
    </div>
 
-   <div class="card bg-base aspirant-question-card">
+   <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
       <div class="card-body p-0">
          <div class="table-responsive">
             <table class="table bordered-table table-heading-dark-mode mb-0">
@@ -54,7 +54,7 @@
 
    <div class="modal fade" id="questionModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-xl modal-dialog-scrollable">
-         <div class="modal-content bg-base aspirant-question-modal">
+         <div class="modal-content bg-base">
             <div class="modal-header">
                <div>
                   <h5 class="modal-title mb-1 text-primary-light">@{{ questionForm.id ? 'Edit Question' : 'Add Question' }}</h5>
@@ -63,7 +63,7 @@
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form ng-submit="saveQuestion()">
-               <div class="modal-body aspirant-question-modal-body" style="overflow-y:auto; max-height: calc(100vh - 220px);">
+               <div class="modal-body" style="overflow-y:auto; max-height: calc(100vh - 220px);">
                   <div class="row g-4">
                      <div class="col-12">
                         <label class="form-label">Question</label>
@@ -78,7 +78,7 @@
                         <input type="text" class="form-control" ng-model="questionForm.reference" placeholder="Book/URL/Source">
                      </div>
                      <div class="col-12">
-                        <div class="border rounded-3 p-16 bg-base aspirant-question-section">
+                        <div class="border border-neutral-200 radius-8 p-16 bg-base">
                            <div class="d-flex align-items-center justify-content-between mb-12">
                               <h6 class="mb-0 text-primary-light">Options</h6>
                               <span class="text-xs text-neutral-500">Fill any that apply</span>
@@ -105,7 +105,7 @@
                      </div>
 
                      <div class="col-12">
-                        <div class="border rounded-3 p-16 bg-base aspirant-question-section">
+                        <div class="border border-neutral-200 radius-8 p-16 bg-base">
                            <div class="d-flex align-items-center justify-content-between mb-12">
                               <h6 class="mb-0 text-primary-light">Scoring & Meta</h6>
                               <span class="text-xs text-neutral-500">Marks + references</span>
@@ -143,7 +143,7 @@
                                     </button>
                                     <a ng-href="@{{questionForm.image_file_link}}"
                                        ng-show="questionForm.image_file_link"
-                                       class="btn btn-outline-primary text-md px-18 py-8 radius-8 aspirant-question-image-link"
+                                       class="border border-primary-600 text-primary-600 text-md px-18 py-8 radius-8"
                                        target="_blank">
                                        View Image
                                     </a>
@@ -155,7 +155,7 @@
                                     </button>
                                  </div>
                                  <div class="mt-12" ng-if="questionForm.image_file_link">
-                                    <img ng-src="@{{questionForm.image_file_link}}" alt="Question Image" class="img-fluid radius-8 border aspirant-question-preview" style="max-height: 220px;">
+                                    <img ng-src="@{{questionForm.image_file_link}}" alt="Question Image" class="img-fluid radius-8 border border-neutral-200" style="max-height: 220px;">
                                  </div>
                               </div>
                            </div>
@@ -164,7 +164,7 @@
                   </div>
                </div>
                <div class="modal-footer">
-                  <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="border border-danger-600 text-danger-600 px-50 py-11 radius-8" data-bs-dismiss="modal">Cancel</button>
                   <button type="submit" class="btn btn-primary-600" ng-disabled="questionProcessing">
                      @{{ questionProcessing ? 'Saving...' : 'Save' }}
                   </button>
@@ -174,36 +174,4 @@
       </div>
    </div>
 </div>
-@endsection
-
-@section('footer_scripts')
-<style>
-   [data-theme=dark] .aspirant-question-card table tbody td {
-      color: #f3f4f6;
-   }
-
-   [data-theme=dark] .aspirant-question-modal .modal-header,
-   [data-theme=dark] .aspirant-question-modal .modal-footer,
-   [data-theme=dark] .aspirant-question-section {
-      border-color: #4b5563 !important;
-   }
-
-   [data-theme=dark] .aspirant-question-modal-body {
-      background-color: #111827;
-   }
-
-   [data-theme=dark] .aspirant-question-section {
-      background-color: #1f2937 !important;
-   }
-
-   [data-theme=dark] .aspirant-question-image-link {
-      border-color: #60a5fa;
-      color: #bfdbfe !important;
-   }
-
-   [data-theme=dark] .aspirant-question-preview {
-      border-color: #4b5563 !important;
-      background-color: #1f2937;
-   }
-</style>
 @endsection

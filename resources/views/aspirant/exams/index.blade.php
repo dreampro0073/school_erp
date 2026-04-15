@@ -8,18 +8,18 @@
             <p class="text-neutral-600 mt-4 mb-0">Pick at least three subjects, start a 100-question exam, and continue safely even after a reload.</p>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap" ng-if="examState === 'running'">
-            <span class="badge bg-base border text-primary-light px-3 py-2">Progress: @{{ currentQuestionIndex + 1 }}/@{{ questions.length || 100 }}</span>
-            <span class="badge bg-base border text-primary-light px-3 py-2">Answered: @{{ getAnsweredCount() }}</span>
-            <span class="badge bg-danger-100 text-danger-600 px-3 py-2">Time Left: @{{ formatTime(timeLeft) }}</span>
+            <span class="px-12 py-5-px border border-neutral-300 radius-8 text-secondary-light text-sm d-inline-flex align-items-center">Progress: @{{ currentQuestionIndex + 1 }}/@{{ questions.length || 100 }}</span>
+            <span class="px-12 py-5-px border border-neutral-300 radius-8 text-secondary-light text-sm d-inline-flex align-items-center">Answered: @{{ getAnsweredCount() }}</span>
+            <span class="bg-danger-100 text-danger-600 px-12 py-5-px radius-8 text-sm d-inline-flex align-items-center">Time Left: @{{ formatTime(timeLeft) }}</span>
         </div>
     </div>
 
-    <div class="card shadow-1 radius-12 border-0 bg-base" ng-if="loading">
+    <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden" ng-if="loading">
         <div class="card-body py-5 text-center">Loading exam data...</div>
     </div>
 
     <div ng-if="!loading && examState === 'entry'">
-        <div class="card shadow-1 radius-12 border-0 bg-base">
+        <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
             <div class="card-body p-24">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-20">
                     <div>
@@ -85,7 +85,7 @@
         </div>
 
         <div class="col-xl-9">
-            <div class="card shadow-1 radius-12 border-0 bg-base" ng-if="getCurrentQuestion()">
+            <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden" ng-if="getCurrentQuestion()">
                 <div class="card-body p-24">
                     <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-20">
                         <div>
@@ -125,7 +125,7 @@
     <div ng-if="!loading && examState === 'result' && result">
         <div class="row g-3 mb-24">
             <div class="col-md-4">
-                <div class="card shadow-1 radius-12 border-0 h-100 bg-base">
+                <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Total Score</p>
                         <h3 class="mb-0 text-primary-light">@{{ result.total_score }}</h3>
@@ -133,7 +133,7 @@
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <div class="card shadow-1 radius-12 border-0 h-100 bg-base">
+                <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Correct</p>
                         <h4 class="mb-0 text-success-600">@{{ result.correct }}</h4>
@@ -141,7 +141,7 @@
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <div class="card shadow-1 radius-12 border-0 h-100 bg-base">
+                <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Wrong</p>
                         <h4 class="mb-0 text-danger-600">@{{ result.wrong }}</h4>
@@ -149,7 +149,7 @@
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <div class="card shadow-1 radius-12 border-0 h-100 bg-base">
+                <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Attempted</p>
                         <h4 class="mb-0 text-primary-light">@{{ result.attempted }}</h4>
@@ -157,7 +157,7 @@
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <div class="card shadow-1 radius-12 border-0 h-100 bg-base">
+                <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Unattempted</p>
                         <h4 class="mb-0 text-primary-light">@{{ result.unattempted }}</h4>
@@ -166,7 +166,7 @@
             </div>
         </div>
 
-        <div class="card shadow-1 radius-12 border-0 mb-24 bg-base">
+        <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden mb-24">
             <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div>
                     <h6 class="mb-2 text-primary-light">Exam Submitted</h6>
@@ -181,7 +181,7 @@
             </div>
         </div>
 
-        <div class="card shadow-1 radius-12 border-0 bg-base" ng-if="showAnswerKey">
+        <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden" ng-if="showAnswerKey">
             <div class="card-body p-0">
                 <div class="p-20 border-bottom">
                     <h6 class="mb-0 text-primary-light">Answer Key</h6>
@@ -324,31 +324,6 @@
         border-color: #0e66aa;
         background: #eef7ff;
         box-shadow: 0 10px 30px rgba(14, 102, 170, 0.1);
-    }
-
-    [data-theme=dark] .exam-subject-card {
-        border-color: #4b5563;
-        background: linear-gradient(135deg, #1f2937 0%, #243447 100%);
-    }
-
-    [data-theme=dark] .exam-subject-card input {
-        accent-color: #60a5fa;
-    }
-
-    [data-theme=dark] .palette-legend {
-        color: #d1d5db;
-    }
-
-    [data-theme=dark] .exam-option-card {
-        background: #1f2937;
-        border-color: #4b5563;
-        color: #f3f4f6;
-    }
-
-    [data-theme=dark] .exam-option-card.selected {
-        border-color: #60a5fa;
-        background: rgba(29, 128, 252, 0.14);
-        box-shadow: 0 10px 30px rgba(14, 102, 170, 0.18);
     }
 
     @media (max-width: 1199px) {

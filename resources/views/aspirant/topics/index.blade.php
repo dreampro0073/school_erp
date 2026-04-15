@@ -72,7 +72,7 @@
             </select>
          </div>
          <div class="d-flex justify-content-end gap-8">
-            <button type="button" class="btn btn-light border" ng-click="closeTopicSidebar()">Cancel</button>
+            <button type="button" class="border border-danger-600 text-danger-600 px-50 py-11 radius-8" ng-click="closeTopicSidebar()">Cancel</button>
             <button type="submit" class="btn btn-primary-600" ng-disabled="topicProcessing">
                @{{ topicProcessing ? 'Saving...' : 'Save' }}
             </button>

@@ -7,7 +7,7 @@
             <h6 class="fw-semibold mb-0 text-primary-light">Aspirant Dashboard</h6>
             <p class="text-neutral-600 mt-4 mb-0">Welcome, @{{ aspirant.name || 'Aspirant' }}.</p>
         </div>
-        <span class="badge bg-base border text-primary-light px-3 py-2">@{{ today }}</span>
+        <span class="px-12 py-5-px border border-neutral-300 radius-8 text-secondary-light text-sm d-inline-flex align-items-center">@{{ today }}</span>
     </div>
 
     <div class="row gy-3 mb-24">
