@@ -25,7 +25,8 @@
                   <tr>
                      <th>SN.</th>
                      <th>Question</th>
-                     <th>Marks</th>
+                     <th>Answer</th>
+                     <th>Remarks/ Reference</th>
                      <th>Action</th>
                   </tr>
                </thead>
@@ -33,8 +34,10 @@
                   <tr ng-repeat="question in questions track by question.id">
                      <td>@{{$index + 1}}</td>
                      <td>@{{question.question}}</td>
+                     <td>@{{question.right_answer}}</td>
                      <td>
-                        @{{question.total_marks || 0}}
+                        <small>Remark: @{{question.remarks}}</small><br>
+                        <small>Ref: @{{question.reference}}</small>
                      </td>
                      <td>
                         <button type="button" class="btn btn-sm btn-info-100 text-info-600" ng-click="openQuestionModal(question)">Edit</button>

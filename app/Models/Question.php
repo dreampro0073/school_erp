@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Question extends Model
 {
     protected $table = 'questions';
+    protected $appends = ['right_answer'];
 
     protected $fillable = [
         'question',
@@ -25,4 +26,13 @@ class Question extends Model
         'subject_id',
         'topic_id',
     ];
+
+    public function getRightAnswerAttribute()
+    {
+        if (!$this->answer) {
+            return null;
+        }
+
+        return $this->{'opt_' . strtolower($this->answer)};
+    }
 }
