@@ -48,7 +48,7 @@
          </div>
 
          <div class="row g-3 mb-16">
-            <div class="col-md-6" ng-repeat="opt in getOptionList()">
+            <div class="col-md-6" ng-repeat="opt in currentOptions track by opt.key">
                <button type="button" class="w-100 text-start border border-neutral-200 radius-8 px-12 py-12 text-primary-light bg-base" ng-class="optionClass(opt.key)" ng-click="selectOption(opt.key)" ng-disabled="showAnswer">
                   <strong class="me-8">@{{ opt.key }}.</strong> @{{ opt.text }}
                </button>

@@ -1320,6 +1320,7 @@ app.controller('practiceCtrl', function($scope , DBService, $interval){
     $scope.questions = [];
     $scope.currentIndex = -1;
     $scope.currentQuestion = null;
+    $scope.currentOptions = [];
     $scope.timeLeft = 30;
     $scope.timerHandle = null;
     $scope.loading = false;
@@ -1406,8 +1407,10 @@ app.controller('practiceCtrl', function($scope , DBService, $interval){
     $scope.loadCurrentQuestion = function() {
         $scope.currentQuestion = $scope.questions[$scope.currentIndex] || null;
         if (!$scope.currentQuestion) {
+            $scope.currentOptions = [];
             return;
         }
+        $scope.currentOptions = buildOptionList($scope.currentQuestion);
         $scope.userAnswer = $scope.currentQuestion._user_answer || '';
         $scope.showAnswer = $scope.currentQuestion._show_answer || false;
         $scope.resetAnswerMode();
@@ -1508,19 +1511,18 @@ app.controller('practiceCtrl', function($scope , DBService, $interval){
         }
     };
 
-    $scope.getOptionList = function() {
-        if (!$scope.currentQuestion) {
+    function buildOptionList(question) {
+        if (!question) {
             return [];
         }
-        var q = $scope.currentQuestion;
         var options = [
-            { key: 'A', text: q.opt_a },
-            { key: 'B', text: q.opt_b },
-            { key: 'C', text: q.opt_c },
-            { key: 'D', text: q.opt_d }
+            { key: 'A', text: question.opt_a },
+            { key: 'B', text: question.opt_b },
+            { key: 'C', text: question.opt_c },
+            { key: 'D', text: question.opt_d }
         ];
         return options.filter(function(opt){ return opt.text && opt.text !== ''; });
-    };
+    }
 
     $scope.optionClass = function(letter) {
         if (!$scope.showAnswer) {
