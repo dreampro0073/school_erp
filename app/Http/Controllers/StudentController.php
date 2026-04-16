@@ -55,16 +55,16 @@ class StudentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'first_name' => ['required','string','max:255'],
-            'last_name' => ['nullable','string','max:255'],
+            // 'last_name' => ['nullable','string','max:255'],
             'gender' => ['required'],
             'dob' => ['required'],
-            'mobile' => ['required','digits:10'],
+            // 'mobile' => ['required','digits:10'],
             'email' => 'required|email|unique:users,email,'.$user_id,
             'aadhar_no'=> ['required','digits:12'], 
             'residential_address' => ['required'],
             'permanent_address' => ['required'],
             'father_name' => ['required','string','max:255'],
-            'father_email' => ['required','email','max:255'],
+            // 'father_email' => ['required','email','max:255'],
             'father_mobile' => ['required','digits:10'],
             'father_aadhar_no' => ['required','digits:12'],
             'mother_name' => ['required','string','max:255'],
@@ -73,7 +73,7 @@ class StudentController extends Controller
         ]);
 
         $validator->after(function ($validator) use ($request) {
-            if ($request->email === $request->father_email) {
+            if ($request->has('father_email') && $request->email === $request->father_email) {
                 $validator->errors()->add('father_email', 'Parent email cannot be same as student email');
             }
         });

@@ -82,6 +82,22 @@ app.controller('addStudentCtrl', function($scope , DBService,Upload){
     $scope.casts = [];
     $scope.standards = [];
 
+    $scope.sameAs = false;
+
+    $scope.copyAddress = function () {
+        if ($scope.sameAs) {
+            $scope.formData.residential_address = $scope.formData.permanent_address;
+        } else {
+            $scope.formData.residential_address = '';
+        }
+    };
+
+    $scope.$watch('formData.permanent_address', function (newVal) {
+        if ($scope.sameAs) {
+            $scope.formData.residential_address = newVal;
+        }
+    });
+
     $scope.init = function(student_token) {
         DBService.postCall({ student_token:student_token }, '/api/admin/students/init-details').then(function(data) {
             if (data.success) {
