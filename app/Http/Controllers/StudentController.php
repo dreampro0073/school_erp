@@ -44,8 +44,173 @@ class StudentController extends Controller
         ]);
 
     }
-   
     public function storeStudent(Request $request){
+        $authUser = User::resolveApiUser($request);
+
+        $e_student = Student::where('unique_id',$request->unique_id)->first(); 
+
+        $user_id = $e_student ? $e_student->user_id : null;
+        $message = "Student details Successfully saved!";
+
+        $validator = Validator::make($request->all(), [
+            'first_name' => ['required','string','max:255'],
+            // 'last_name' => ['nullable','string','max:255'],
+            'gender' => ['required'],
+            'dob' => ['required'],
+            // 'mobile' => ['required','digits:10'],
+            // 'email' => 'required|email|unique:users,email,'.$user_id,
+            'aadhar_no'=> ['required','digits:12'], 
+            'residential_address' => ['required'],
+            'permanent_address' => ['required'],
+            'father_name' => ['required','string','max:255'],
+            // 'father_email' => ['required','email','max:255'],
+            'father_mobile' => ['required','digits:10'],
+            // 'father_aadhar_no' => ['required','digits:12'],
+            'mother_name' => ['required','string','max:255'],
+            // 'mother_aadhar_no' => ['required','digits:12'],
+            'religion_id' => ['required'],
+            'sr_no' => ['required'],
+        ]);
+
+        // $validator->after(function ($validator) use ($request) {
+        //     if ($request->has('father_email') && $request->email === $request->father_email) {
+        //         $validator->errors()->add('father_email', 'Parent email cannot be same as student email');
+        //     }
+        // });
+
+        if($validator->fails()){
+            return response()->json([
+                'success'=>false,
+                'errors'=>$validator->errors(),
+            ],422);
+        }
+
+        $data = $request->only([
+            'first_name','last_name','gender','dob','mobile','email',
+            'aadhar_no','residential_address','permanent_address',
+            'religion_id','cast_id','blood_group_id','standard_id',
+            'section_id','height','weight','previous_school',
+            'previous_school_address','approved','student_photo',
+            'aadhar_card','sr_no','roll_no',
+        ]);
+
+        $parent_data = $request->only([
+            'father_name','father_email','father_mobile','father_aadhar_no',
+            'mother_name','mother_aadhar_no','father_occupation',
+            'mother_mobile','mother_email','guardian_name'
+        ]);
+
+        if($data['email']){
+            $check = User::where('email',$data['email'])->first();
+            if($check){
+                return response()->json([
+                    'success'=>false,
+                    'message' => "Email already exists in the sytem kindly use different email",
+                ],422);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            $parent = StudentParent::where('father_mobile',$parent_data['father_mobile'])->first();
+
+            if(!$parent){
+                $parent_data['school_id'] = $authUser->client_id;
+                $parent_data['unique_id'] = time().$authUser->client_id.$authUser->id;
+                $parent = StudentParent::create($parent_data);
+            }else{
+                $parent->update($parent_data);
+            }
+
+            $parentUser = null;
+
+            if(!empty($parent_data['father_email'])){
+                $parentUser = User::where('email',$parent_data['father_email'])->first();
+
+                if(!$parentUser){
+                    $pass = User::getRandPassword();
+
+                    $parentUser = new User;
+                    $parentUser->name = $parent_data['father_name'];
+                    $parentUser->email = $parent_data['father_email'];
+                    $parentUser->password = Hash::make($pass);
+                    $parentUser->password_check = $pass;
+                    $parentUser->parent_user_id = 0;
+                    $parentUser->added_by = $authUser->id;
+                    $parentUser->org_id = $authUser->org_id;
+                    $parentUser->client_id = $authUser->client_id;
+                    $parentUser->priv = 5;
+                    $parentUser->save();
+                }else{
+                    $parentUser->name = $parent_data['father_name'];
+                    $parentUser->save();
+                }
+
+
+                $parent->user_id = $parentUser->id;
+                $parent->save();
+            }
+
+            $studentEmail = $data['email'] ?? ('student_'.$request->sr_no.'_'.time().'@school.com');
+
+            $user = User::where('email',$studentEmail)->first();
+
+            if(!$user){
+                $user = new User;
+                $password = User::getRandPassword();
+
+                $user->password = Hash::make($password);
+                $user->name = $data['first_name'].' '.$data['last_name'];
+                $user->start_date = $authUser->start_date;
+                $user->parent_user_id = $parentUser ? $parentUser->id : null;
+                $user->added_by = $authUser->id;
+                $user->password_check = $password;
+                $user->org_id = $authUser->org_id;
+                $user->client_id = $authUser->client_id;
+                $user->priv = 4;
+                $user->email = $studentEmail;
+                $user->save();
+
+                $data['school_id'] = $authUser->client_id;
+                $data['user_id'] = $user->id;
+                $data['parent_id'] = $parent->id;
+                $data['unique_id'] = time().$authUser->client_id.$authUser->id;
+
+            }else{
+                $user->name = $data['first_name'].' '.$data['last_name'];
+                $user->parent_user_id = $parentUser ? $parentUser->id : null;
+                $user->save();
+            }
+
+            $data['name'] = $data['first_name'].' '.$data['last_name'];
+            $data['dob'] = date("Y-m-d",strtotime($request->dob));
+
+            if(!$e_student){
+                $student = Student::create($data);
+            }else{
+                $data['admission_no'] = $this->generateAdmissionNumber($authUser->client_id);
+                $e_student->update($data);
+                $student = $e_student;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'student' => $student
+            ]);
+
+        } catch (\Exception $e){
+            DB::rollback();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+    }
+    public function storeStudentOld(Request $request){
         $authUser = User::resolveApiUser($request);
 
         $e_student = Student::where('unique_id',$request->unique_id)->first(); 
@@ -66,10 +231,11 @@ class StudentController extends Controller
             'father_name' => ['required','string','max:255'],
             // 'father_email' => ['required','email','max:255'],
             'father_mobile' => ['required','digits:10'],
-            'father_aadhar_no' => ['required','digits:12'],
+            // 'father_aadhar_no' => ['required','digits:12'],
             'mother_name' => ['required','string','max:255'],
-            'mother_aadhar_no' => ['required','digits:12'],
+            // 'mother_aadhar_no' => ['required','digits:12'],
             'religion_id' => ['required'],
+            'sr_no' => ['required'],
         ]);
 
         $validator->after(function ($validator) use ($request) {
@@ -107,6 +273,8 @@ class StudentController extends Controller
             'approved',
             'student_photo',
             'aadhar_card',
+            'sr_no',
+            'roll_no',
         ]);
 
         $parent_data = $request->only([
@@ -124,37 +292,41 @@ class StudentController extends Controller
 
         DB::beginTransaction();
         try {
-            $parentUser = User::where('email',$parent_data['father_email'])->first();
-           
-            if(!$parentUser){
-                $parentPassword = User::getRandPassword();
-                $parentUser = new User;
-                $parentUser->name = $parent_data['father_name'];
-                $parentUser->email = $parent_data['father_email'];
-                $parentUser->password = Hash::make($parentPassword);
-                $parentUser->password_check = $parentPassword;
-                $parentUser->parent_user_id =0;
-                $parentUser->added_by = $authUser->id;
-                $parentUser->org_id = $authUser->org_id;
-                $parentUser->client_id = $authUser->client_id;
-                $parentUser->priv = 5;
-                $parentUser->save();
-            }else{ 
-                $parentUser->name = $parent_data['father_name'];
-                $parentUser->save();
+            
+            $parentUser = null;
+
+            if($request->has('father_email')){
+                $parentUser = User::where('email',$parent_data['father_email'])->first();
+                if(!$parentUser){
+                    $parentPassword = User::getRandPassword();
+                    $parentUser = new User;
+                    $parentUser->name = $parent_data['father_name'];
+                    $parentUser->email = $parent_data['father_email'];
+                    $parentUser->password = Hash::make($parentPassword);
+                    $parentUser->password_check = $parentPassword;
+                    $parentUser->parent_user_id =0;
+                    $parentUser->added_by = $authUser->id;
+                    $parentUser->org_id = $authUser->org_id;
+                    $parentUser->client_id = $authUser->client_id;
+                    $parentUser->priv = 5;
+                    $parentUser->save();
+                }else{ 
+                    $parentUser->name = $parent_data['father_name'];
+                    $parentUser->save();
+                }
+
+                // $parent = StudentParent::where('user_id',$parentUser->id)->first();
+
+                // if(!$parent){
+                //     $parent_data['user_id'] = $parentUser->id;
+                //     $parent_data['school_id'] = $authUser->client_id;
+                //     $parent_data['unique_id'] = time().$authUser->client_id.$authUser->id.$parentUser->id;
+                //     $parent = StudentParent::create($parent_data);
+                // }else{
+                //     $parent->update($parent_data);
+                // }
             }
-
-            $parent = StudentParent::where('user_id',$parentUser->id)->first();
-
-            if(!$parent){
-                $parent_data['user_id'] = $parentUser->id;
-                $parent_data['school_id'] = $authUser->client_id;
-                $parent_data['unique_id'] = time().$authUser->client_id.$authUser->id.$parentUser->id;
-                $parent = StudentParent::create($parent_data);
-            }else{
-                $parent->update($parent_data);
-            }
-
+            
             $user = User::where('email',$request->email)->first();
             if(!$user){
                 $user = new User;
@@ -162,7 +334,7 @@ class StudentController extends Controller
                 $user->password = Hash::make($password);
                 $user->name = $data['first_name'].' '.$data['last_name'];
                 $user->start_date = $authUser->start_date;
-                $user->parent_user_id = $parentUser->id;
+                $user->parent_user_id = $parentUser ? $parentUser->id : null;
                 $user->added_by = $authUser->id;
                 $user->password_check = $password;
                 $user->org_id = $authUser->org_id;
@@ -173,9 +345,10 @@ class StudentController extends Controller
 
                 $data['school_id'] = $authUser->client_id;
                 $data['user_id'] = $user->id;
-                $data['parent_id'] = $parent->id;
+                $data['parent_id'] = null;
                 $data['unique_id'] = time().$authUser->client_id.$authUser->id;
             }else{
+                $user->parent_user_id = $parentUser ? $parentUser->id : null;
                 $user->name = $data['first_name'].' '.$data['last_name'];
                 $user->save();
             }
@@ -194,6 +367,20 @@ class StudentController extends Controller
                 $student = $e_student;
             }
 
+            $parent = StudentParent::where('student_id',$student->id)->first();
+
+            if(!$parent){
+                $parent_data['student_id'] = $student->id;
+                $parent_data['school_id'] = $authUser->client_id;
+                $parent_data['unique_id'] = time().$authUser->client_id.$authUser->id.$student->id;
+                $parent = StudentParent::create($parent_data);
+            }else{
+                $parent->update($parent_data);
+            }
+
+            $student->parent_id = $parent->id;
+            $student->save();
+
             DB::commit();
 
             return response()->json([
@@ -210,6 +397,8 @@ class StudentController extends Controller
                 'message' => $e->getMessage()
             ],500);
         }
+
+        
     }
 
     public function studentProfile($student_token){

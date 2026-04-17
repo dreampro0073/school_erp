@@ -105,9 +105,10 @@
                               <th>
                                  <span class="dt-column-title" role="button">Status</span><span class="dt-column-order"></span>
                               </th>
-                              <th>
+                              <td>
                                  <span class="dt-column-title" role="button">Action</span><span class="dt-column-order"></span>
-                              </th>
+                              </td>
+                             
                            </tr>
                         </thead>
                         <tbody>
@@ -132,8 +133,9 @@
                                     </div>
                                  </div>
                               </td>
+                              <td></td>
                               <td>@{{item.dob}}</td>
-                              <td>Male</td>
+                              <td></td>
                               <td>@{{item.mobile}}</td>
                               
                               <td>

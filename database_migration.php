@@ -571,3 +571,18 @@ CREATE TABLE IF NOT EXISTS `user_answers` (
   KEY `user_answers_question_id_index` (`question_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+//DIpanshu
+
+ALTER TABLE `parents` ADD `student_id` INT NOT NULL DEFAULT '0' AFTER `user_id`;
+
+ALTER TABLE `users` CHANGE `parent_user_id` `parent_user_id` INT(11) NULL DEFAULT NULL;
+ALTER TABLE `students` CHANGE `parent_id` `parent_id` INT(11) NULL DEFAULT NULL;
+
+
+//DIpanshu
+
+ALTER TABLE parents DROP COLUMN student_id;
+ALTER TABLE parents 
+ADD COLUMN user_id BIGINT UNSIGNED NULL AFTER id;
+ALTER TABLE students 
+ADD COLUMN parent_id BIGINT UNSIGNED NULL AFTER user_id;
