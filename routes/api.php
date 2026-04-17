@@ -62,6 +62,8 @@ use App\Http\Controllers\AspirantController;
         });
 
         Route::prefix('users')->controller(SuperAdminController::class)->group(function () {
+            Route::post('/uploadFile', 'uploadFile');
+            
             Route::post('/init', 'initUsers');
             Route::post('/edit', 'editUsers');
             Route::post('/submit-users', 'submitUsers');
@@ -101,6 +103,7 @@ use App\Http\Controllers\AspirantController;
                 Route::post('/get-attendance', 'getAttendance');
                 Route::post('/get-leaves', 'getLeaves');
                 Route::post('/get-fees', 'getFees');
+                Route::post('/delete', 'deleteTeacher');
             }
         );
 

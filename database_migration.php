@@ -570,3 +570,8 @@ CREATE TABLE IF NOT EXISTS `user_answers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 //Uppper code deployed to PROD 
+
+ALTER TABLE `teachers` ADD `marital_status` VARCHAR(50) NULL DEFAULT NULL AFTER `gender`;
+ALTER TABLE `teachers` ADD `qualification` VARCHAR(255) NULL DEFAULT NULL AFTER `mobile`, ADD `eligibility` VARCHAR(255) NULL DEFAULT NULL AFTER `qualification`, ADD `skills` VARCHAR(255) NULL DEFAULT NULL AFTER `eligibility`, ADD `experience` VARCHAR(255) NULL DEFAULT NULL AFTER `skills`;
+ALTER TABLE `teachers` CHANGE `status` `status` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '0=>active,1=>inactive, 2=>deleted';
+ALTER TABLE `schools` ADD `short_name` VARCHAR(255) NULL DEFAULT NULL AFTER `school_name`, ADD `logo` VARCHAR(255) NULL DEFAULT NULL AFTER `short_name`;

@@ -82,7 +82,23 @@
                   <div class="text-danger-600 text-xs mt-1" ng-if="(myForm.aadhar_no.$touched || myForm.$submitted) && myForm.aadhar_no.$error.pattern">
                      Enter a valid 12-digit Aadhar number.
                   </div>
-              </div>
+               </div>
+               <div class="form-group col-md-4">
+                  <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">
+                     Marital Status <span class="text-danger-600">*</span>
+                  </label>
+                  <select class="form-control" name="marital_status" ng-model="formData.marital_status" required>
+                     <option value="">Select</option>
+                     <option value="Married">Married</option>
+                     <option value="Unmarried">Unmarried</option>
+                     <option value="Divorced">Divorced</option>
+                     <option value="Widowed">Widowed</option>
+                  </select>
+                  <div class="text-danger-600 text-xs mt-1" 
+                       ng-if="(myForm.marital_status.$touched || myForm.$submitted) && myForm.marital_status.$error.required">
+                     Marital status is required.
+                  </div>
+               </div>
             </div>
          </div>
       </div>
@@ -97,7 +113,7 @@
                   <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Name </label>
                   <input type="text" class="form-control" ng-model="formData.father_name">
                </div>
-
+               @if(Auth::user()->client_id == 2)
                <div class="form-group col-md-6">
                   <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Mobile </label>
                   <input type="text" class="form-control" ng-model="formData.father_mobile">
@@ -112,12 +128,14 @@
                      <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Aadhar No </label>
                      <input type="text" class="form-control" ng-model="formData.father_aadhar_no">
                  </div>
+                 @endif
 
                  <div class="form-group col-md-6">
                      <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Name </label>
                      <input type="text" class="form-control" ng-model="formData.mother_name">
                  </div>
 
+                 @if(Auth::user()->client_id == 2)
                  <div class="form-group col-md-6">
                      <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Mobile</label>
                      <input type="text" class="form-control" ng-model="formData.mother_mobile">
@@ -132,6 +150,7 @@
                      <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Aadhar No </label>
                      <input type="text" class="form-control" ng-model="formData.mother_aadhar_no">
                  </div>
+                 @endif
 
                  <div class="form-group col-md-4">
                      <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Status </label>
@@ -181,22 +200,70 @@
       </div>
 
       <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden mt-16">
-         <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
-             <h6 class="text-lg fw-semibold mb-0">Previous School Details</h6>
+         <div class="card-header border-bottom bg-base py-16 px-24">
+            <h6 class="text-lg fw-semibold mb-0">Professional Details</h6>
          </div>
-         <div class="card-body p-20">
-             <div class="row g-3">
-                 <div class="form-group col-md-6">
-                     <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">School Name </label>
-                     <input type="text" class="form-control" ng-model="formData.previous_school">
-                 </div>
 
-                 <div class="form-group col-md-6">
-                     <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Address  </label>
-                     <input type="text" class="form-control" ng-model="formData.previous_school_address">
-                 </div>
-                 
-             </div>
+         <div class="card-body p-20">
+            <div class="row g-3">
+
+               <div class="form-group col-md-4">
+                  <label class="text-sm fw-semibold text-primary-light mb-8">
+                     Qualification <span class="text-danger-600">*</span>
+                  </label>
+                  <select class="form-control" ng-model="formData.qualification" required>
+                     <option value="">Select</option>
+                     <option value="D.El.Ed">D.El.Ed</option>
+                     <option value="B.Ed">B.Ed</option>
+                     <option value="M.Ed">M.Ed</option>
+                     <option value="Graduation">Graduation</option>
+                     <option value="Post Graduation">Post Graduation</option>
+                     <option value="PhD">PhD</option>
+                  </select>
+               </div>
+
+               <div class="form-group col-md-4">
+                  <label class="text-sm fw-semibold text-primary-light mb-8">
+                     Teaching Eligibility
+                  </label>
+                  <select class="form-control" ng-model="formData.eligibility">
+                     <option value="">Select</option>
+                     <option value="CTET">CTET</option>
+                     <option value="TET">State TET</option>
+                     <option value="NET">UGC NET</option>
+                     <option value="None">None</option>
+                  </select>
+               </div>
+
+               <div class="form-group col-md-4">
+                  <label class="text-sm fw-semibold text-primary-light mb-8">
+                     Experience (Years)
+                  </label>
+                  <input type="number" class="form-control" ng-model="formData.experience">
+               </div>
+
+               <div class="form-group col-md-6">
+                  <label class="text-sm fw-semibold text-primary-light mb-8">
+                     Skills
+                  </label>
+                  <input type="text" class="form-control" placeholder="e.g. Classroom Management, MS Office" ng-model="formData.skills">
+               </div>
+
+               <div class="form-group col-md-6">
+                  <label class="text-sm fw-semibold text-primary-light mb-8">
+                     Previous School Name
+                  </label>
+                  <input type="text" class="form-control" ng-model="formData.previous_school">
+               </div>
+
+               <div class="form-group col-md-6">
+                  <label class="text-sm fw-semibold text-primary-light mb-8">
+                     Previous School Address
+                  </label>
+                  <input type="text" class="form-control" ng-model="formData.previous_school_address">
+               </div>
+
+            </div>
          </div>
       </div>
 
@@ -225,6 +292,7 @@
          </div>
       </div>
 
+      @if(Auth::user()->client_id == 2)
       <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden mt-16">
          <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
             <h6 class="text-lg fw-semibold mb-0">Salary Structure</h6>
@@ -295,6 +363,7 @@
             </div>
          </div>
       </div>
+      @endif
 
       <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden mt-16">
          <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">

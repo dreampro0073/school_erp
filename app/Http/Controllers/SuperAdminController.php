@@ -26,7 +26,7 @@ class SuperAdminController extends Controller {
     }
 
     public function editUsers(Request $request){
-        $user = DB::table('schools')->select('schools.name','schools.id','schools.school_name','schools.email','schools.mobile','schools.status','schools.gst','schools.address','users.start_date','users.end_date')
+        $user = DB::table('schools')->select('schools.name','schools.id','schools.school_name','schools.email','schools.mobile','schools.status','schools.gst','schools.address','users.start_date','users.end_date', "schools.short_name", "schools.logo")
             ->leftJoin('users','users.id','=','schools.user_id')
             ->where('schools.user_id',$request->id)->first();
         if ($user) {
@@ -57,6 +57,8 @@ class SuperAdminController extends Controller {
         $validator = Validator::make($request->all(), [
             'school_name' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:100'],
+            'logo' => ['required', 'string'],
+            'short_name' => ['required', 'string'],
             'email' => 'required|email|unique:users,email,' . $user_id,
             'mobile' => ['nullable', 'string', 'max:50'],
         ]);
@@ -76,6 +78,8 @@ class SuperAdminController extends Controller {
 
             $school->name = $request->name;
             $school->school_name = $request->school_name;
+            $school->short_name = $request->short_name;
+            $school->logo = $request->logo;
             $school->email = $request->email;
             $school->mobile = $request->mobile;
             $school->address = $request->address;
@@ -492,6 +496,47 @@ class SuperAdminController extends Controller {
         }
 
         return back()->with('success', 'User status updated successfully.');
+    }
+
+    public function uploadFile(Request $request){
+
+
+        $destination = "school_assets/";
+
+        if($request->file('media')){
+            $extension = $request->file('media')->getClientOriginalExtension();
+            if(in_array($extension, User::fileExtensions())){
+
+                $file = $request->file('media');
+                $name_file = pathinfo($request->file('media')->getClientOriginalName(), PATHINFO_FILENAME);
+                $name_file = preg_replace('/[^a-zA-Z0-9]/', '', $name_file);
+
+                $name = 'student'.$name_file.'_'.strtotime("now").'.'.strtolower($extension);
+                $file = $file->move($destination, $name);
+                $data['media'] = $destination.$name;
+                $data['media_link'] = url($destination.$name);
+
+                return response()->json([
+                    "success" => true,
+                    "data" => $data,
+                ]);
+            }else{
+
+                return response()->json([
+                    "success" => false,
+                    "message" => "Invalid file format for image , Valid extentions are  jpg , png ,jpeg",
+                ]);
+
+
+            }
+        }else{
+            return response()->json([
+                "success" => false,
+                "message" => "Please select image",
+            ]);
+        }
+        
+
     }
 
 }

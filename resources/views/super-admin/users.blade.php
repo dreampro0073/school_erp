@@ -74,6 +74,9 @@
                                         <span class="dt-column-title" role="button">Name</span><span class="dt-column-order"></span>
                                     </th>                                    
                                     <th>
+                                        <span class="dt-column-title" role="button">School Short Name</span>
+                                    </th>                                    
+                                    <th>
                                         <span class="dt-column-title" role="button">School Name</span><span class="dt-column-order"></span>
                                     </th>
                                     <th>
@@ -109,7 +112,14 @@
 
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <!-- <img src="assets/images/thumbs/avatar-img1.png" alt="Image" class="flex-shrink-0 me-12 radius-8"> -->
+                                            <img src="item.logo" alt="Image" class="flex-shrink-0 me-12 radius-8">
+                                            <div class="">
+                                                <h6 class="text-md mb-0 fw-medium flex-grow-1">@{{item.short_name}}</h6>
+                                            </div>
+                                        </div>
+                                    </td>                                    
+                                    <td>
+                                        <div class="d-flex align-items-center">
                                             <div class="">
                                                 <h6 class="text-md mb-0 fw-medium flex-grow-1">@{{item.school_name}}</h6>
                                             </div>

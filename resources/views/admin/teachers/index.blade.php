@@ -81,6 +81,12 @@
                               </th>
                               <th>
                                  <span class="dt-column-title" role="button">Gender</span><span class="dt-column-order"></span>
+                              </th>                                
+                              <th>
+                                 <span class="dt-column-title" role="button">Qualification</span><span class="dt-column-order"></span>
+                              </th>                              
+                              <th>
+                                 <span class="dt-column-title" role="button">Marital Status</span><span class="dt-column-order"></span>
                               </th>
                               <th>
                                  <span class="dt-column-title" role="button">Mobile Number</span><span class="dt-column-order"></span>
@@ -108,6 +114,8 @@
                               </td>
                               <td>@{{item.dob || '-'}}</td>
                               <td>@{{item.gender || '-'}}</td>
+                              <td>@{{item.qualification || '-'}}</td>
+                              <td>@{{item.marital_status || '-'}}</td>
                               <td>@{{item.mobile || '-'}}</td>
                               <td>@{{item.email || '-'}}</td>
                               <td>
@@ -126,6 +134,15 @@
                                           <i class="ri-edit-2-line"></i>
                                           Edit
                                           </a>
+                                       </li>
+                                       <li>
+                                         <a href="javascript:void(0)"
+                                            ng-click="deleteTeacher(item, $index)"
+                                            class="dropdown-item rounded text-danger bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
+                                            
+                                            <i class="ri-delete-bin-line"></i>
+                                            Delete
+                                         </a>
                                        </li>
                                     </ul>
                                  </div>
