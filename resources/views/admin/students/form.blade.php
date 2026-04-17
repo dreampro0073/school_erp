@@ -26,15 +26,26 @@
                     </div> -->
 
                     <div class="form-group col-md-4">
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">SR. No <span class="text-danger-600">* </span> </label>
+                        <input type="text" class="form-control" ng-model="formData.sr_no" required>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Roll. No <span class="text-danger-600">* </span> </label>
+                        <input type="text" class="form-control" ng-model="formData.roll_no">
+                    </div>
+
+                    <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Class  <span class="text-danger-600">* </span> </label>
-                        <select class="form-select" ng-model="formData.standard_id" convert-to-number>
+                        <select class="form-select" ng-model="formData.standard_id" convert-to-number required>
                             <option value="">Select</option>
                             <option value="@{{item.value}}" ng-repeat="item in standards">@{{item.label}}</option>
                         </select>
                     </div>
                     <div class="form-group col-md-4">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Section <span class="text-danger-600">* </span> </label>
-                        <select class="form-select" ng-model="formData.section_id" convert-to-number>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8" >Section <span class="text-danger-600">* </span> </label>
+                        <select class="form-select" ng-model="formData.section_id" convert-to-number required>
+                            <option value="">Select</option>
                             <option value="1">A</option>
                             <option value="2">B</option>
                         </select>
@@ -42,11 +53,11 @@
 
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">First Name <span class="text-danger-600">* </span> </label>
-                        <input type="text" class="form-control" ng-model="formData.first_name">
+                        <input type="text" class="form-control" ng-model="formData.first_name" required>
                     </div>
 
                     <div class="form-group col-md-4">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Last Name  <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Last Name  <span class="text-danger-600"> </span> </label>
                         <input type="text" class="form-control" ng-model="formData.last_name">
                     </div>
 
@@ -55,12 +66,12 @@
                         <input class="flatpickr flatpickr-input form-control"
                                type="text"
                                ng-model="formData.dob"
-                               placeholder="Select Date..">
+                               placeholder="Select Date.." required>
                     </div>
 
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Gender  <span class="text-danger-600">* </span> </label>
-                        <select class="form-select" ng-model="formData.gender">
+                        <select class="form-select" ng-model="formData.gender" required>
                             <option value="">Select</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
@@ -69,15 +80,13 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mobile  <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mobile </label>
                         <input type="text" class="form-control" ng-model="formData.mobile">
                     </div>
 
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Email  <span class="text-danger-600">* </span> </label>
-                        <input type="email" class="form-control"
-                               ng-model="formData.email"
-                               ng-readonly="formData.id">
+                        <input type="email" class="form-control" ng-model="formData.email" ng-readonly="formData.id" required>
                     </div>
 
                     <div class="form-group col-md-4">
@@ -87,14 +96,14 @@
 
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Relgion <span class="text-danger-600">* </span> </label>
-                        <select class="form-select" ng-model="formData.religion_id" convert-to-number>
+                        <select class="form-select" ng-model="formData.religion_id" convert-to-number required>
                             <option value="">Select</option>
                             <option value="@{{item.value}}" ng-repeat="item in religions">@{{item.label}}</option>
                         </select>
                     </div>
 
                     <div class="form-group col-md-4">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Cast <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Cast </label>
                         <select class="form-select" ng-model="formData.cast_id" convert-to-number>
                             <option value="">Select</option>
                             <option value="@{{item.value}}" ng-repeat="item in casts">@{{item.label}}</option>
@@ -173,43 +182,43 @@
                 <div class="row g-3">
                     <div class="form-group col-md-6">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Name  <span class="text-danger-600">* </span> </label>
-                        <input type="text" class="form-control" ng-model="formData.father_name">
+                        <input type="text" class="form-control" ng-model="formData.father_name" required>
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Mobile  <span class="text-danger-600">* </span> </label>
-                        <input type="text" class="form-control" ng-model="formData.father_mobile">
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Mobile <span class="text-danger-600">* </span> </label>
+                        <input type="text" class="form-control" ng-model="formData.father_mobile" required>
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Email  <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Email</label>
                         <input type="email" class="form-control"
                                ng-model="formData.father_email"
                                ng-readonly="formData.id">
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Aadhar No  <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Aadhar No</label>
                         <input type="text" class="form-control" ng-model="formData.father_aadhar_no">
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Name  <span class="text-danger-600">* </span> </label>
-                        <input type="text" class="form-control" ng-model="formData.mother_name">
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Name <span class="text-danger-600">* </span> </label>
+                        <input type="text" class="form-control" ng-model="formData.mother_name" required>
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Mobile  <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Mobile</label>
                         <input type="text" class="form-control" ng-model="formData.mother_mobile">
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Email  <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Email</label>
                         <input type="email" class="form-control" ng-model="formData.mother_email">
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Aadhar No  <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mother's Aadhar No</label>
                         <input type="text" class="form-control" ng-model="formData.mother_aadhar_no">
                     </div>
 
@@ -227,7 +236,7 @@
             <div class="card-body p-20">
                 <div class="row g-3">
                     <div class="form-group col-md-4">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Relgion <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Blood Group <span class="text-danger-600">* </span> </label>
                         <select class="form-select" ng-model="formData.blood_group_id" convert-to-number>
                             <option value="">Select</option>
                             <option value="@{{item.value}}" ng-repeat="item in blood_groups">@{{item.label}}</option>
@@ -236,11 +245,11 @@
 
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Weight <span class="text-danger-600">* </span> </label>
-                        <input type="text" class="form-control" ng-model="formData.weight">
+                        <input type="text" class="form-control" ng-model="formData.weight" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Height  <span class="text-danger-600">* </span> </label>
-                        <input type="text" class="form-control" ng-model="formData.height">
+                        <input type="text" class="form-control" ng-model="formData.height" required>
                     </div>
                 </div>
             </div>
@@ -270,15 +279,29 @@
             </div>
             <div class="card-body p-20">
                 <div class="row g-3">
-                     <div class="form-group col-md-12">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Residential Address  <span class="text-danger-600">* </span> </label>
-                        <textarea class="form-control" rows="1" ng-model="formData.residential_address"></textarea>
+                    <div class="form-group col-md-12">
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">
+                            Permanent Address<span class="text-danger-600">*</span>
+                        </label>
+
+                        <textarea class="form-control" rows="1" ng-model="formData.permanent_address" required></textarea>
                     </div>
 
                     <div class="form-group col-md-12">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Permanent Address  <span class="text-danger-600">* </span> </label>
-                        <textarea class="form-control" rows="1" ng-model="formData.permanent_address"></textarea>
-                    </div> 
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">
+                            Residential Address<span class="text-danger-600">*</span>
+                        </label>
+
+                        <div class="form-check mb-2 d-inline-flex">
+                            <input class="form-check-input" type="checkbox" ng-model="sameAs" ng-change="copyAddress()" id="sameAsCheck">
+                            <label class="form-check-label" for="sameAsCheck">
+                                Same as Permanent Address
+                            </label>
+                        </div>
+                        <textarea class="form-control" rows="1" ng-model="formData.residential_address" required></textarea>
+                    </div>
+
+                    
                 </div>
             </div>
         </div>

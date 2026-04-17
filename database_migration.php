@@ -569,9 +569,28 @@ CREATE TABLE IF NOT EXISTS `user_answers` (
   KEY `user_answers_question_id_index` (`question_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+ALTER TABLE students ADD sr_no VARCHAR(50) NULL DEFAULT NULL AFTER erp_id, ADD roll_no VARCHAR(50) NULL DEFAULT NULL AFTER sr_no;
+
 //Uppper code deployed to PROD 
 
 ALTER TABLE `teachers` ADD `marital_status` VARCHAR(50) NULL DEFAULT NULL AFTER `gender`;
 ALTER TABLE `teachers` ADD `qualification` VARCHAR(255) NULL DEFAULT NULL AFTER `mobile`, ADD `eligibility` VARCHAR(255) NULL DEFAULT NULL AFTER `qualification`, ADD `skills` VARCHAR(255) NULL DEFAULT NULL AFTER `eligibility`, ADD `experience` VARCHAR(255) NULL DEFAULT NULL AFTER `skills`;
 ALTER TABLE `teachers` CHANGE `status` `status` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '0=>active,1=>inactive, 2=>deleted';
 ALTER TABLE `schools` ADD `short_name` VARCHAR(255) NULL DEFAULT NULL AFTER `school_name`, ADD `logo` VARCHAR(255) NULL DEFAULT NULL AFTER `short_name`;
+
+//DIpanshu
+
+ALTER TABLE `parents` ADD `student_id` INT NOT NULL DEFAULT '0' AFTER `user_id`;
+
+ALTER TABLE `users` CHANGE `parent_user_id` `parent_user_id` INT(11) NULL DEFAULT NULL;
+ALTER TABLE `students` CHANGE `parent_id` `parent_id` INT(11) NULL DEFAULT NULL;
+
+
+//DIpanshu
+
+ALTER TABLE parents DROP COLUMN student_id;
+ALTER TABLE parents 
+ADD COLUMN user_id BIGINT UNSIGNED NULL AFTER id;
+ALTER TABLE students 
+ADD COLUMN parent_id BIGINT UNSIGNED NULL AFTER user_id;
+

@@ -13,44 +13,52 @@
         <div class="row gy-4">
             <div class="col-xxl-8">
                 <div class="row gy-4">
+
                     <div class="col-xxl-4 col-sm-6">
-                        <div class="card shadow-1 radius-8 h-100">
-                            <a href="{{ url('/admin/teachers') }}">
+                        <div class="card shadow-1 radius-8 gradient-bg-end-1 h-100">
+                            <a href="{{url('admin/teachers')}}">
                                 <div class="card-body p-20">
                                     <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
-                                        <div class="w-44-px h-44-px rounded-circle d-flex justify-content-center align-items-center" >
-                                            <i class="ri-circle-fill circle-icon w-auto"></i>
+                                        <div class="w-44-px h-44-px bg-primary-600 rounded-circle d-flex justify-content-center align-items-center">
+                                            <i class="ri-group-3-line text-white "></i>
                                         </div>
                                         <p class="fw-medium text-primary-light mb-1">Teachers</p>
                                     </div>
                                     <h6 class="mb-0">@{{teachers['total_teachers']}}</h6>
-                                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center justify-content-between">
-                                        <span>Active: @{{teachers['active_teachers']}}</span>
-                                        <span>Inactive: @{{teachers.inactive_teachers}}</span>
-                                    </p>
+                                    <a href="{{url('admin/students/add')}}" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6 mt-10 justify-content-center">
+                                        <span class="d-flex text-md">
+                                            <i class="ri-add-large-line"></i>
+                                        </span>
+                                        Add Teacher
+                                    </a>
                                 </div>
                             </a>
                         </div>
+                        
                     </div>
 
                     <div class="col-xxl-4 col-sm-6">
-                        <div class="card shadow-1 radius-8 h-100">
-                            <a href="{{ url('/admin/students') }}">
+                        <div class="card shadow-1 radius-8 gradient-bg-end-2 h-100">
+                            <a href="{{url('admin/teachers')}}">
                                 <div class="card-body p-20">
                                     <div class="d-flex flex-wrap align-items-center gap-3 mb-16">
-                                        <div class="w-44-px h-44-px rounded-circle d-flex justify-content-center align-items-center" >
-                                            <i class="ri-circle-fill circle-icon w-auto"></i>
+                                        <div class="w-44-px h-44-px bg-primary-600 rounded-circle d-flex justify-content-center align-items-center">
+                                            <i class="ri-group-line text-white"></i>
                                         </div>
                                         <p class="fw-medium text-primary-light mb-1">Students</p>
                                     </div>
                                     <h6 class="mb-0">@{{students['total_students']}}</h6>
-                                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center justify-content-between">
-                                        <span>Active: @{{students['active_students']}}</span>
-                                        <span>Inactive: @{{students.inactive_students}}</span>
-                                    </p>
+
+                                    <a href="{{url('admin/students/add')}}" class="my-sidebar-btn btn btn-primary-600 d-flex align-items-center gap-6 mt-10 justify-content-center">
+                                         <span class="d-flex text-md">
+                                              <i class="ri-add-large-line"></i>
+                                         </span>
+                                         Admission
+                                    </a>
                                 </div>
                             </a>
                         </div>
+                        
                     </div>
                 </div>
             </div>
