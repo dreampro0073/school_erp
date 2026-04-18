@@ -50,7 +50,7 @@ app.controller('suparAdminDashboardCtrl', function($scope , DBService){
 });
 
 
-app.controller('superAdminUsersCtrl', function($scope , DBService){
+app.controller('superAdminUsersCtrl', function($scope , DBService, Upload){
     $scope.loading = true;
     $scope.processing = false;
     $scope.type = "";
@@ -92,6 +92,54 @@ app.controller('superAdminUsersCtrl', function($scope , DBService){
             $scope.processing = false;
         })
     }
+
+    $scope.uploadFile = function (file, name, object) {
+
+      
+        if (file.size > 1024 * 1024) {
+            alert("File size must be less than 1MB");
+            return;
+        }
+
+        object.uploading = true;
+
+        var url = base_url + '/api/super-admin/users/uploadFile';
+
+        Upload.upload({
+            url: url,
+            data: {
+                media: file
+            }
+        }).then(function (resp) {
+
+            if (resp.data.success) {
+
+                object[name] = resp.data.data.media_link;
+                object[name + '_link'] = resp.data.data.media_link;
+
+            } else {
+                alert(resp.data.message);
+            }
+
+            object.uploading = false;
+
+        }, function (resp) {
+            object.uploading = false;
+            alert("Upload failed, please try again");
+
+        }, function (evt) {
+            object.progress = parseInt(100.0 * evt.loaded / evt.total);
+
+        });
+
+
+    };
+
+    $scope.removeFile = function (object, name) {
+        object[name] = '';
+        object[name + '_link'] = '';
+    };
+
     
 });
 
@@ -652,6 +700,31 @@ app.controller('teacherCtrl', function($scope, $timeout, DBService){
                 }
                 $scope.loading = false;
             });
+    };
+
+    $scope.deleteTeacher = function(item, index) {
+
+        if (!confirm("Are you sure you want to delete this record?")) {
+            return;
+        }
+
+        $scope.loading = true;
+
+        DBService.postCall(
+            { unique_id: item.unique_id },
+            '/api/admin/teachers/delete'
+        )
+        .then(function(data) {
+
+            if (data.success) {
+                $scope.teachers.splice(index, 1);
+                $scope.totalRecords--;
+            } else {
+                alert(data.message || "Delete failed!");
+            }
+
+            $scope.loading = false;
+        });
     };
 });
 

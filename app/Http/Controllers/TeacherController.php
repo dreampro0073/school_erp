@@ -65,7 +65,7 @@ class TeacherController extends Controller {
         $auth_user = User::authUser($apiToken);
 
         $limit = $request->has('limit')?$request->limit:10;
-        $query = Teacher::where('school_id', $auth_user->client_id);
+        $query = Teacher::where('school_id', $auth_user->client_id)->where("status", "!=", 2);
         if ($request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('first_name', 'like', '%'.$request->search.'%')
@@ -194,7 +194,7 @@ class TeacherController extends Controller {
 
         $bank = DB::table('bank_details')->where('user_id', $teacher->user_id)->first();
 
-           $salary = DB::table('salary_structures')
+        $salary = DB::table('salary_structures')
         ->where('user_id', $teacher->user_id)
         ->get();
 
@@ -206,6 +206,11 @@ class TeacherController extends Controller {
             'email' => $teacher->email,
             'mobile' => $teacher->mobile,
             'gender' => $teacher->gender,
+            'marital_status' => $teacher->marital_status,
+            'qualification' => $teacher->qualification,
+            'eligibility' => $teacher->eligibility,
+            'experience' => $teacher->experience,
+            'skills' => $teacher->skills,
             'dob' => $teacher->dob ? date('Y-m-d', strtotime($teacher->dob)) : null,
             'aadhar_no' => $teacher->aadhar_no,
 
@@ -272,6 +277,29 @@ class TeacherController extends Controller {
         ]);
     }
 
+    public function deleteTeacher(Request $request)
+    {
+        $apiToken = $request->header('apiToken');
+        $auth_user = User::authUser($apiToken);
+
+        $teacher = Teacher::where('unique_id', $request->unique_id)->where('school_id', $auth_user->client_id)->first();
+
+        if (!$teacher) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Record not found'
+            ]);
+        }
+
+        $teacher->status = 2;
+        $teacher->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Deleted successfully'
+        ]);
+    }
+
     public function storeTeacher(Request $request)
     {
         $authUser = User::resolveApiUser($request);
@@ -282,6 +310,8 @@ class TeacherController extends Controller {
             'first_name' => ['required','string','max:255'],
             'last_name' => ['nullable','string','max:255'],
             'gender' => ['required'],
+            'qualification' => ['required'],
+            'marital_status' => ['required'],
             'dob' => ['required'],
             'mobile' => ['required','digits:10'],
             'email' => 'required|email|unique:teachers,email,' . ($e_teacher->id ?? 'NULL') . ',id',
@@ -302,10 +332,10 @@ class TeacherController extends Controller {
             'bank_details.branch_name' => ['required','string','max:255'],
             'bank_details.upi_id' => ['nullable','string','max:255'],
 
-            'salary_components' => ['required','array','min:1'],
-            'salary_components.*.component_name' => ['required','string','max:255'],
-            'salary_components.*.component_type' => ['required','in:earning,deduction'],
-            'salary_components.*.amount' => ['required','regex:/^\d+(\.\d{1,2})?$/'],
+            // 'salary_components' => ['required','array','min:1'],
+            // 'salary_components.*.component_name' => ['required','string','max:255'],
+            // 'salary_components.*.component_type' => ['required','in:earning,deduction'],
+            // 'salary_components.*.amount' => ['required','regex:/^\d+(\.\d{1,2})?$/'],
         ]);
 
         $validator->setCustomMessages([
@@ -367,9 +397,15 @@ class TeacherController extends Controller {
                 'email' => $request->email,
                 'mobile' => $request->mobile,
                 'gender' => $request->gender,
+                'marital_status' => $request->marital_status,
                 'dob' => date("Y-m-d", strtotime($request->dob)),
                 'aadhar_no' => $request->aadhar_no,
 
+                'qualification' => $request->qualification,
+                'eligibility' => $request->eligibility,
+                'experience' => $request->experience,
+                'skills' => $request->skills,
+                
 
                 'residential_address' => $request->residential_address,
                 'permanent_address' => $request->permanent_address,

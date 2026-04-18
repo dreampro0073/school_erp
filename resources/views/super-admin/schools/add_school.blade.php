@@ -20,49 +20,72 @@
             <div class="card-body p-20">
                 <div class="row g-3">
 
-                    <!-- School Name -->
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">School Name  <span class="text-danger-600">* </span> </label>
                         <input type="text" class="form-control" ng-model="formData.school_name">
+                    </div>                    
+
+                    <div class="form-group col-md-4">
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">School Short Name  <span class="text-danger-600">* </span> </label>
+                        <input type="text" class="form-control" ng-model="formData.short_name">
                     </div>
 
-                    <!-- Owner Name -->
+                    <div class="form-group col-md-4">
+                        <label class="text-sm fw-semibold text-primary-light d-block mb-8">Logo</label>
+
+                        <button type="button"
+                            ng-if="!formData.logo || formData.logo == ''"
+                            class="btn btn-primary-600 border border-primary-600 text-md px-28 py-8 radius-8"
+                            ngf-select="uploadFile($file,'logo',formData)"
+                            ng-hide="formData.uploading">
+                            Select Image
+                        </button>
+
+                        <a ng-href="@{{formData.logo}}"
+                           ng-show="formData.logo"
+                           class="btn btn-primary-600 border border-primary-600 text-md px-28 py-8 radius-8"
+                           target="_blank">
+                           View Image
+                        </a>
+
+                        <button ng-show="formData.logo"
+                            type="button"
+                            class="btn btn-danger"
+                            ng-click="removeFile(formData,'logo')">
+                            X
+                        </button>
+                    </div>
+
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Owner Name  <span class="text-danger-600">* </span> </label>
                         <input type="text" class="form-control" ng-model="formData.name">
                     </div>
 
-                    <!-- Start Date -->
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Start Date  <span class="text-danger-600">* </span> </label>
                         <input type="date" class="form-control" ng-model="formData.subscription_start_date">
                     </div>
 
-                    <!-- End Date -->
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">End Date  <span class="text-danger-600">* </span> </label>
                         <input type="date" class="form-control" ng-model="formData.subscription_end_date" min="@{{formData.subscription_start_date}}">
                     </div>
 
-                    <!-- GST -->
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">GST Number</label>
                         <input type="text" class="form-control" ng-model="formData.gst">
                     </div>
 
-                    <!-- Email -->
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Email  <span class="text-danger-600">* </span> </label>
                         <input type="email" class="form-control" ng-model="formData.email">
                     </div>
 
-                    <!-- Mobile -->
                     <div class="form-group col-md-4">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Mobile  <span class="text-danger-600">* </span> </label>
                         <input type="text" class="form-control" ng-model="formData.mobile">
                     </div>
 
-                    <!-- Address -->
                     <div class="form-group col-md-6">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Address</label>
                         <input type="text" class="form-control" ng-model="formData.address">

@@ -212,10 +212,12 @@ class SchoolManagementController extends Controller {
         ]);
 
         if($request->id){
-            DB::table('standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)->where("is_verified", "!=", 1)->update([
+            DB::table('standards')->where('id', $request->id)->where("client_id", $auth_user->client_id)
+            // ->where("is_verified", "!=", 1)
+            ->update([
                 "name" => $request->name,
                 "status" => 0, 
-                "is_verified" => 0
+                "is_verified" => 1
             ]);
 
             $data["success"] = true;
@@ -225,7 +227,7 @@ class SchoolManagementController extends Controller {
             DB::table('standards')->insertGetId([
                 "name" => $request->name,
                 'status'       => 0,
-                "is_verified"  => 0,
+                "is_verified"  => 1,
                 "client_id" => $auth_user->client_id,
                 "created_at" => date("Y-m-d H:i:s")
             ]);                
