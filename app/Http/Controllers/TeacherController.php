@@ -314,7 +314,7 @@ class TeacherController extends Controller {
             'marital_status' => ['required'],
             'dob' => ['required'],
             'mobile' => ['required','digits:10'],
-            'email' => 'required|email|unique:teachers,email,' . ($e_teacher->id ?? 'NULL') . ',id',
+            // 'email' => 'required|email|unique:teachers,email,' . ($e_teacher->id ?? 'NULL') . ',id',
             'aadhar_no'=> ['required','digits:12'], 
             'blood_group_id' => ['required','integer'],
             'weight' => ['required','string','max:20'],
@@ -361,36 +361,50 @@ class TeacherController extends Controller {
                 'errors'=>$validator->errors(),
             ],422);
         }
-
+        if(!empty($request->email)){
+            $check = User::where('email',$request->email)
+                ->when($e_teacher, function($q) use ($e_teacher){
+                    return $q->where('id','!=',$e_teacher->user_id);
+                })
+                ->exists();
+            if($check){
+                return response()->json([
+                    'success'=>false,
+                    'message' => "Email already exists in the system kindly use different email",
+                ],422);
+            }
+        }
         DB::beginTransaction();
-
         try {
 
-            $user = User::where('email',$request->email)->first();
-            if(!$user){
 
-                $password = User::getRandPassword();
+            $user = null;
 
-                $user = new User;
+            if(!empty($request->email)){
+                $user = $e_teacher 
+                    ? User::find($e_teacher->user_id) 
+                    : User::where('email',$request->email)->first();
+
+                if(!$user){
+    
+                    $password = User::getRandPassword();
+
+                    $user = new User;
+                    $user->email = $request->email;
+                    $user->password = Hash::make($password);
+                    $user->password_check = $password;
+                    $user->priv = 3;
+                    $user->added_by = $authUser->id;
+                    $user->org_id = $authUser->org_id;
+                    $user->client_id = $authUser->client_id;
+                    $user->parent_user_id = $authUser->parent_user_id;
+                }
                 $user->name = $request->first_name.' '.$request->last_name;
-                $user->email = $request->email;
-                $user->password = Hash::make($password);
-                $user->password_check = $password;
-                $user->priv = 3; 
-                $user->added_by = $authUser->id;
-                $user->org_id = $authUser->org_id;
-                $user->client_id = $authUser->client_id;
-                $user->parent_user_id = $authUser->parent_user_id;
-                $user->save();
-
-
-            }else{
-               $user->name = $request->first_name.' '.$request->last_name;
                 $user->save();
             }
 
             $teacherData = [
-                'user_id' => $user->id,
+                'user_id' => $user ? $user->id : null,
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'name' => $request->first_name.' '.$request->last_name,

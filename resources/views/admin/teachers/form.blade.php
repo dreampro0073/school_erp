@@ -64,14 +64,18 @@
                </div>
                <div class="form-group col-md-4">
                   <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Email <span class="text-danger-600">* </span></label>
-                  <input type="email" class="form-control" name="email" ng-model="formData.email" required>
+                  <input type="email" class="form-control" name="email" ng-model="formData.email">
+               </div>
+               <!-- <div class="form-group col-md-4">
+                  <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Email <span class="text-danger-600">* </span></label>
+                  <input type="email" class="form-control" name="email" ng-model="formData.email">
                   <div class="text-danger-600 text-xs mt-1" ng-if="(myForm.email.$touched || myForm.$submitted) && myForm.email.$error.required">
                      Email is required.
                   </div>
                   <div class="text-danger-600 text-xs mt-1" ng-if="(myForm.email.$touched || myForm.$submitted) && myForm.email.$error.email">
                      Enter a valid email address.
                   </div>
-               </div>
+               </div> -->
 
                <div class="form-group col-md-4">
                   <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Aadhar No  <span class="text-danger-600">* </span> </label>
