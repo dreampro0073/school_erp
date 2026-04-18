@@ -59,7 +59,7 @@ class StudentController extends Controller
             'dob' => ['required'],
             // 'mobile' => ['required','digits:10'],
             // 'email' => 'required|email|unique:users,email,'.$user_id,
-            'aadhar_no'=> ['required','digits:12'], 
+            // 'aadhar_no'=> ['required','digits:12'], 
             'residential_address' => ['required'],
             'permanent_address' => ['required'],
             'father_name' => ['required','string','max:255'],
@@ -72,11 +72,18 @@ class StudentController extends Controller
             'sr_no' => ['required'],
         ]);
 
-        // $validator->after(function ($validator) use ($request) {
-        //     if ($request->has('father_email') && $request->email === $request->father_email) {
-        //         $validator->errors()->add('father_email', 'Parent email cannot be same as student email');
-        //     }
-        // });
+        $validator->after(function ($validator) use ($request) {
+            if (
+                $request->filled('email') &&
+                $request->filled('father_email') &&
+                $request->email === $request->father_email
+            ) {
+                $validator->errors()->add(
+                    'father_email',
+                    'Parent email cannot be same as student email'
+                );
+            }
+        });
 
         if($validator->fails()){
             return response()->json([
@@ -100,12 +107,17 @@ class StudentController extends Controller
             'mother_mobile','mother_email','guardian_name'
         ]);
 
-        if($data['email']){
-            $check = User::where('email',$data['email'])->first();
+        if(!empty($data['email'])){
+
+            $check = User::where('email',$data['email'])
+                ->when($e_student, function($q) use ($e_student){
+                    return $q->where('id','!=',$e_student->user_id);
+                })
+                ->first();
             if($check){
                 return response()->json([
                     'success'=>false,
-                    'message' => "Email already exists in the sytem kindly use different email",
+                    'message' => "Email already exists in the system kindly use different email",
                 ],422);
             }
         }
@@ -145,49 +157,60 @@ class StudentController extends Controller
                     $parentUser->name = $parent_data['father_name'];
                     $parentUser->save();
                 }
-
-
                 $parent->user_id = $parentUser->id;
                 $parent->save();
             }
 
-            $studentEmail = $data['email'] ?? ('student_'.$request->sr_no.'_'.time().'@school.com');
 
-            $user = User::where('email',$studentEmail)->first();
+            if($e_student){
+                $user = User::find($e_student->user_id);
 
-            if(!$user){
-                $user = new User;
-                $password = User::getRandPassword();
+                if(!empty($data['email'])){
+                    $user->email = $data['email'];
+                }
 
-                $user->password = Hash::make($password);
-                $user->name = $data['first_name'].' '.$data['last_name'];
-                $user->start_date = $authUser->start_date;
-                $user->parent_user_id = $parentUser ? $parentUser->id : null;
-                $user->added_by = $authUser->id;
-                $user->password_check = $password;
-                $user->org_id = $authUser->org_id;
-                $user->client_id = $authUser->client_id;
-                $user->priv = 4;
-                $user->email = $studentEmail;
-                $user->save();
+            }else{
+                $studentEmail = !empty($data['email']) 
+                    ? $data['email'] 
+                    : 'student_'.$request->sr_no.'_'.time().'@school.com';
 
+                $user = User::where('email',$studentEmail)->first();
+
+                if(!$user){
+                    $user = new User;
+                    $password = User::getRandPassword();
+
+                    $user->password = Hash::make($password);
+                    $user->password_check = $password;
+                    $user->email = $studentEmail;
+                }
+            }
+
+            $user->name = $data['first_name'].' '.$data['last_name'];
+            $user->start_date = $authUser->start_date;
+            $user->parent_user_id = $parentUser ? $parentUser->id : null;
+            $user->added_by = $authUser->id;
+            $user->org_id = $authUser->org_id;
+            $user->client_id = $authUser->client_id;
+            $user->priv = 4;
+
+            $user->save();
+
+            if(!$e_student){
                 $data['school_id'] = $authUser->client_id;
                 $data['user_id'] = $user->id;
                 $data['parent_id'] = $parent->id;
                 $data['unique_id'] = time().$authUser->client_id.$authUser->id;
-
-            }else{
-                $user->name = $data['first_name'].' '.$data['last_name'];
-                $user->parent_user_id = $parentUser ? $parentUser->id : null;
-                $user->save();
             }
 
             $data['name'] = $data['first_name'].' '.$data['last_name'];
+            $data['email'] = $user->email;
             $data['dob'] = date("Y-m-d",strtotime($request->dob));
 
             if(!$e_student){
                 $student = Student::create($data);
             }else{
+                $data['parent_id'] = $parent->id;
                 $data['admission_no'] = $this->generateAdmissionNumber($authUser->client_id);
                 $e_student->update($data);
                 $student = $e_student;

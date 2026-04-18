@@ -140,18 +140,23 @@ app.controller('addStudentCtrl', function($scope , DBService,Upload){
         // });
 
         DBService.erpPostCall($scope.formData, '/api/admin/students/store').then(function(data){
+
             $scope.processing = false;
+
             if (data.success) {
                 alert(data.message);
                 window.location.href = base_url + '/admin/students';
             } else {
                 if(data.message){
-                    let firstError = data.message;
-                }else{
-                    let firstError = Object.values(data.errors)[0][0];
+                    alert(data.message);
                 }
-                alert(firstError);
-                // $scope.errors = data.errors;
+
+                if(data.errors && Object.keys(data.errors).length > 0){
+                    let firstError = Object.values(data.errors)[0][0];
+                    alert(firstError);
+                    $scope.errors = data.errors;    
+                }
+                
             }
 
         });

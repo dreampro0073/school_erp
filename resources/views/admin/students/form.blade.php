@@ -31,7 +31,7 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Roll. No <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Roll. No</label>
                         <input type="text" class="form-control" ng-model="formData.roll_no">
                     </div>
 
@@ -85,12 +85,12 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Email  <span class="text-danger-600">* </span> </label>
-                        <input type="email" class="form-control" ng-model="formData.email" ng-readonly="formData.id" required>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Email</label>
+                        <input type="email" class="form-control" ng-model="formData.email" ng-readonly="formData.id">
                     </div>
 
                     <div class="form-group col-md-4">
-                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Aadhar No  <span class="text-danger-600">* </span> </label>
+                        <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Aadhar No </label>
                         <input type="text" class="form-control" ng-model="formData.aadhar_no">
                     </div>
 
@@ -194,7 +194,7 @@
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Father's Email</label>
                         <input type="email" class="form-control"
                                ng-model="formData.father_email"
-                               ng-readonly="formData.id">
+                               >
                     </div>
 
                     <div class="form-group col-md-6">
