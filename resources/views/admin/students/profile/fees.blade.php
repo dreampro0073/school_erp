@@ -171,6 +171,7 @@
 					<th scope="col">Payment Mode</th>
 					<th scope="col">Paid Date</th>
 					<th scope="col">Status</th>
+					<th scope="col">Print Slip</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -198,6 +199,10 @@
 							class="bg-success-100 text-success-600 px-20 py-4 radius-4 fw-medium text-sm">
 							Paid
 						</span>
+					</td>
+
+					<td>
+						<a target="_blank" href="{{url('admin/students/receipt/')}}/@{{item.id}}">Print Slip</a>
 					</td>
 				</tr>
 				

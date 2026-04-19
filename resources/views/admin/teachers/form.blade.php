@@ -42,7 +42,7 @@
 
                <div class="form-group col-md-4">
                   <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Gender <span class="text-danger-600">* </span></label>
-                  <select class="form-control" name="gender" ng-model="formData.gender" required>
+                  <select class="form-select" name="gender" ng-model="formData.gender" required>
                      <option value="">Select</option>
                      <option value="Male">Male</option>
                      <option value="Female">Female</option>
@@ -64,7 +64,7 @@
                </div>
                <div class="form-group col-md-4">
                   <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Email <span class="text-danger-600">* </span></label>
-                  <input type="email" class="form-control" name="email" ng-model="formData.email">
+                  <input type="email" class="form-control" name="email" ng-model="formData.email" ng-readonly="formData.enc_id">
                </div>
                <!-- <div class="form-group col-md-4">
                   <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Email <span class="text-danger-600">* </span></label>
@@ -91,7 +91,7 @@
                   <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">
                      Marital Status <span class="text-danger-600">*</span>
                   </label>
-                  <select class="form-control" name="marital_status" ng-model="formData.marital_status" required>
+                  <select class="form-select" name="marital_status" ng-model="formData.marital_status" required>
                      <option value="">Select</option>
                      <option value="Married">Married</option>
                      <option value="Unmarried">Unmarried</option>
@@ -215,7 +215,7 @@
                   <label class="text-sm fw-semibold text-primary-light mb-8">
                      Qualification <span class="text-danger-600">*</span>
                   </label>
-                  <select class="form-control" ng-model="formData.qualification" required>
+                  <select class="form-select" ng-model="formData.qualification" required>
                      <option value="">Select</option>
                      <option value="D.El.Ed">D.El.Ed</option>
                      <option value="B.Ed">B.Ed</option>
@@ -230,7 +230,7 @@
                   <label class="text-sm fw-semibold text-primary-light mb-8">
                      Teaching Eligibility
                   </label>
-                  <select class="form-control" ng-model="formData.eligibility">
+                  <select class="form-select" ng-model="formData.eligibility">
                      <option value="">Select</option>
                      <option value="CTET">CTET</option>
                      <option value="TET">State TET</option>
@@ -315,7 +315,7 @@
                      </div>
                      <div class="form-group col-md-3">
                         <label class="text-sm fw-semibold text-primary-light d-inline-block mb-8">Type <span class="text-danger-600">* </span></label>
-                        <select class="form-control" name="component_type_@{{$index}}" ng-model="item.component_type" required>
+                        <select class="form-select" name="component_type_@{{$index}}" ng-model="item.component_type" required>
                            <option value="earning">Earning</option>
                            <option value="deduction">Deduction</option>
                         </select>

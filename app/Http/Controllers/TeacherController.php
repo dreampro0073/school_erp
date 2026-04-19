@@ -374,41 +374,53 @@ class TeacherController extends Controller {
                 ],422);
             }
         }
+
         DB::beginTransaction();
         try {
-
-
             $user = null;
 
-            if(!empty($request->email)){
-                $user = $e_teacher 
-                    ? User::find($e_teacher->user_id) 
-                    : User::where('email',$request->email)->first();
+            $email = !empty($request->email) 
+                ? $request->email 
+                : strtolower($request->first_name).'_'.$authUser->client_id.'_'.time().'@school.com';
 
-                if(!$user){
-    
-                    $password = User::getRandPassword();
-
-                    $user = new User;
-                    $user->email = $request->email;
-                    $user->password = Hash::make($password);
-                    $user->password_check = $password;
-                    $user->priv = 3;
-                    $user->added_by = $authUser->id;
-                    $user->org_id = $authUser->org_id;
-                    $user->client_id = $authUser->client_id;
-                    $user->parent_user_id = $authUser->parent_user_id;
-                }
-                $user->name = $request->first_name.' '.$request->last_name;
-                $user->save();
+            if($e_teacher && $e_teacher->user_id){
+                $user = User::find($e_teacher->user_id);
             }
 
+    
+            if(!$user){
+                $user = User::where('email',$email)->first();
+            }
+
+            if(!$user){
+                $password = User::getRandPassword();
+
+                $user = new User;
+                $user->email = $email;
+                $user->password = Hash::make($password);
+                $user->password_check = $password;
+                $user->priv = 3;
+                $user->added_by = $authUser->id;
+                $user->org_id = $authUser->org_id;
+                $user->client_id = $authUser->client_id;
+                $user->parent_user_id = $authUser->parent_user_id;
+            }
+
+            $user->name = $request->first_name.' '.$request->last_name;
+
+           
+            if(!empty($request->email)){
+                $user->email = $request->email;
+            }
+
+            $user->save();
+
             $teacherData = [
-                'user_id' => $user ? $user->id : null,
+                'user_id' => (isset($user)) ? $user->id : null,
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'name' => $request->first_name.' '.$request->last_name,
-                'email' => $request->email,
+                'email' => $email,
                 'mobile' => $request->mobile,
                 'gender' => $request->gender,
                 'marital_status' => $request->marital_status,
@@ -446,7 +458,7 @@ class TeacherController extends Controller {
 
 
             if(!$e_teacher){
-                $teacherData['unique_id'] = time().$authUser->client_id.$authUser->id.$user->id;
+                $teacherData['unique_id'] = time().$authUser->client_id.$authUser->id;
                 $teacher = Teacher::create($teacherData);
 
             }else{

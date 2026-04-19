@@ -594,3 +594,5 @@ ADD COLUMN user_id BIGINT UNSIGNED NULL AFTER id;
 ALTER TABLE students 
 ADD COLUMN parent_id BIGINT UNSIGNED NULL AFTER user_id;
 
+ALTER TABLE `salary_structures` CHANGE `amount` `amount` DECIMAL(10,2) NULL DEFAULT NULL;
+

@@ -128,6 +128,10 @@ class User extends Authenticatable {
         return ["jpg","jpeg","JPG","JPEG","png","PNG"];
     }
 
+
+    public static function schoolDetails(){
+        return DB::table('schools')->where('user_id',Auth::user()->id)->first();
+    }
    
 
         

@@ -1076,10 +1076,18 @@ app.controller('addTeacherCtrl', function($scope , DBService){
                 alert(data.message);
                 window.location.href = base_url + '/admin/teachers';
             } else {
-                let firstError = Object.values(data.errors)[0][0];
-                alert(firstError);
-                $scope.errors = data.errors;
+                if(data.message){
+                    alert(data.message);
+                }
+
+                if(data.errors && Object.keys(data.errors).length > 0){
+                    let firstError = Object.values(data.errors)[0][0];
+                    alert(firstError);
+                    $scope.errors = data.errors;    
+                }
             }
+
+            
 
         });
     };
