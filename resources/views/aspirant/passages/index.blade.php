@@ -34,7 +34,7 @@
                   <tr ng-repeat="passage in passages track by passage.id">
                      <td>@{{$index + 1}}</td>
                      <td>@{{passage.title}}</td>
-                     <td class="text-wrap" style="min-width: 320px;">@{{passage.passage}}</td>
+                     <td class="text-wrap" style="width: 620px;">@{{passage.passage}}</td>
                      <td>
                         <span ng-if="passage.status != 1" class="bg-success-100 text-success-600 px-24 py-4 radius-4 fw-medium text-sm">Active</span>
                         <span ng-if="passage.status == 1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Inactive</span>

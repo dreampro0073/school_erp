@@ -51,7 +51,7 @@
          data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
          <span class="d-flex align-items-center gap-10">
 
-            @if(Auth::user()->priv != 1)
+            @if(Auth::user()->priv != 1 && Auth::user()->priv != 6)
             <img src="{{$school->logo }}" alt="Thumbnail"
                class="w-40-px h-40-px rounded-circle object-fit-cover flex-shrink-0">
                <span class="text-secondary-light text-sm mb-0 d-block">{{ $roleLabel }}</span>
