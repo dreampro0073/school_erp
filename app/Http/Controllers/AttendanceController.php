@@ -158,11 +158,30 @@ class AttendanceController extends Controller {
             }
         }
 
+        $teacher_filters = Teacher::select('id', 'first_name', 'last_name', 'name')
+            ->where('school_id', $user->client_id)
+            ->where('status', '!=', 2)
+            ->orderBy('first_name')
+            ->orderBy('last_name')
+            ->get()
+            ->map(function($teacher) {
+                $name = trim(($teacher->first_name ? $teacher->first_name : '') . ' ' . ($teacher->last_name ? $teacher->last_name : ''));
+                if (!$name) {
+                    $name = $teacher->name ? $teacher->name : 'Teacher #'.$teacher->id;
+                }
+
+                return [
+                    'id' => $teacher->id,
+                    'name' => $name,
+                ];
+            })->values();
+
         $data["success"] = true;
         $data["statuses"] = array_values($statuses);
         $data["default_status"] = $default_status;
         $data["attendance_items"] = $attendance_items;
         $data["summary"] = array_values($summary);
+        $data["teacher_filters"] = $teacher_filters;
         $data["type"] = "teacher";
 
         return response()->json($data,200,[]);
@@ -240,6 +259,7 @@ class AttendanceController extends Controller {
 
         $from_date = $request->from_date ? date("Y-m-d", strtotime($request->from_date)) : date("Y-m-d", strtotime("-14 days"));
         $to_date = $request->to_date ? date("Y-m-d", strtotime($request->to_date)) : date("Y-m-d");
+        $teacher_id = $request->teacher_id ? (int) $request->teacher_id : 0;
 
         $status_map = [];
         if (Schema::hasTable('attendance_statuses')) {
@@ -256,6 +276,10 @@ class AttendanceController extends Controller {
             ->where('type', 'teacher')
             ->where('attendance_date', '>=', $from_date)
             ->where('attendance_date', '<=', $to_date);
+
+        if ($teacher_id > 0) {
+            $query->where('reference_id', $teacher_id);
+        }
 
         $rows = $query->orderBy('attendance_date', 'DESC')->orderBy('updated_at', 'DESC')->limit(250)->get();
 

@@ -165,6 +165,7 @@ app.controller('attendanceCtrl', function($scope , DBService){
     $scope.attendanceItems = [];
     $scope.historyRows = [];
     $scope.summaryCards = [];
+    $scope.teacherFilters = [];
 
     $scope.filters = {
         date: new Date().toISOString().split('T')[0],
@@ -172,6 +173,7 @@ app.controller('attendanceCtrl', function($scope , DBService){
     };
 
     $scope.historyFilter = {
+        teacher_id: '',
         from_date: new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
         to_date: new Date().toISOString().split('T')[0]
     };
@@ -199,10 +201,12 @@ app.controller('attendanceCtrl', function($scope , DBService){
                 $scope.defaultStatus = data.default_status || '';
                 $scope.attendanceItems = data.attendance_items || [];
                 $scope.summaryCards = data.summary || [];
+                $scope.teacherFilters = data.teacher_filters || [];
             } else {
                 $scope.statuses = [];
                 $scope.attendanceItems = [];
                 $scope.summaryCards = [];
+                $scope.teacherFilters = [];
                 alert(data.message || 'Unable to load attendance data.');
             }
 

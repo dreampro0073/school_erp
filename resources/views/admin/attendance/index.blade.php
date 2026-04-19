@@ -150,6 +150,13 @@
 
          <div class="row g-3 mb-16">
             <div class="col-md-3">
+               <label class="form-label">Teacher</label>
+               <select class="form-control" ng-model="historyFilter.teacher_id">
+                  <option value="">All Teachers</option>
+                  <option ng-repeat="teacher in teacherFilters track by teacher.id" ng-value="teacher.id">@{{ teacher.name }}</option>
+               </select>
+            </div>
+            <div class="col-md-3">
                <label class="form-label">From Date</label>
                <input type="date" class="form-control" ng-model="historyFilter.from_date">
             </div>

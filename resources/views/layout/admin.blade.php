@@ -54,14 +54,14 @@
    </a>
 </li>
 
-@if(false)
 <li>
-   <a href="{{ route('admin.attendance.index') }}">
+   <a href="{{ url('/admin/attendance') }}">
       <i class="ri-calendar-check-line"></i>
       <span>Attendance</span>
    </a>
 </li>
 
+@if(false)
 <li class="dropdown">
    <a href="javascript:void(0)">
       <i class="ri-money-dollar-circle-line"></i>
