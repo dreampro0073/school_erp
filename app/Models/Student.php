@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-use App\Models\StudentParent,App\Models\Standard,App\Models\Section;
+use App\Models\StudentParent,App\Models\Standard,App\Models\Section,App\Models\MasterData;
 use App\Models\User;
 
 class Student extends Model
@@ -36,6 +36,12 @@ class Student extends Model
     }
     public function section(){
         return $this->belongsTo(Section::class, 'section_id');
+    }
+    public function religion(){
+        return $this->belongsTo(MasterData::class, 'religion_id');
+    }
+    public function cast(){
+        return $this->belongsTo(MasterData::class, 'cast_id');
     }
 
     // public function bloodGroup(){

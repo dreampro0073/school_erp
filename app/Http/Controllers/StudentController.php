@@ -849,4 +849,43 @@ class StudentController extends Controller
         return $pdf->download('fee_receipt_'.$fee->id.'.pdf');
 
     }
+
+    public function downloadRegForm(Request $request,$student_token){
+        $student_token = $request->student_token;
+        $student = Student::with([
+            'parentUser',
+            'standard:id,name',
+            'section:id,name',
+            'religion:id,master_name',
+            'cast:id,master_name',
+        ])->where('unique_id', $student_token)->first();
+        
+        $data = null;
+        if($student){
+            $data = $student->toArray();
+            if(isset($data['parent_user'])){
+                foreach($data['parent_user'] as $key => $value){
+                    if(!array_key_exists($key, $data)){
+                        $data[$key] = $value;
+                    }
+                }
+                unset($data['parent_user']);
+            }
+        }
+
+        // dd($data);
+
+        $school = User::schoolDetails();
+        $path = $school->logo;
+        $type = pathinfo($path, PATHINFO_EXTENSION);
+        $dataImg = file_get_contents($path);
+        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($dataImg);
+        $data['logo'] = $base64;
+       
+        $pdf = Pdf::loadView('admin.students.reg_form', ['student'=>$data]);
+
+        return $pdf->stream('reg_form.pdf');
+    }
+
+
 }

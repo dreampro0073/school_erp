@@ -91,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/add/{student_token?}', 'addStudentPage');
                 Route::get('/profile/{student_token?}', 'studentProfile');
                 Route::get('/receipt/{payment_id?}', 'generateReceipt');
+                Route::get('/reg-form/{student_token}', 'downloadRegForm');
             });
         });
 

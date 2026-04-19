@@ -160,6 +160,13 @@
                                           </a>
                                        </li>
 
+                                       <li>
+                                          <a target="_blank" href="{{url('admin/students/reg-form/')}}/@{{item.unique_id}}" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
+                                          <i class="ri-edit-2-line"></i>
+                                          Print PDF
+                                          </a>
+                                       </li>
+
                                        <!-- <li>
                                           <button class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2 py-6">
                                           <i class="ri-money-dollar-box-line"></i>
