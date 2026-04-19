@@ -8,4 +8,10 @@ class Attendance extends Model
 {
     protected $table = 'attendances';
 
+    protected $guarded = [];
+
+    protected $casts = [
+        'attendance_date' => 'date:Y-m-d',
+    ];
+
 }

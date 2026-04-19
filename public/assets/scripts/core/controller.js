@@ -158,23 +158,24 @@ app.controller('superAdminUsersCtrl', function($scope , DBService, Upload){
 
 app.controller('attendanceCtrl', function($scope , DBService){
 
+    $scope.loading = false;
     $scope.saving = false;
     $scope.statuses = [];
     $scope.defaultStatus = '';
-    $scope.allItems = [];
     $scope.attendanceItems = [];
     $scope.historyRows = [];
+    $scope.summaryCards = [];
 
     $scope.filters = {
-        type: 'student',
-        date: today,
+        type: 'teacher',
+        date: new Date().toISOString().split('T')[0],
         search: ''
     };
 
     $scope.historyFilter = {
         type: '',
-        from_date: '',
-        to_date: ''
+        from_date: new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
+        to_date: new Date().toISOString().split('T')[0]
     };
 
     $scope.init = function() {
@@ -183,35 +184,69 @@ app.controller('attendanceCtrl', function($scope , DBService){
     };
 
     $scope.applyListFilter = function() {
-
+        $scope.attendanceItems = angular.isArray($scope.attendanceItems) ? $scope.attendanceItems : [];
     };
 
     $scope.resetSearch = function() {
         $scope.filters.search = '';
-        $scope.applyListFilter();
+        $scope.loadAttendance();
     };
 
     $scope.loadAttendance = function() {
-        DBService.postCall({ }, '/api/admin/attendance/init').then(function(data) {
+        $scope.loading = true;
+
+        DBService.postCall($scope.filters, '/api/admin/attendance/init').then(function(data) {
             if (data.success) {
+                $scope.statuses = data.statuses || [];
+                $scope.defaultStatus = data.default_status || '';
+                $scope.attendanceItems = data.attendance_items || [];
+                $scope.summaryCards = data.summary || [];
+            } else {
+                $scope.statuses = [];
+                $scope.attendanceItems = [];
+                $scope.summaryCards = [];
+                alert(data.message || 'Unable to load attendance data.');
             }
+
+            $scope.loading = false;
             $scope.applyListFilter();
         });
     };
 
     $scope.saveAttendance = function() {
+        if (!$scope.attendanceItems.length) {
+            return;
+        }
 
         $scope.saving = true;
-        DBService.postCall({}, '/api/admin/attendance/store').then(function(data) {
+        DBService.postCall({
+            type: $scope.filters.type,
+            date: $scope.filters.date,
+            items: $scope.attendanceItems.map(function(item) {
+                return {
+                    id: item.id,
+                    status: item.status || $scope.defaultStatus,
+                    remark: item.remark || ''
+                };
+            })
+        }, '/api/admin/attendance/store').then(function(data) {
+           $scope.saving = false;
            if (data.success) {
-            } 
+                alert(data.message || 'Attendance saved successfully.');
+                $scope.loadAttendance();
+                $scope.loadHistory();
+            } else {
+                alert(data.message || 'Unable to save attendance.');
+            }
         });
     };
 
     $scope.loadHistory = function() {
-        DBService.postCall({ }, '/api/admin/attendance/list').then(function(data) {
+        DBService.postCall($scope.historyFilter, '/api/admin/attendance/list').then(function(data) {
             if (data.success) {
-
+                $scope.historyRows = data.history_rows || [];
+            } else {
+                $scope.historyRows = [];
             }
         });
     };
