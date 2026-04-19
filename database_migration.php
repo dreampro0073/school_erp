@@ -473,7 +473,7 @@ CREATE TABLE IF NOT EXISTS `questions` (
   `opt_d` VARCHAR(255) NULL,
   `answer` VARCHAR(20) NULL,
   `negative_marks` FLOAT NULL,
-  `paragraph_id` INT(11) NULL,
+  `passage_id` INT(11) NULL,
   `image_file` VARCHAR(255) NULL,
   `total_marks` INT(11) NOT NULL DEFAULT 0,
   `subject_id` INT(11) NULL,
@@ -614,3 +614,20 @@ CREATE TABLE IF NOT EXISTS `attendances` (
   KEY `attendances_status_code_index` (`status_code`),
   KEY `attendances_marked_by_index` (`marked_by`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `passages` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `subject_id` BIGINT UNSIGNED NOT NULL,
+  `topic_id` BIGINT UNSIGNED NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `passage` LONGTEXT NOT NULL,
+  `status` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `passages_subject_id_index` (`subject_id`),
+  KEY `passages_topic_id_index` (`topic_id`),
+  KEY `passages_status_index` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE `questions` CHANGE `paragraph_id` `passage_id` INT(11) NULL DEFAULT NULL;

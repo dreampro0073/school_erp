@@ -200,6 +200,11 @@ use App\Http\Controllers\AspirantController;
         Route::post('/store', 'storeTopic');
     });
 
+    Route::prefix('aspirant/passages')->controller(AspirantController::class)->group(function () {
+        Route::post('/init', 'initPassages');
+        Route::post('/store', 'storePassage');
+    });
+
     Route::prefix('aspirant/questions')->controller(AspirantController::class)->group(function () {
         Route::post('/init', 'initQuestions');
         Route::post('/store', 'storeQuestion');

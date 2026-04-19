@@ -38,8 +38,11 @@
                         <span ng-if="topic.status == 1" class="bg-danger-100 text-danger-600 px-24 py-4 radius-4 fw-medium text-sm">Inactive</span>
                      </td>
                      <td>
-                        <button type="button" class="btn btn-sm btn-info-100 text-info-600" ng-click="openTopicSidebar(topic)">Edit</button>
-                        <a class="btn btn-sm btn-primary-600" href="{{ url('/aspirant/subjects') }}/@{{selectedSubject.id}}/topics/@{{topic.id}}/questions">Questions</a>
+                        <div class="d-flex gap-2 flex-wrap">
+                           <button type="button" class="btn btn-sm btn-info-100 text-info-600" ng-click="openTopicSidebar(topic)">Edit</button>
+                           <a class="btn btn-sm btn-warning-100 text-warning-600" href="{{ url('/aspirant/subjects') }}/@{{selectedSubject.id}}/topics/@{{topic.id}}/passages">Passages</a>
+                           <a class="btn btn-sm btn-primary-600" href="{{ url('/aspirant/subjects') }}/@{{selectedSubject.id}}/topics/@{{topic.id}}/questions">Questions</a>
+                        </div>
                      </td>
                   </tr>
                   <tr ng-if="!topics.length">
