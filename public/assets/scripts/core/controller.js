@@ -167,13 +167,11 @@ app.controller('attendanceCtrl', function($scope , DBService){
     $scope.summaryCards = [];
 
     $scope.filters = {
-        type: 'teacher',
         date: new Date().toISOString().split('T')[0],
         search: ''
     };
 
     $scope.historyFilter = {
-        type: '',
         from_date: new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
         to_date: new Date().toISOString().split('T')[0]
     };
@@ -220,7 +218,6 @@ app.controller('attendanceCtrl', function($scope , DBService){
 
         $scope.saving = true;
         DBService.postCall({
-            type: $scope.filters.type,
             date: $scope.filters.date,
             items: $scope.attendanceItems.map(function(item) {
                 return {
@@ -1167,6 +1164,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
     $scope.aspirant = {};
     $scope.subjects = [];
     $scope.topics = [];
+    $scope.passages = [];
     $scope.selectedSubject = null;
     $scope.isTopicSidebarOpen = false;
     $scope.isTopicEditMode = false;
@@ -1174,6 +1172,10 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
     $scope.topicForm = { id: null, subject_id: null, name: '', status: 0 };
     $scope.questions = [];
     $scope.selectedTopic = null;
+    $scope.selectedPassageId = '';
+    $scope.selectedPassageText = '';
+    $scope.passageProcessing = false;
+    $scope.passageForm = { id: null, subject_id: null, topic_id: null, title: '', passage: '', status: 0 };
     $scope.questionProcessing = false;
     $scope.questionForm = {
         id: null,
@@ -1188,7 +1190,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
         opt_d: '',
         answer: '',
         negative_marks: 0.33,
-        paragraph_id: '',
+        passage_id: '',
         image_file: '',
         total_marks: 1,
         image_file_link: ''
@@ -1278,25 +1280,98 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
         });
     };
 
-    $scope.initQuestionsPage = function(subject, topic) {
+    $scope.initPassagesPage = function(subject, topic) {
         $scope.selectedSubject = subject || null;
         $scope.selectedTopic = topic || null;
         if (subject && topic && subject.id && topic.id) {
-            $scope.initQuestions(subject.id, topic.id);
+            $scope.initPassages(subject.id, topic.id);
         }
     };
 
-    $scope.initQuestions = function(subjectId, topicId) {
+    $scope.initPassages = function(subjectId, topicId) {
         if (!subjectId || !topicId) {
             return;
         }
         $scope.loading = true;
-        DBService.postCall({ subject_id: subjectId, topic_id: topicId }, '/api/aspirant/questions/init').then(function(data) {
-            $scope.questions = data.questions || [];
+        DBService.postCall({ subject_id: subjectId, topic_id: topicId }, '/api/aspirant/passages/init').then(function(data) {
+            $scope.passages = data.passages || [];
             $scope.loading = false;
         }, function () {
             $scope.loading = false;
         });
+    };
+
+    $scope.openPassageModal = function(passage) {
+        var subjectId = $scope.selectedSubject ? $scope.selectedSubject.id : null;
+        var topicId = $scope.selectedTopic ? $scope.selectedTopic.id : null;
+        if (!subjectId || !topicId) {
+            alert('Subject/Topic not selected');
+            return;
+        }
+        if (passage && passage.id) {
+            $scope.passageForm = angular.copy(passage);
+        } else {
+            $scope.passageForm = { id: null, subject_id: subjectId, topic_id: topicId, title: '', passage: '', status: 0 };
+        }
+        $scope.passageForm.subject_id = subjectId;
+        $scope.passageForm.topic_id = topicId;
+        $('#passageModal').modal('show');
+    };
+
+    $scope.savePassage = function() {
+        if (!$scope.passageForm.subject_id || !$scope.passageForm.topic_id) {
+            alert('Subject/Topic not selected');
+            return;
+        }
+        $scope.passageProcessing = true;
+        DBService.postCall($scope.passageForm, '/api/aspirant/passages/store').then(function(data) {
+            $scope.passageProcessing = false;
+            if (data.success) {
+                $('#passageModal').modal('hide');
+                alert(data.message || 'Saved Successfully');
+                $scope.initPassages($scope.selectedSubject.id, $scope.selectedTopic.id);
+            } else {
+                alert(data.message || 'Something went wrong');
+            }
+        }, function () {
+            $scope.passageProcessing = false;
+        });
+    };
+
+    $scope.initQuestionsPage = function(subject, topic, passageId) {
+        $scope.selectedSubject = subject || null;
+        $scope.selectedTopic = topic || null;
+        $scope.selectedPassageId = passageId || '';
+        if (subject && topic && subject.id && topic.id) {
+            $scope.initQuestions(subject.id, topic.id, $scope.selectedPassageId);
+        }
+    };
+
+    $scope.initQuestions = function(subjectId, topicId, passageId) {
+        if (!subjectId || !topicId) {
+            return;
+        }
+        $scope.loading = true;
+        DBService.postCall({ subject_id: subjectId, topic_id: topicId, passage_id: passageId || '' }, '/api/aspirant/questions/init').then(function(data) {
+            $scope.questions = data.questions || [];
+            $scope.passages = data.passages || [];
+            $scope.selectedPassageText = '';
+            angular.forEach($scope.passages, function(passage) {
+                if (parseInt(passage.id, 10) === parseInt($scope.selectedPassageId || 0, 10)) {
+                    $scope.selectedPassageText = passage.passage || '';
+                }
+            });
+            $scope.loading = false;
+        }, function () {
+            $scope.loading = false;
+        });
+    };
+
+    $scope.onPassageFilterChange = function() {
+        if (!$scope.selectedSubject || !$scope.selectedTopic) {
+            return;
+        }
+        $scope.initQuestions($scope.selectedSubject.id, $scope.selectedTopic.id, $scope.selectedPassageId);
     };
 
     $scope.openQuestionModal = function(question) {
@@ -1328,7 +1403,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
                 opt_d: '',
                 answer: '',
                 negative_marks: 0.33,
-                paragraph_id: '',
+                passage_id: $scope.selectedPassageId || '',
                 image_file: '',
                 total_marks: 1,
                 image_file_link: ''
@@ -1402,6 +1477,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
             alert('Subject/Topic not selected');
             return;
         }
+        $scope.questionForm.passage_id = $scope.selectedPassageId || '';
         $scope.applyAnswer();
         $scope.questionProcessing = true;
         DBService.postCall($scope.questionForm, '/api/aspirant/questions/store').then(function(data) {
@@ -1409,7 +1485,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
             if (data.success) {
                 $('#questionModal').modal('hide');
                 alert(data.message || 'Saved Successfully');
-                $scope.initQuestions($scope.selectedSubject.id, $scope.selectedTopic.id);
+                $scope.initQuestions($scope.selectedSubject.id, $scope.selectedTopic.id, $scope.selectedPassageId);
             } else {
                 alert(data.message || 'Something went wrong');
             }

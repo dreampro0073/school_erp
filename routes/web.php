@@ -62,6 +62,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', 'dashboard');
         Route::get('/subjects/index', 'subjectsIndex');
         Route::get('/subjects/{subjectId}/topics', 'topicsIndex');
+        Route::get('/subjects/{subjectId}/topics/{topicId}/passages', 'passagesIndex');
         Route::get('/subjects/{subjectId}/topics/{topicId}/questions', 'questionsIndex');
         Route::get('/practice/index', 'practiceIndex');
         Route::get('/exams/index', 'examsIndex');

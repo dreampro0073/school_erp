@@ -32,14 +32,6 @@
 
                <div class="row g-3">
                   <div class="col-12">
-                     <label class="form-label">Attendance Type</label>
-                     <select class="form-select" ng-model="filters.type" ng-change="loadAttendance()">
-                        <option value="teacher">Teachers</option>
-                        <option value="student">Students</option>
-                     </select>
-                  </div>
-
-                  <div class="col-12">
                      <label class="form-label">Date</label>
                      <input type="date" class="form-control" ng-model="filters.date" ng-change="loadAttendance()">
                   </div>
@@ -80,7 +72,7 @@
                   <div class="card-body p-20 p-lg-24">
                      <div class="d-flex flex-wrap align-items-center justify-content-between gap-16 mb-16">
                         <div>
-                           <h5 class="mb-4">@{{ filters.type === 'teacher' ? 'Teacher' : 'Student' }} Attendance Sheet</h5>
+                           <h5 class="mb-4">Teacher Attendance Sheet</h5>
                            <p class="mb-0 text-sm text-secondary-light">Mark status with the same quick-select style as the demo page.</p>
                         </div>
 
@@ -158,14 +150,6 @@
 
          <div class="row g-3 mb-16">
             <div class="col-md-3">
-               <label class="form-label">Type</label>
-               <select class="form-select" ng-model="historyFilter.type">
-                  <option value="">All</option>
-                  <option value="teacher">Teachers</option>
-                  <option value="student">Students</option>
-               </select>
-            </div>
-            <div class="col-md-3">
                <label class="form-label">From Date</label>
                <input type="date" class="form-control" ng-model="historyFilter.from_date">
             </div>
@@ -192,7 +176,7 @@
                <tbody>
                   <tr ng-repeat="row in historyRows track by row.id">
                      <td>@{{ row.date }}</td>
-                     <td class="text-capitalize">@{{ row.type }}</td>
+                     <td>Teacher</td>
                      <td>@{{ row.name }}</td>
                      <td>
                         <span class="px-12 py-6 radius-8 fw-medium text-sm" ng-class="row.status_badge_class">@{{ row.status_label }}</span>

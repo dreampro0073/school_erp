@@ -20,7 +20,7 @@ class Question extends Model
         'opt_d',
         'answer',
         'negative_marks',
-        'paragraph_id',
+        'passage_id',
         'image_file',
         'total_marks',
         'subject_id',
