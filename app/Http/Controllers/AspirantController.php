@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Exam;
 use App\Models\ExamPaper;
+use App\Models\Passage;
 use App\Models\Question;
 use App\Models\Subject;
 use App\Models\Topic;
@@ -12,6 +13,7 @@ use App\Models\UserAnswer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -52,6 +54,17 @@ class AspirantController extends Controller
         $topic = Topic::find($topicId);
 
         return view('aspirant.questions.index', [
+            'subject' => $subject,
+            'topic' => $topic,
+        ]);
+    }
+
+    public function passagesIndex($subjectId, $topicId)
+    {
+        $subject = Subject::find($subjectId);
+        $topic = Topic::find($topicId);
+
+        return view('aspirant.passages.index', [
             'subject' => $subject,
             'topic' => $topic,
         ]);
@@ -136,6 +149,91 @@ class AspirantController extends Controller
         ], 200, []);
     }
 
+    public function initPassages(Request $request)
+    {
+        $this->resolveApiUser($request);
+
+        if (!Schema::hasTable('passages')) {
+            return response()->json([
+                'passages' => [],
+                'success' => true,
+            ], 200, []);
+        }
+
+        $subjectId = (int) $request->subject_id;
+        $topicId = (int) $request->topic_id;
+
+        $passages = Passage::where('subject_id', $subjectId)
+            ->where('topic_id', $topicId)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'passages' => $passages,
+            'success' => true,
+        ], 200, []);
+    }
+
+    public function storePassage(Request $request)
+    {
+        $user = $this->resolveApiUser($request);
+
+        if (!$user) {
+            abort(403, 'Not authorized');
+        }
+
+        if (!Schema::hasTable('passages')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please update passages table first.',
+            ], 200, []);
+        }
+
+        $cre = [
+            'title' => $request->title,
+            'passage' => $request->passage,
+            'subject_id' => $request->subject_id,
+            'topic_id' => $request->topic_id,
+        ];
+
+        $rules = [
+            'title' => 'required',
+            'passage' => 'required',
+            'subject_id' => 'required',
+            'topic_id' => 'required',
+        ];
+
+        $validator = Validator::make($cre, $rules);
+
+        if ($validator->passes()) {
+            if ($request->id) {
+                $passage = Passage::find($request->id);
+                $message = 'Successfully updated';
+            } else {
+                $passage = new Passage();
+                $message = 'Successfully Stored';
+            }
+
+            $passage->title = $request->title;
+            $passage->passage = $request->passage;
+            $passage->subject_id = $request->subject_id;
+            $passage->topic_id = $request->topic_id;
+            $passage->status = $request->status ?? 0;
+            $passage->created_at = date('Y-m-d H:i:s');
+            $passage->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+            ], 200, []);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => $validator->errors()->first(),
+        ], 200, []);
+    }
+
     public function storeTopic(Request $request)
     {
         $user = $this->resolveApiUser($request);
@@ -189,12 +287,28 @@ class AspirantController extends Controller
 
         $subjectId = (int) $request->subject_id;
         $topicId = (int) $request->topic_id;
+        $passageId = (int) $request->passage_id;
         $questions = Question::where('subject_id', $subjectId)
-            ->where('topic_id', $topicId)
+            ->where('topic_id', $topicId);
+
+        if ($passageId > 0) {
+            $questions->where('passage_id', $passageId);
+        }
+
+        $questions = $questions
             ->get();
+
+        $passages = [];
+        if (Schema::hasTable('passages')) {
+            $passages = Passage::where('subject_id', $subjectId)
+                ->where('topic_id', $topicId)
+                ->orderBy('id', 'desc')
+                ->get();
+        }
 
         return response()->json([
             'questions' => $questions,
+            'passages' => $passages,
             'success' => true,
         ], 200, []);
     }
@@ -240,7 +354,7 @@ class AspirantController extends Controller
             $question->opt_d = $request->opt_d;
             $question->answer = $request->answer;
             $question->negative_marks = $request->negative_marks ?? 0.33;
-            $question->paragraph_id = $request->paragraph_id;
+            $question->passage_id = $request->passage_id ? $request->passage_id : null;
             $question->image_file = $request->image_file;
             $question->total_marks = $request->total_marks ?? 1;
             $question->subject_id = $request->subject_id;
@@ -324,7 +438,9 @@ class AspirantController extends Controller
         $questions = Question::whereIn('subject_id', $subjectIds)
             ->inRandomOrder()
             ->limit(100)
-            ->get();
+            ->get()
+            ->shuffle()
+            ->values();
 
         if ($questions->count() < 100) {
             return response()->json([

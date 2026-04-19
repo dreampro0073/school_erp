@@ -158,23 +158,24 @@ app.controller('superAdminUsersCtrl', function($scope , DBService, Upload){
 
 app.controller('attendanceCtrl', function($scope , DBService){
 
+    $scope.loading = false;
     $scope.saving = false;
     $scope.statuses = [];
     $scope.defaultStatus = '';
-    $scope.allItems = [];
     $scope.attendanceItems = [];
     $scope.historyRows = [];
+    $scope.summaryCards = [];
+    $scope.teacherFilters = [];
 
     $scope.filters = {
-        type: 'student',
-        date: today,
+        date: new Date().toISOString().split('T')[0],
         search: ''
     };
 
     $scope.historyFilter = {
-        type: '',
-        from_date: '',
-        to_date: ''
+        teacher_id: '',
+        from_date: new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
+        to_date: new Date().toISOString().split('T')[0]
     };
 
     $scope.init = function() {
@@ -183,35 +184,70 @@ app.controller('attendanceCtrl', function($scope , DBService){
     };
 
     $scope.applyListFilter = function() {
-
+        $scope.attendanceItems = angular.isArray($scope.attendanceItems) ? $scope.attendanceItems : [];
     };
 
     $scope.resetSearch = function() {
         $scope.filters.search = '';
-        $scope.applyListFilter();
+        $scope.loadAttendance();
     };
 
     $scope.loadAttendance = function() {
-        DBService.postCall({ }, '/api/admin/attendance/init').then(function(data) {
+        $scope.loading = true;
+
+        DBService.postCall($scope.filters, '/api/admin/attendance/init').then(function(data) {
             if (data.success) {
+                $scope.statuses = data.statuses || [];
+                $scope.defaultStatus = data.default_status || '';
+                $scope.attendanceItems = data.attendance_items || [];
+                $scope.summaryCards = data.summary || [];
+                $scope.teacherFilters = data.teacher_filters || [];
+            } else {
+                $scope.statuses = [];
+                $scope.attendanceItems = [];
+                $scope.summaryCards = [];
+                $scope.teacherFilters = [];
+                alert(data.message || 'Unable to load attendance data.');
             }
+
+            $scope.loading = false;
             $scope.applyListFilter();
         });
     };
 
     $scope.saveAttendance = function() {
+        if (!$scope.attendanceItems.length) {
+            return;
+        }
 
         $scope.saving = true;
-        DBService.postCall({}, '/api/admin/attendance/store').then(function(data) {
+        DBService.postCall({
+            date: $scope.filters.date,
+            items: $scope.attendanceItems.map(function(item) {
+                return {
+                    id: item.id,
+                    status: item.status || $scope.defaultStatus,
+                    remark: item.remark || ''
+                };
+            })
+        }, '/api/admin/attendance/store').then(function(data) {
+           $scope.saving = false;
            if (data.success) {
-            } 
+                alert(data.message || 'Attendance saved successfully.');
+                $scope.loadAttendance();
+                $scope.loadHistory();
+            } else {
+                alert(data.message || 'Unable to save attendance.');
+            }
         });
     };
 
     $scope.loadHistory = function() {
-        DBService.postCall({ }, '/api/admin/attendance/list').then(function(data) {
+        DBService.postCall($scope.historyFilter, '/api/admin/attendance/list').then(function(data) {
             if (data.success) {
-
+                $scope.historyRows = data.history_rows || [];
+            } else {
+                $scope.historyRows = [];
             }
         });
     };
@@ -1140,6 +1176,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
     $scope.aspirant = {};
     $scope.subjects = [];
     $scope.topics = [];
+    $scope.passages = [];
     $scope.selectedSubject = null;
     $scope.isTopicSidebarOpen = false;
     $scope.isTopicEditMode = false;
@@ -1147,6 +1184,10 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
     $scope.topicForm = { id: null, subject_id: null, name: '', status: 0 };
     $scope.questions = [];
     $scope.selectedTopic = null;
+    $scope.selectedPassageId = '';
+    $scope.selectedPassageText = '';
+    $scope.passageProcessing = false;
+    $scope.passageForm = { id: null, subject_id: null, topic_id: null, title: '', passage: '', status: 0 };
     $scope.questionProcessing = false;
     $scope.questionForm = {
         id: null,
@@ -1161,7 +1202,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
         opt_d: '',
         answer: '',
         negative_marks: 0.33,
-        paragraph_id: '',
+        passage_id: '',
         image_file: '',
         total_marks: 1,
         image_file_link: ''
@@ -1251,25 +1292,98 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
         });
     };
 
-    $scope.initQuestionsPage = function(subject, topic) {
+    $scope.initPassagesPage = function(subject, topic) {
         $scope.selectedSubject = subject || null;
         $scope.selectedTopic = topic || null;
         if (subject && topic && subject.id && topic.id) {
-            $scope.initQuestions(subject.id, topic.id);
+            $scope.initPassages(subject.id, topic.id);
         }
     };
 
-    $scope.initQuestions = function(subjectId, topicId) {
+    $scope.initPassages = function(subjectId, topicId) {
         if (!subjectId || !topicId) {
             return;
         }
         $scope.loading = true;
-        DBService.postCall({ subject_id: subjectId, topic_id: topicId }, '/api/aspirant/questions/init').then(function(data) {
-            $scope.questions = data.questions || [];
+        DBService.postCall({ subject_id: subjectId, topic_id: topicId }, '/api/aspirant/passages/init').then(function(data) {
+            $scope.passages = data.passages || [];
             $scope.loading = false;
         }, function () {
             $scope.loading = false;
         });
+    };
+
+    $scope.openPassageModal = function(passage) {
+        var subjectId = $scope.selectedSubject ? $scope.selectedSubject.id : null;
+        var topicId = $scope.selectedTopic ? $scope.selectedTopic.id : null;
+        if (!subjectId || !topicId) {
+            alert('Subject/Topic not selected');
+            return;
+        }
+        if (passage && passage.id) {
+            $scope.passageForm = angular.copy(passage);
+        } else {
+            $scope.passageForm = { id: null, subject_id: subjectId, topic_id: topicId, title: '', passage: '', status: 0 };
+        }
+        $scope.passageForm.subject_id = subjectId;
+        $scope.passageForm.topic_id = topicId;
+        $('#passageModal').modal('show');
+    };
+
+    $scope.savePassage = function() {
+        if (!$scope.passageForm.subject_id || !$scope.passageForm.topic_id) {
+            alert('Subject/Topic not selected');
+            return;
+        }
+        $scope.passageProcessing = true;
+        DBService.postCall($scope.passageForm, '/api/aspirant/passages/store').then(function(data) {
+            $scope.passageProcessing = false;
+            if (data.success) {
+                $('#passageModal').modal('hide');
+                alert(data.message || 'Saved Successfully');
+                $scope.initPassages($scope.selectedSubject.id, $scope.selectedTopic.id);
+            } else {
+                alert(data.message || 'Something went wrong');
+            }
+        }, function () {
+            $scope.passageProcessing = false;
+        });
+    };
+
+    $scope.initQuestionsPage = function(subject, topic, passageId) {
+        $scope.selectedSubject = subject || null;
+        $scope.selectedTopic = topic || null;
+        $scope.selectedPassageId = passageId || '';
+        if (subject && topic && subject.id && topic.id) {
+            $scope.initQuestions(subject.id, topic.id, $scope.selectedPassageId);
+        }
+    };
+
+    $scope.initQuestions = function(subjectId, topicId, passageId) {
+        if (!subjectId || !topicId) {
+            return;
+        }
+        $scope.loading = true;
+        DBService.postCall({ subject_id: subjectId, topic_id: topicId, passage_id: passageId || '' }, '/api/aspirant/questions/init').then(function(data) {
+            $scope.questions = data.questions || [];
+            $scope.passages = data.passages || [];
+            $scope.selectedPassageText = '';
+            angular.forEach($scope.passages, function(passage) {
+                if (parseInt(passage.id, 10) === parseInt($scope.selectedPassageId || 0, 10)) {
+                    $scope.selectedPassageText = passage.passage || '';
+                }
+            });
+            $scope.loading = false;
+        }, function () {
+            $scope.loading = false;
+        });
+    };
+
+    $scope.onPassageFilterChange = function() {
+        if (!$scope.selectedSubject || !$scope.selectedTopic) {
+            return;
+        }
+        $scope.initQuestions($scope.selectedSubject.id, $scope.selectedTopic.id, $scope.selectedPassageId);
     };
 
     $scope.openQuestionModal = function(question) {
@@ -1301,7 +1415,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
                 opt_d: '',
                 answer: '',
                 negative_marks: 0.33,
-                paragraph_id: '',
+                passage_id: $scope.selectedPassageId || '',
                 image_file: '',
                 total_marks: 1,
                 image_file_link: ''
@@ -1375,6 +1489,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
             alert('Subject/Topic not selected');
             return;
         }
+        $scope.questionForm.passage_id = $scope.selectedPassageId || '';
         $scope.applyAnswer();
         $scope.questionProcessing = true;
         DBService.postCall($scope.questionForm, '/api/aspirant/questions/store').then(function(data) {
@@ -1382,7 +1497,7 @@ app.controller('aspirantDashboardCtrl', function($scope , DBService, Upload){
             if (data.success) {
                 $('#questionModal').modal('hide');
                 alert(data.message || 'Saved Successfully');
-                $scope.initQuestions($scope.selectedSubject.id, $scope.selectedTopic.id);
+                $scope.initQuestions($scope.selectedSubject.id, $scope.selectedTopic.id, $scope.selectedPassageId);
             } else {
                 alert(data.message || 'Something went wrong');
             }

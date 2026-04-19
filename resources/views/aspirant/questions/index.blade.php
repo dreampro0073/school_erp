@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @section('main')
-<div ng-controller="aspirantDashboardCtrl" ng-init='initQuestionsPage(@json($subject), @json($topic))'>
+<div ng-controller="aspirantDashboardCtrl" ng-init='initQuestionsPage(@json($subject), @json($topic), {{ request('passage_id') ? (int) request('passage_id') : 'null' }})'>
    <div class="breadcrumb d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
       <div>
          <h6 class="fw-semibold mb-0 text-primary-light">Questions</h6>
@@ -19,6 +19,22 @@
 
    <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
       <div class="card-body p-0">
+         <div class="p-16 border-bottom">
+            <div class="row g-3 align-items-end">
+               <div class="col-md-4">
+                  <label class="form-label">Passage Filter</label>
+                  <select class="form-control" ng-model="selectedPassageId" ng-change="onPassageFilterChange()">
+                     <option value="">All Questions</option>
+                     <option ng-repeat="passage in passages track by passage.id" ng-value="passage.id">@{{passage.title}}</option>
+                  </select>
+               </div>
+               <div class="col-md-8">
+                  <div class="text-secondary-light small" ng-if="selectedPassageId && selectedPassageText">
+                     @{{ selectedPassageText }}
+                  </div>
+               </div>
+            </div>
+         </div>
          <div class="table-responsive">
             <table class="table bordered-table table-heading-dark-mode mb-0">
                <thead>
@@ -127,10 +143,6 @@
                               <div class="col-md-4">
                                  <label class="form-label">Negative Marks</label>
                                  <input type="number" step="0.01" class="form-control" ng-model="questionForm.negative_marks" readonly>
-                              </div>
-                              <div class="col-md-6">
-                                 <label class="form-label">Paragraph ID</label>
-                                 <input type="number" class="form-control" ng-model="questionForm.paragraph_id">
                               </div>
                               <div class="col-md-6">
                                  <label class="form-label">Question Image</label>
