@@ -561,6 +561,8 @@ ADD COLUMN user_id BIGINT UNSIGNED NULL AFTER id;
 ALTER TABLE students 
 ADD COLUMN parent_id BIGINT UNSIGNED NULL AFTER user_id;
 
+// Latest updates - always append below this line
+
 CREATE TABLE IF NOT EXISTS `attendance_statuses` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(30) NOT NULL,

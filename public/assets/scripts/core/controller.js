@@ -167,13 +167,11 @@ app.controller('attendanceCtrl', function($scope , DBService){
     $scope.summaryCards = [];
 
     $scope.filters = {
-        type: 'teacher',
         date: new Date().toISOString().split('T')[0],
         search: ''
     };
 
     $scope.historyFilter = {
-        type: '',
         from_date: new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
         to_date: new Date().toISOString().split('T')[0]
     };
@@ -220,7 +218,6 @@ app.controller('attendanceCtrl', function($scope , DBService){
 
         $scope.saving = true;
         DBService.postCall({
-            type: $scope.filters.type,
             date: $scope.filters.date,
             items: $scope.attendanceItems.map(function(item) {
                 return {
