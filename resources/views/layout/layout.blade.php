@@ -64,7 +64,7 @@
                 @else
                     <div class="d-flex align-items-center gap-2 text-sm text-secondary-light">
                         <i class="ri-user-3-line"></i>
-                        <span>{{ $school->name }}</span>
+                        <span>{{ $school->school_name }}</span>
                     </div>
                 @endif
             </div>
