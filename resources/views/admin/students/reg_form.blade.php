@@ -167,12 +167,12 @@ Note: No Change may be made in the age of entry of the scholar's records during 
 
 <br><br>
 
-<div style="display:flex; justify-content: space-between;">
-    <div>
+<div style="display:table;width: 100%;">
+    <div style="display: table-cell;width:50%;">
         Date: <span class="line">{{ now()->format('d-m-Y') }}</span>
-        <br> Signature of Parent/Guardian
+        <!-- <br> Signature of Parent/Guardian -->
     </div>
-    <div>
+    <div style="display: table-cell;width:50%;text-align: right;">
         Signature of Parent/Guardian
     </div>
 </div>
