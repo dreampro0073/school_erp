@@ -50,14 +50,14 @@
          <div class="row g-3 mb-16">
             <div class="col-md-6" ng-repeat="opt in currentOptions track by opt.key">
                <label class="practice-option-card w-100" ng-class="optionClass(opt.key)">
-                  <input type="radio"
-                     name="practice_question_@{{ currentQuestion.id }}"
-                     ng-model="answerMode"
-                     ng-value="opt.key"
-                     ng-change="selectOption(opt.key)"
-                     ng-disabled="showAnswer">
                   <span class="d-flex align-items-start gap-3">
-                     <span class="practice-option-indicator"></span>
+                     <input type="radio"
+                        class="practice-option-radio"
+                        name="practice_question_@{{ currentQuestion.id }}"
+                        ng-model="answerMode"
+                        ng-value="opt.key"
+                        ng-change="selectOption(opt.key)"
+                        ng-disabled="showAnswer">
                      <span>
                         <strong class="me-8">@{{ opt.key }}.</strong> @{{ opt.text }}
                      </span>
@@ -123,20 +123,19 @@
       transition: all 0.2s ease;
    }
 
-   .practice-option-card input {
+   .practice-option-card > input {
       position: absolute;
       opacity: 0;
       pointer-events: none;
    }
 
-   .practice-option-card .practice-option-indicator {
+   .practice-option-card .practice-option-radio {
       width: 18px;
       height: 18px;
       min-width: 18px;
-      border: 2px solid #98a2b3;
-      border-radius: 50%;
       margin-top: 2px;
-      position: relative;
+      accent-color: #0e66aa;
+      cursor: pointer;
       transition: all 0.2s ease;
    }
 
@@ -146,19 +145,8 @@
       box-shadow: 0 10px 30px rgba(14, 102, 170, 0.1);
    }
 
-   .practice-option-card.selected .practice-option-indicator {
-      border-color: #0e66aa;
-   }
-
-   .practice-option-card.selected .practice-option-indicator::after {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #0e66aa;
-      position: absolute;
-      top: 3px;
-      left: 3px;
+   .practice-option-card.selected .practice-option-radio {
+      accent-color: #0e66aa;
    }
 
    .practice-option-card.correct {
@@ -167,19 +155,8 @@
       color: #1d8f5b;
    }
 
-   .practice-option-card.correct .practice-option-indicator {
-      border-color: #1d8f5b;
-   }
-
-   .practice-option-card.correct .practice-option-indicator::after {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #1d8f5b;
-      position: absolute;
-      top: 3px;
-      left: 3px;
+   .practice-option-card.correct .practice-option-radio {
+      accent-color: #1d8f5b;
    }
 
    .practice-option-card.incorrect {
@@ -188,19 +165,8 @@
       color: #d92d20;
    }
 
-   .practice-option-card.incorrect .practice-option-indicator {
-      border-color: #d92d20;
-   }
-
-   .practice-option-card.incorrect .practice-option-indicator::after {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #d92d20;
-      position: absolute;
-      top: 3px;
-      left: 3px;
+   .practice-option-card.incorrect .practice-option-radio {
+      accent-color: #d92d20;
    }
 </style>
 @endsection

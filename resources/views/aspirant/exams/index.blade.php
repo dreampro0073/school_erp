@@ -103,14 +103,14 @@
                     <div class="row g-3">
                         <div class="col-md-6" ng-repeat="option in getQuestionOptions(getCurrentQuestion()) track by option.key">
                             <label class="exam-option-card w-100" ng-class="{'selected': answerMap[getCurrentQuestion().id] === option.key}">
-                                <input type="radio"
-                                    name="question_@{{ getCurrentQuestion().id }}"
-                                    ng-model="answerMap[getCurrentQuestion().id]"
-                                    ng-value="option.key"
-                                    ng-change="selectAnswer(getCurrentQuestion(), option.key)"
-                                    ng-disabled="processing">
                                 <span class="d-flex align-items-start gap-3">
-                                    <span class="exam-option-indicator"></span>
+                                    <input type="radio"
+                                        class="exam-option-radio"
+                                        name="question_@{{ getCurrentQuestion().id }}"
+                                        ng-model="answerMap[getCurrentQuestion().id]"
+                                        ng-value="option.key"
+                                        ng-change="selectAnswer(getCurrentQuestion(), option.key)"
+                                        ng-disabled="processing">
                                     <span>
                                         <strong>@{{ option.key }}.</strong>
                                         <span>@{{ option.text }}</span>
@@ -360,20 +360,19 @@
         min-height: 100%;
     }
 
-    .exam-option-card input {
+    .exam-option-card > input {
         position: absolute;
         opacity: 0;
         pointer-events: none;
     }
 
-    .exam-option-indicator {
+    .exam-option-radio {
         width: 18px;
         height: 18px;
         min-width: 18px;
-        border: 2px solid #98a2b3;
-        border-radius: 50%;
         margin-top: 2px;
-        position: relative;
+        accent-color: #0e66aa;
+        cursor: pointer;
         transition: all 0.2s ease;
     }
 
@@ -383,19 +382,8 @@
         box-shadow: 0 10px 30px rgba(14, 102, 170, 0.1);
     }
 
-    .exam-option-card.selected .exam-option-indicator {
-        border-color: #0e66aa;
-    }
-
-    .exam-option-card.selected .exam-option-indicator::after {
-        content: '';
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #0e66aa;
-        position: absolute;
-        top: 3px;
-        left: 3px;
+    .exam-option-card.selected .exam-option-radio {
+        accent-color: #0e66aa;
     }
 
     .result-stat-value {
