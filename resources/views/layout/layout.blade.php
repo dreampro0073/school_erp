@@ -56,15 +56,16 @@
                         <p class="mb-0 text-sm text-secondary-light">{{ now()->format('d M, Y') }}</p>
                     </div>
                 </div>
-                @if(Auth::user()->priv == 1 || Auth::user()->priv == 6)
-                <div class="d-flex align-items-center gap-2 text-sm text-secondary-light">
-                    <i class="ri-user-3-line"></i>
-                    <span>{{ $authUser->name }}</span>
-                </div>
-                @else
+                @if(Auth::user()->priv == 2)
                     <div class="d-flex align-items-center gap-2 text-sm text-secondary-light">
                         <i class="ri-user-3-line"></i>
                         <span>{{ $school->school_name }}</span>
+                    </div>
+                
+                @else
+                    <div class="d-flex align-items-center gap-2 text-sm text-secondary-light">
+                        <i class="ri-user-3-line"></i>
+                        <span>{{ $authUser->name }}</span>
                     </div>
                 @endif
             </div>
