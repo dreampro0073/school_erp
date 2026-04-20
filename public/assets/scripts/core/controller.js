@@ -1722,15 +1722,15 @@ app.controller('practiceCtrl', function($scope , DBService, $interval){
 
     $scope.optionClass = function(letter) {
         if (!$scope.showAnswer) {
-            return ($scope.answerMode === letter ? 'border-primary-600 text-primary-600' : '');
+            return ($scope.answerMode === letter ? 'selected' : '');
         }
         var correct = ($scope.currentQuestion.answer || '').toString().trim();
         var user = ($scope.currentQuestion._user_answer || '').toString().trim();
         if (letter === correct) {
-            return 'border-success-600 text-success-600';
+            return 'correct';
         }
         if (letter === user && user !== correct) {
-            return 'border-danger-600 text-danger-600';
+            return 'incorrect';
         }
         return '';
     };
@@ -1764,6 +1764,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
     $scope.result = null;
     $scope.answerKey = [];
     $scope.showAnswerKey = false;
+    $scope.answerKeyInfo = null;
     $scope.errorMessage = '';
 
     function apiConfig(method, route, payload, params) {
@@ -2172,6 +2173,15 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         });
     };
 
+    $scope.showAnswerKeyInfo = function(item) {
+        if (!item) {
+            return;
+        }
+
+        $scope.answerKeyInfo = item;
+        $('#answerKeyInfoModal').modal('show');
+    };
+
     $scope.resetToEntry = function() {
         stopTimer();
         cancelSavePromises();
@@ -2186,6 +2196,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         $scope.result = null;
         $scope.answerKey = [];
         $scope.showAnswerKey = false;
+        $scope.answerKeyInfo = null;
         $scope.examState = 'entry';
         $scope.errorMessage = '';
     };

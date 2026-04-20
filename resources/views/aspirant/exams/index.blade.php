@@ -78,7 +78,7 @@
                     <div class="palette-legend mt-20">
                         <div><span class="legend-dot not-answered"></span> Not Answered</div>
                         <div><span class="legend-dot visited"></span> Visited</div>
-                        <div><span class="legend-dot answered"></span> Answered</div>
+                        <div><span class="legend-dot answered"></span> Attempted</div>
                     </div>
                 </div>
             </div>
@@ -90,6 +90,11 @@
                     <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-20">
                         <div>
                             <p class="text-sm text-secondary-light mb-2">Question @{{ currentQuestionIndex + 1 }} of @{{ questions.length }}</p>
+                            <div class="exam-passage-box mb-16" ng-if="getCurrentQuestion().passage">
+                                <p class="exam-passage-label mb-6">Passage</p>
+                                <h6 class="mb-8 text-primary-light" ng-if="getCurrentQuestion().passage.title">@{{ getCurrentQuestion().passage.title }}</h6>
+                                <p class="mb-0 text-secondary-light exam-passage-text">@{{ getCurrentQuestion().passage.description }}</p>
+                            </div>
                             <h5 class="mb-0 text-primary-light">@{{ getCurrentQuestion().question }}</h5>
                         </div>
                         <button type="button" class="btn btn-danger" ng-click="submitExam(false)" ng-disabled="processing">Submit Exam</button>
@@ -105,8 +110,11 @@
                                     ng-change="selectAnswer(getCurrentQuestion(), option.key)"
                                     ng-disabled="processing">
                                 <span class="d-flex align-items-start gap-3">
-                                    <strong>@{{ option.key }}.</strong>
-                                    <span>@{{ option.text }}</span>
+                                    <span class="exam-option-indicator"></span>
+                                    <span>
+                                        <strong>@{{ option.key }}.</strong>
+                                        <span>@{{ option.text }}</span>
+                                    </span>
                                 </span>
                             </label>
                         </div>
@@ -128,7 +136,7 @@
                 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Total Score</p>
-                        <h3 class="mb-0 text-primary-light">@{{ result.total_score }}</h3>
+                        <h3 class="mb-0 text-primary-light result-stat-value">@{{ result.total_score }}</h3>
                     </div>
                 </div>
             </div>
@@ -136,7 +144,7 @@
                 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Correct</p>
-                        <h4 class="mb-0 text-success-600">@{{ result.correct }}</h4>
+                        <h4 class="mb-0 text-success-600 result-stat-value">@{{ result.correct }}</h4>
                     </div>
                 </div>
             </div>
@@ -144,7 +152,7 @@
                 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Wrong</p>
-                        <h4 class="mb-0 text-danger-600">@{{ result.wrong }}</h4>
+                        <h4 class="mb-0 text-danger-600 result-stat-value">@{{ result.wrong }}</h4>
                     </div>
                 </div>
             </div>
@@ -152,7 +160,7 @@
                 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Attempted</p>
-                        <h4 class="mb-0 text-primary-light">@{{ result.attempted }}</h4>
+                        <h4 class="mb-0 text-primary-light result-stat-value">@{{ result.attempted }}</h4>
                     </div>
                 </div>
             </div>
@@ -160,7 +168,7 @@
                 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
                         <p class="text-secondary-light mb-4">Unattempted</p>
-                        <h4 class="mb-0 text-primary-light">@{{ result.unattempted }}</h4>
+                        <h4 class="mb-0 text-primary-light result-stat-value">@{{ result.unattempted }}</h4>
                     </div>
                 </div>
             </div>
@@ -204,14 +212,23 @@
                                 <td>@{{ item.correct_answer || '-' }}</td>
                                 <td>@{{ item.user_answer || '-' }}</td>
                                 <td>
-                                    <span class="badge"
-                                        ng-class="{
-                                            'bg-success-100 text-success-600': item.status === 'correct',
-                                            'bg-danger-100 text-danger-600': item.status === 'incorrect',
-                                            'bg-warning-100 text-warning-600': item.status === 'unattempted'
-                                        }">
-                                        @{{ item.status }}
-                                    </span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge"
+                                            ng-class="{
+                                                'bg-success-100 text-success-600': item.status === 'correct',
+                                                'bg-danger-100 text-danger-600': item.status === 'incorrect',
+                                                'bg-warning-100 text-warning-600': item.status === 'unattempted'
+                                            }">
+                                            @{{ item.status }}
+                                        </span>
+                                        <button type="button"
+                                            class="answerkey-info-btn"
+                                            ng-click="showAnswerKeyInfo(item)"
+                                            title="View reference and remarks"
+                                            aria-label="View reference and remarks">
+                                            <i class="ri-information-line"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr ng-if="!answerKey.length">
@@ -219,6 +236,24 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="answerKeyInfoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-base">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary-light">Question Info</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-12 text-primary-light"><strong>Reference:</strong> @{{ answerKeyInfo.reference || '-' }}</p>
+                    <p class="mb-0 text-primary-light"><strong>Remarks:</strong> @{{ answerKeyInfo.remarks || '-' }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="border border-danger-600 text-danger-600 px-50 py-11 radius-8" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -256,10 +291,18 @@
     }
 
     .palette-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border: 0;
         border-radius: 12px;
+        width: 48px;
+        height: 48px;
         min-height: 48px;
+        padding: 0;
         font-weight: 700;
+        line-height: 1;
+        text-align: center;
         transition: all 0.2s ease;
         background: #111111;
         color: #ffffff;
@@ -270,7 +313,8 @@
     }
 
     .palette-item.answered {
-        background: #1d8f5b;
+        background: linear-gradient(135deg, #159957 0%, #0b7a43 100%);
+        box-shadow: 0 10px 20px rgba(21, 153, 87, 0.25);
     }
 
     .palette-item.current {
@@ -303,7 +347,7 @@
     }
 
     .legend-dot.answered {
-        background: #1d8f5b;
+        background: linear-gradient(135deg, #159957 0%, #0b7a43 100%);
     }
 
     .exam-option-card {
@@ -317,13 +361,88 @@
     }
 
     .exam-option-card input {
-        display: none;
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .exam-option-indicator {
+        width: 18px;
+        height: 18px;
+        min-width: 18px;
+        border: 2px solid #98a2b3;
+        border-radius: 50%;
+        margin-top: 2px;
+        position: relative;
+        transition: all 0.2s ease;
     }
 
     .exam-option-card.selected {
         border-color: #0e66aa;
         background: #eef7ff;
         box-shadow: 0 10px 30px rgba(14, 102, 170, 0.1);
+    }
+
+    .exam-option-card.selected .exam-option-indicator {
+        border-color: #0e66aa;
+    }
+
+    .exam-option-card.selected .exam-option-indicator::after {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #0e66aa;
+        position: absolute;
+        top: 3px;
+        left: 3px;
+    }
+
+    .result-stat-value {
+        padding-left: 5px;
+    }
+
+    .exam-passage-box {
+        border: 1px solid #dbe7f3;
+        border-radius: 16px;
+        padding: 16px 18px;
+        background: linear-gradient(135deg, #f9fbff 0%, #f6fdf8 100%);
+    }
+
+    .exam-passage-label {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #e8f1fb;
+        color: #0e66aa;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    .exam-passage-text {
+        white-space: pre-line;
+        line-height: 1.7;
+    }
+
+    .answerkey-info-btn {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #d6dfec;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fbff;
+        color: #0e66aa;
+        transition: all 0.2s ease;
+    }
+
+    .answerkey-info-btn:hover {
+        background: #eef7ff;
+        border-color: #0e66aa;
     }
 
     @media (max-width: 1199px) {

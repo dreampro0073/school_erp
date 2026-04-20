@@ -49,9 +49,20 @@
 
          <div class="row g-3 mb-16">
             <div class="col-md-6" ng-repeat="opt in currentOptions track by opt.key">
-               <button type="button" class="w-100 text-start border border-neutral-200 radius-8 px-12 py-12 text-primary-light bg-base" ng-class="optionClass(opt.key)" ng-click="selectOption(opt.key)" ng-disabled="showAnswer">
-                  <strong class="me-8">@{{ opt.key }}.</strong> @{{ opt.text }}
-               </button>
+               <label class="practice-option-card w-100" ng-class="optionClass(opt.key)">
+                  <input type="radio"
+                     name="practice_question_@{{ currentQuestion.id }}"
+                     ng-model="answerMode"
+                     ng-value="opt.key"
+                     ng-change="selectOption(opt.key)"
+                     ng-disabled="showAnswer">
+                  <span class="d-flex align-items-start gap-3">
+                     <span class="practice-option-indicator"></span>
+                     <span>
+                        <strong class="me-8">@{{ opt.key }}.</strong> @{{ opt.text }}
+                     </span>
+                  </span>
+               </label>
             </div>
          </div>
 
@@ -97,4 +108,99 @@
       </div>
    </div>
 </div>
+@endsection
+
+@section('footer_scripts')
+<style>
+   .practice-option-card {
+      display: block;
+      border: 1px solid #d6dfec;
+      border-radius: 16px;
+      padding: 18px;
+      cursor: pointer;
+      background: #ffffff;
+      min-height: 100%;
+      transition: all 0.2s ease;
+   }
+
+   .practice-option-card input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+   }
+
+   .practice-option-card .practice-option-indicator {
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      border: 2px solid #98a2b3;
+      border-radius: 50%;
+      margin-top: 2px;
+      position: relative;
+      transition: all 0.2s ease;
+   }
+
+   .practice-option-card.selected {
+      border-color: #0e66aa;
+      background: #eef7ff;
+      box-shadow: 0 10px 30px rgba(14, 102, 170, 0.1);
+   }
+
+   .practice-option-card.selected .practice-option-indicator {
+      border-color: #0e66aa;
+   }
+
+   .practice-option-card.selected .practice-option-indicator::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #0e66aa;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+   }
+
+   .practice-option-card.correct {
+      border-color: #1d8f5b;
+      background: #edfdf3;
+      color: #1d8f5b;
+   }
+
+   .practice-option-card.correct .practice-option-indicator {
+      border-color: #1d8f5b;
+   }
+
+   .practice-option-card.correct .practice-option-indicator::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #1d8f5b;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+   }
+
+   .practice-option-card.incorrect {
+      border-color: #d92d20;
+      background: #fff1f3;
+      color: #d92d20;
+   }
+
+   .practice-option-card.incorrect .practice-option-indicator {
+      border-color: #d92d20;
+   }
+
+   .practice-option-card.incorrect .practice-option-indicator::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d92d20;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+   }
+</style>
 @endsection

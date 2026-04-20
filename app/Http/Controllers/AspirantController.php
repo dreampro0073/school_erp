@@ -435,12 +435,7 @@ class AspirantController extends Controller
         }
 
         $subjectIds = array_values(array_unique(array_map('intval', $request->subject_ids)));
-        $questions = Question::whereIn('subject_id', $subjectIds)
-            ->inRandomOrder()
-            ->limit(100)
-            ->get()
-            ->shuffle()
-            ->values();
+        $questions = $this->buildExamQuestionSet($subjectIds, 100);
 
         if ($questions->count() < 100) {
             return response()->json([
@@ -728,14 +723,16 @@ class AspirantController extends Controller
                 'question_id' => (int) $row->id,
                 'question_no' => (int) $row->question_order,
                 'question' => $this->questionField($row, ['question']),
-                'options' => [
+                'options' => $options = [
                     'A' => $this->questionField($row, ['option1', 'opt_a']),
                     'B' => $this->questionField($row, ['option2', 'opt_b']),
                     'C' => $this->questionField($row, ['option3', 'opt_c']),
                     'D' => $this->questionField($row, ['option4', 'opt_d']),
                 ],
-                'correct_answer' => $correctAnswer,
-                'user_answer' => $userAnswer ?: null,
+                'correct_answer' => $this->formatAnswerLabel($correctAnswer, $options),
+                'user_answer' => $this->formatAnswerLabel($userAnswer, $options),
+                'reference' => $this->questionField($row, ['reference']),
+                'remarks' => $this->questionField($row, ['remarks']),
                 'status' => $status,
             ];
         }
@@ -773,9 +770,16 @@ class AspirantController extends Controller
     {
         return DB::table('exam_papers as ep')
             ->join('questions as q', 'q.id', '=', 'ep.question_id')
+            ->leftJoin('passages as p', 'p.id', '=', 'q.passage_id')
             ->where('ep.exam_id', $examId)
             ->orderBy('ep.question_order')
-            ->select('q.*', 'ep.question_order')
+            ->select(
+                'q.*',
+                'ep.question_order',
+                'p.id as linked_passage_id',
+                'p.title as passage_title',
+                'p.passage as passage_description'
+            )
             ->get();
     }
 
@@ -793,7 +797,147 @@ class AspirantController extends Controller
             'positive_marks' => (float) $this->questionField($row, ['positive_marks', 'total_marks'], 1),
             'negative_marks' => (float) $this->questionField($row, ['negative_marks'], 0),
             'selected_option' => $selectedOption,
+            'passage' => $this->transformQuestionPassage($row),
         ];
+    }
+
+    protected function buildExamQuestionSet(array $subjectIds, int $limit)
+    {
+        $allQuestions = Question::whereIn('subject_id', $subjectIds)
+            ->orderBy('id')
+            ->get();
+
+        if ($allQuestions->count() < $limit) {
+            return collect();
+        }
+
+        $standaloneQuestions = [];
+        $passageGroups = [];
+
+        foreach ($allQuestions as $question) {
+            $passageId = (int) ($question->passage_id ?? 0);
+
+            if ($passageId > 0) {
+                if (!isset($passageGroups[$passageId])) {
+                    $passageGroups[$passageId] = [];
+                }
+
+                $passageGroups[$passageId][] = $question;
+                continue;
+            }
+
+            $standaloneQuestions[] = $question;
+        }
+
+        foreach ($passageGroups as $passageId => $groupQuestions) {
+            usort($groupQuestions, function ($first, $second) {
+                return ((int) $first->id) <=> ((int) $second->id);
+            });
+            $passageGroups[$passageId] = $groupQuestions;
+        }
+
+        shuffle($standaloneQuestions);
+
+        $groupBuckets = array_values($passageGroups);
+        shuffle($groupBuckets);
+
+        $minPassageQuestions = max(0, $limit - count($standaloneQuestions));
+        $selectedGroupIndexes = $this->selectPassageGroupIndexes($groupBuckets, $minPassageQuestions, $limit);
+
+        $selectedQuestions = collect();
+
+        foreach ($selectedGroupIndexes as $groupIndex) {
+            foreach ($groupBuckets[$groupIndex] as $groupQuestion) {
+                $selectedQuestions->push($groupQuestion);
+            }
+        }
+
+        foreach ($standaloneQuestions as $question) {
+            if ($selectedQuestions->count() >= $limit) {
+                break;
+            }
+
+            $selectedQuestions->push($question);
+        }
+
+        if ($selectedQuestions->count() < $limit) {
+            return collect();
+        }
+
+        return $selectedQuestions
+            ->take($limit)
+            ->values();
+    }
+
+    protected function selectPassageGroupIndexes(array $groupBuckets, int $minQuestions, int $limit): array
+    {
+        $reachable = [
+            0 => [],
+        ];
+
+        foreach ($groupBuckets as $index => $bucket) {
+            $bucketSize = count($bucket);
+            $nextReachable = $reachable;
+
+            foreach ($reachable as $questionCount => $selectedIndexes) {
+                $newCount = $questionCount + $bucketSize;
+
+                if ($newCount > $limit || isset($nextReachable[$newCount])) {
+                    continue;
+                }
+
+                $nextReachable[$newCount] = array_merge($selectedIndexes, [$index]);
+            }
+
+            $reachable = $nextReachable;
+        }
+
+        $candidateCounts = array_keys($reachable);
+        rsort($candidateCounts);
+
+        foreach ($candidateCounts as $candidateCount) {
+            if ($candidateCount < $minQuestions || $candidateCount > $limit) {
+                continue;
+            }
+
+            return $reachable[$candidateCount];
+        }
+
+        return [];
+    }
+
+    protected function transformQuestionPassage($row): ?array
+    {
+        $passageId = (int) ($row->linked_passage_id ?? $row->passage_id ?? 0);
+        $passageDescription = trim((string) ($row->passage_description ?? ''));
+        $passageTitle = trim((string) ($row->passage_title ?? ''));
+
+        if ($passageId <= 0 || ($passageTitle === '' && $passageDescription === '')) {
+            return null;
+        }
+
+        return [
+            'id' => $passageId,
+            'title' => $passageTitle,
+            'description' => $passageDescription,
+        ];
+    }
+
+    protected function formatAnswerLabel($answer, array $options): ?string
+    {
+        $normalizedAnswer = $this->normalizeAnswerValue($answer);
+
+        if ($normalizedAnswer === '') {
+            return null;
+        }
+
+        $optionText = trim((string) ($options[$normalizedAnswer] ?? ''));
+
+        if ($optionText === '') {
+            return $normalizedAnswer;
+        }
+
+        return $normalizedAnswer . ' (' . $optionText . ')';
     }
 
     protected function questionField($row, array $keys, $default = '')
