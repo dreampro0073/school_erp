@@ -1779,6 +1779,13 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         };
     }
 
+    function normalizeOptionValue(value) {
+        if (value === undefined || value === null) {
+            return '';
+        }
+        return ('' + value).trim().toUpperCase();
+    }
+
     function setDraftState() {
         if (!$scope.examId) {
             return;
@@ -1846,15 +1853,28 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         }, 1000);
     }
 
+    function normalizeAnswerMap(map) {
+        var normalized = {};
+        angular.forEach(map || {}, function(value, key) {
+            var cleanValue = normalizeOptionValue(value);
+            if (cleanValue !== '') {
+                normalized[key] = cleanValue;
+            }
+        });
+        return normalized;
+    }
+
     function hydrateExamState(response) {
         var exam = response.exam || {};
         var draft = readDraftState();
         var serverAnswerMap = response.answer_map || {};
+        var draftAnswerMap = (draft && draft.exam_id === exam.exam_id) ? (draft.answer_map || {}) : {};
+        var draftVisitedMap = (draft && draft.exam_id === exam.exam_id) ? (draft.visited_map || {}) : {};
 
         $scope.examId = exam.exam_id || '';
         $scope.questions = response.questions || [];
-        $scope.answerMap = angular.extend({}, serverAnswerMap, draft && draft.exam_id === exam.exam_id ? (draft.answer_map || {}) : {});
-        $scope.visitedMap = draft && draft.exam_id === exam.exam_id ? (draft.visited_map || {}) : {};
+        $scope.answerMap = angular.extend({}, normalizeAnswerMap(serverAnswerMap), normalizeAnswerMap(draftAnswerMap));
+        $scope.visitedMap = angular.extend({}, draftVisitedMap);
         $scope.currentQuestionIndex = draft && draft.exam_id === exam.exam_id ? parseInt(draft.current_question_index || 0, 10) : 0;
         $scope.timeLeft = parseInt(exam.remaining_seconds || 0, 10);
         $scope.examState = exam.status === 'submitted' ? 'result' : 'running';
@@ -1862,9 +1882,23 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         $scope.answerKey = [];
         $scope.errorMessage = '';
 
+        if (isNaN($scope.currentQuestionIndex) || $scope.currentQuestionIndex < 0) {
+            $scope.currentQuestionIndex = 0;
+        }
+
         if ($scope.currentQuestionIndex >= $scope.questions.length) {
             $scope.currentQuestionIndex = 0;
         }
+
+        angular.forEach($scope.questions, function(question) {
+            if (!question || !question.id) {
+                return;
+            }
+
+            if ($scope.answerMap[question.id]) {
+                $scope.visitedMap[question.id] = true;
+            }
+        });
 
         if ($scope.questions[$scope.currentQuestionIndex]) {
             $scope.visitedMap[$scope.questions[$scope.currentQuestionIndex].id] = true;
@@ -2021,15 +2055,26 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         });
     };
 
+    $scope.isOptionSelected = function(question, optionKey) {
+        if (!question || !question.id) {
+            return false;
+        }
+
+        var saved = $scope.answerMap[question.id];
+        return normalizeOptionValue(saved) === normalizeOptionValue(optionKey);
+    };
+
     $scope.goToQuestion = function(index) {
         if (index < 0 || index >= $scope.questions.length) {
             return;
         }
 
         $scope.currentQuestionIndex = index;
-        if ($scope.questions[index]) {
+
+        if ($scope.questions[index] && $scope.questions[index].id) {
             $scope.visitedMap[$scope.questions[index].id] = true;
         }
+
         setDraftState();
     };
 
@@ -2046,11 +2091,13 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
     };
 
     $scope.selectAnswer = function(question, selectedOption) {
-        if (!question || !$scope.examId) {
+        if (!question || !question.id || !$scope.examId) {
             return;
         }
 
-        $scope.answerMap[question.id] = selectedOption;
+        var normalizedOption = normalizeOptionValue(selectedOption);
+
+        $scope.answerMap[question.id] = normalizedOption;
         $scope.visitedMap[question.id] = true;
         setDraftState();
 
@@ -2062,7 +2109,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
             $http(apiConfig('POST', '/api/save-answer', {
                 exam_id: $scope.examId,
                 question_id: question.id,
-                selected_option: selectedOption
+                selected_option: normalizedOption
             })).then(function(response) {
                 var data = response.data || {};
                 if (data.auto_submitted) {
@@ -2077,20 +2124,31 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
 
     $scope.getPaletteClass = function(question, index) {
         var classes = [];
-        if ($scope.answerMap[question.id]) {
+
+        if (!question || !question.id) {
+            return '';
+        }
+
+        var answer = $scope.answerMap[question.id];
+        var isAnswered = normalizeOptionValue(answer) !== '';
+        var isVisited = !!$scope.visitedMap[question.id];
+
+        if (isAnswered) {
             classes.push('answered');
-        } else if ($scope.visitedMap[question.id]) {
+        } else if (isVisited) {
             classes.push('visited');
         }
+
         if (index === $scope.currentQuestionIndex) {
             classes.push('current');
         }
+
         return classes.join(' ');
     };
 
     $scope.getAnsweredCount = function() {
         return Object.keys($scope.answerMap).filter(function(questionId) {
-            return !!$scope.answerMap[questionId];
+            return normalizeOptionValue($scope.answerMap[questionId]) !== '';
         }).length;
     };
 
@@ -2131,11 +2189,13 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
             $scope.result = data.result || null;
             $scope.examState = 'result';
             $scope.showAnswerKey = false;
+
             if (isAutoSubmit) {
                 $scope.errorMessage = 'Time is over. Exam submitted automatically.';
             } else {
                 $scope.errorMessage = '';
             }
+
             clearDraftState();
         }, function() {
             $scope.processing = false;

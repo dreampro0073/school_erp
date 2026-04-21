@@ -103,7 +103,7 @@
                     <div class="row g-3">
                         <div class="col-md-6" ng-repeat="option in getQuestionOptions(getCurrentQuestion()) track by option.key">
                             <label class="exam-option-card w-100"
-                                ng-class="{'selected': answerMap[getCurrentQuestion().id] === option.key}"
+                                ng-class="{'selected': isOptionSelected(getCurrentQuestion(), option.key)}"
                                 ng-click="!processing && selectAnswer(getCurrentQuestion(), option.key)">
                                 <span class="d-flex align-items-start gap-3">
                                     <span class="exam-option-key">@{{ option.key }}</span>
@@ -304,11 +304,13 @@
     }
 
     .palette-item.visited {
-        background: #bf4d28;
+        background: #bf4d28 !important;
+        color: #ffffff !important;
     }
 
     .palette-item.answered {
-        background: linear-gradient(135deg, #159957 0%, #0b7a43 100%);
+        background: linear-gradient(135deg, #159957 0%, #0b7a43 100%) !important;
+        color: #ffffff !important;
         box-shadow: 0 10px 20px rgba(21, 153, 87, 0.25);
     }
 
@@ -383,15 +385,15 @@
     }
 
     .exam-option-card.selected {
-        border-color: #0e66aa;
-        background: #eef7ff;
-        box-shadow: 0 0 0 3px rgba(14, 102, 170, 0.12);
+        border: 2px solid #0e66aa !important;
+        background: #eef7ff !important;
+        box-shadow: 0 0 0 3px rgba(14, 102, 170, 0.12) !important;
     }
 
     .exam-option-card.selected .exam-option-key {
-        background: #0e66aa;
-        border-color: #0e66aa;
-        color: #ffffff;
+        background: #0e66aa !important;
+        border-color: #0e66aa !important;
+        color: #ffffff !important;
     }
 
     .result-stat-value {
