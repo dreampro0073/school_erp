@@ -115,7 +115,8 @@ class AspirantController extends Controller
             ], 200, []);
         }
 
-        $query = Question::where('subject_id', $subjectId)
+        $query = Question::with(['passage:id,title,passage'])
+            ->where('subject_id', $subjectId)
             ->whereIn('topic_id', $topicIds);
 
         if (is_array($excludeIds) && count($excludeIds)) {

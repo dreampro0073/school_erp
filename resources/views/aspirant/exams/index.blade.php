@@ -102,17 +102,12 @@
 
                     <div class="row g-3">
                         <div class="col-md-6" ng-repeat="option in getQuestionOptions(getCurrentQuestion()) track by option.key">
-                            <label class="exam-option-card w-100" ng-class="{'selected': answerMap[getCurrentQuestion().id] === option.key}">
+                            <label class="exam-option-card w-100"
+                                ng-class="{'selected': answerMap[getCurrentQuestion().id] === option.key}"
+                                ng-click="!processing && selectAnswer(getCurrentQuestion(), option.key)">
                                 <span class="d-flex align-items-start gap-3">
-                                    <input type="radio"
-                                        class="exam-option-radio"
-                                        name="question_@{{ getCurrentQuestion().id }}"
-                                        ng-model="answerMap[getCurrentQuestion().id]"
-                                        ng-value="option.key"
-                                        ng-change="selectAnswer(getCurrentQuestion(), option.key)"
-                                        ng-disabled="processing">
-                                    <span>
-                                        <strong>@{{ option.key }}.</strong>
+                                    <span class="exam-option-key">@{{ option.key }}</span>
+                                    <span class="exam-option-text">
                                         <span>@{{ option.text }}</span>
                                     </span>
                                 </span>
@@ -358,32 +353,45 @@
         cursor: pointer;
         background: #ffffff;
         min-height: 100%;
-    }
-
-    .exam-option-card > input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .exam-option-radio {
-        width: 18px;
-        height: 18px;
-        min-width: 18px;
-        margin-top: 2px;
-        accent-color: #0e66aa;
-        cursor: pointer;
         transition: all 0.2s ease;
+    }
+
+    .exam-option-card:hover {
+        border-color: #0e66aa;
+        background: #f8fbff;
+    }
+
+    .exam-option-key {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        color: #0e66aa;
+        background: #eef4fb;
+        border: 1px solid #d6dfec;
+        transition: all 0.2s ease;
+    }
+
+    .exam-option-text {
+        color: #1b2430;
+        line-height: 1.6;
     }
 
     .exam-option-card.selected {
         border-color: #0e66aa;
         background: #eef7ff;
-        box-shadow: 0 10px 30px rgba(14, 102, 170, 0.1);
+        box-shadow: 0 0 0 3px rgba(14, 102, 170, 0.12);
     }
 
-    .exam-option-card.selected .exam-option-radio {
-        accent-color: #0e66aa;
+    .exam-option-card.selected .exam-option-key {
+        background: #0e66aa;
+        border-color: #0e66aa;
+        color: #ffffff;
     }
 
     .result-stat-value {

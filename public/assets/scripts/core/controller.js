@@ -1522,7 +1522,7 @@ app.controller('practiceCtrl', function($scope , DBService, $interval){
     $scope.loading = false;
     $scope.showAnswer = false;
     $scope.userAnswer = '';
-    $scope.answerMode = 'A';
+    $scope.answerMode = '';
     $scope.answerText = '';
     $scope.referenceQuestion = null;
 
@@ -1665,9 +1665,9 @@ app.controller('practiceCtrl', function($scope , DBService, $interval){
         if ($scope.showAnswer) {
             return;
         }
+        $scope.userAnswer = letter;
         $scope.answerMode = letter;
         $scope.onAnswerModeChange();
-        $scope.applyAnswer();
     };
 
     $scope.submitAnswer = function() {
@@ -1722,7 +1722,7 @@ app.controller('practiceCtrl', function($scope , DBService, $interval){
 
     $scope.optionClass = function(letter) {
         if (!$scope.showAnswer) {
-            return ($scope.answerMode === letter ? 'selected' : '');
+            return ($scope.userAnswer === letter ? 'selected' : '');
         }
         var correct = ($scope.currentQuestion.answer || '').toString().trim();
         var user = ($scope.currentQuestion._user_answer || '').toString().trim();

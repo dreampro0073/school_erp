@@ -35,4 +35,9 @@ class Question extends Model
 
         return $this->{'opt_' . strtolower($this->answer)};
     }
+
+    public function passage()
+    {
+        return $this->belongsTo(Passage::class);
+    }
 }

@@ -41,6 +41,11 @@
          <div class="d-flex justify-content-between align-items-start gap-12 mb-16">
             <div>
                <h6 class="mb-8 text-primary-light">Question @{{ currentIndex + 1 }}</h6>
+               <div class="practice-passage-box mb-12" ng-if="currentQuestion.passage">
+                  <p class="practice-passage-label mb-6">Passage</p>
+                  <h6 class="mb-8 text-primary-light" ng-if="currentQuestion.passage.title">@{{ currentQuestion.passage.title }}</h6>
+                  <p class="mb-0 text-secondary-light practice-passage-text">@{{ currentQuestion.passage.passage }}</p>
+               </div>
                <p class="mb-0 text-primary-light">@{{ currentQuestion.question }}</p>
             </div>
             <div class="px-12 py-5-px border border-neutral-300 radius-8 text-secondary-light text-sm">Time: @{{ timeLeft }}s</div>
@@ -49,17 +54,11 @@
 
          <div class="row g-3 mb-16">
             <div class="col-md-6" ng-repeat="opt in currentOptions track by opt.key">
-               <label class="practice-option-card w-100" ng-class="optionClass(opt.key)">
+               <label class="practice-option-card w-100" ng-class="optionClass(opt.key)" ng-click="selectOption(opt.key)">
                   <span class="d-flex align-items-start gap-3">
-                     <input type="radio"
-                        class="practice-option-radio"
-                        name="practice_question_@{{ currentQuestion.id }}"
-                        ng-model="answerMode"
-                        ng-value="opt.key"
-                        ng-change="selectOption(opt.key)"
-                        ng-disabled="showAnswer">
-                     <span>
-                        <strong class="me-8">@{{ opt.key }}.</strong> @{{ opt.text }}
+                     <span class="practice-option-key">@{{ opt.key }}</span>
+                     <span class="practice-option-text">
+                        @{{ opt.text }}
                      </span>
                   </span>
                </label>
@@ -112,6 +111,26 @@
 
 @section('footer_scripts')
 <style>
+   .practice-passage-box {
+      background: linear-gradient(180deg, #f6faff 0%, #eef7ff 100%);
+      border: 1px solid #d6e8f8;
+      border-radius: 16px;
+      padding: 16px 18px;
+   }
+
+   .practice-passage-label {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0e66aa;
+   }
+
+   .practice-passage-text {
+      white-space: pre-line;
+      line-height: 1.7;
+   }
+
    .practice-option-card {
       display: block;
       border: 1px solid #d6dfec;
@@ -123,50 +142,68 @@
       transition: all 0.2s ease;
    }
 
-   .practice-option-card > input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
+   .practice-option-card:hover {
+      border-color: #0e66aa;
+      background: #f8fbff;
    }
 
-   .practice-option-card .practice-option-radio {
-      width: 18px;
-      height: 18px;
-      min-width: 18px;
-      margin-top: 2px;
-      accent-color: #0e66aa;
-      cursor: pointer;
+   .practice-option-key {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #0e66aa;
+      background: #eef4fb;
+      border: 1px solid #d6dfec;
       transition: all 0.2s ease;
+   }
+
+   .practice-option-text {
+      color: #1b2430;
+      line-height: 1.6;
    }
 
    .practice-option-card.selected {
       border-color: #0e66aa;
       background: #eef7ff;
-      box-shadow: 0 10px 30px rgba(14, 102, 170, 0.1);
+      box-shadow: 0 0 0 3px rgba(14, 102, 170, 0.12);
    }
 
-   .practice-option-card.selected .practice-option-radio {
-      accent-color: #0e66aa;
+   .practice-option-card.selected .practice-option-key {
+      background: #0e66aa;
+      border-color: #0e66aa;
+      color: #ffffff;
    }
 
    .practice-option-card.correct {
       border-color: #1d8f5b;
       background: #edfdf3;
       color: #1d8f5b;
+      box-shadow: 0 0 0 3px rgba(29, 143, 91, 0.12);
    }
 
-   .practice-option-card.correct .practice-option-radio {
-      accent-color: #1d8f5b;
+   .practice-option-card.correct .practice-option-key {
+      background: #1d8f5b;
+      border-color: #1d8f5b;
+      color: #ffffff;
    }
 
    .practice-option-card.incorrect {
       border-color: #d92d20;
       background: #fff1f3;
       color: #d92d20;
+      box-shadow: 0 0 0 3px rgba(217, 45, 32, 0.12);
    }
 
-   .practice-option-card.incorrect .practice-option-radio {
-      accent-color: #d92d20;
+   .practice-option-card.incorrect .practice-option-key {
+      background: #d92d20;
+      border-color: #d92d20;
+      color: #ffffff;
    }
 </style>
 @endsection
