@@ -1786,6 +1786,21 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         return ('' + value).trim().toUpperCase();
     }
 
+    function buildQuestionOptions(question) {
+        if (!question) {
+            return [];
+        }
+
+        return [
+            { key: 'A', text: question.option1 },
+            { key: 'B', text: question.option2 },
+            { key: 'C', text: question.option3 },
+            { key: 'D', text: question.option4 }
+        ].filter(function(option) {
+            return option.text !== null && option.text !== undefined && option.text !== '';
+        });
+    }
+
     function setDraftState() {
         if (!$scope.examId) {
             return;
@@ -1864,6 +1879,13 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         return normalized;
     }
 
+    function prepareQuestions(questions) {
+        return (questions || []).map(function(question) {
+            question._options = buildQuestionOptions(question);
+            return question;
+        });
+    }
+
     function hydrateExamState(response) {
         var exam = response.exam || {};
         var draft = readDraftState();
@@ -1872,7 +1894,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         var draftVisitedMap = (draft && draft.exam_id === exam.exam_id) ? (draft.visited_map || {}) : {};
 
         $scope.examId = exam.exam_id || '';
-        $scope.questions = response.questions || [];
+        $scope.questions = prepareQuestions(response.questions || []);
         $scope.answerMap = angular.extend({}, normalizeAnswerMap(serverAnswerMap), normalizeAnswerMap(draftAnswerMap));
         $scope.visitedMap = angular.extend({}, draftVisitedMap);
         $scope.currentQuestionIndex = draft && draft.exam_id === exam.exam_id ? parseInt(draft.current_question_index || 0, 10) : 0;
@@ -1900,7 +1922,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
             }
         });
 
-        if ($scope.questions[$scope.currentQuestionIndex]) {
+        if ($scope.questions[$scope.currentQuestionIndex] && $scope.questions[$scope.currentQuestionIndex].id) {
             $scope.visitedMap[$scope.questions[$scope.currentQuestionIndex].id] = true;
         }
 
@@ -2040,28 +2062,12 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         return $scope.questions[$scope.currentQuestionIndex] || null;
     };
 
-    $scope.getQuestionOptions = function(question) {
-        if (!question) {
-            return [];
-        }
-
-        return [
-            { key: 'A', text: question.option1 },
-            { key: 'B', text: question.option2 },
-            { key: 'C', text: question.option3 },
-            { key: 'D', text: question.option4 }
-        ].filter(function(option) {
-            return option.text !== null && option.text !== undefined && option.text !== '';
-        });
-    };
-
     $scope.isOptionSelected = function(question, optionKey) {
         if (!question || !question.id) {
             return false;
         }
 
-        var saved = $scope.answerMap[question.id];
-        return normalizeOptionValue(saved) === normalizeOptionValue(optionKey);
+        return normalizeOptionValue($scope.answerMap[question.id]) === normalizeOptionValue(optionKey);
     };
 
     $scope.goToQuestion = function(index) {
@@ -2129,8 +2135,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
             return '';
         }
 
-        var answer = $scope.answerMap[question.id];
-        var isAnswered = normalizeOptionValue(answer) !== '';
+        var isAnswered = normalizeOptionValue($scope.answerMap[question.id]) !== '';
         var isVisited = !!$scope.visitedMap[question.id];
 
         if (isAnswered) {

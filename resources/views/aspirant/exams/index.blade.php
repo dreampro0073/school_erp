@@ -8,9 +8,15 @@
             <p class="text-neutral-600 mt-4 mb-0">Pick at least three subjects, start a 100-question exam, and continue safely even after a reload.</p>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap" ng-if="examState === 'running'">
-            <span class="px-12 py-5-px border border-neutral-300 radius-8 text-secondary-light text-sm d-inline-flex align-items-center">Progress: @{{ currentQuestionIndex + 1 }}/@{{ questions.length || 100 }}</span>
-            <span class="px-12 py-5-px border border-neutral-300 radius-8 text-secondary-light text-sm d-inline-flex align-items-center">Answered: @{{ getAnsweredCount() }}</span>
-            <span class="bg-danger-100 text-danger-600 px-12 py-5-px radius-8 text-sm d-inline-flex align-items-center">Time Left: @{{ formatTime(timeLeft) }}</span>
+            <span class="px-12 py-5-px border border-neutral-300 radius-8 text-secondary-light text-sm d-inline-flex align-items-center">
+                Progress: @{{ currentQuestionIndex + 1 }}/@{{ questions.length || 100 }}
+            </span>
+            <span class="px-12 py-5-px border border-neutral-300 radius-8 text-secondary-light text-sm d-inline-flex align-items-center">
+                Answered: @{{ getAnsweredCount() }}
+            </span>
+            <span class="bg-danger-100 text-danger-600 px-12 py-5-px radius-8 text-sm d-inline-flex align-items-center">
+                Time Left: @{{ formatTime(timeLeft) }}
+            </span>
         </div>
     </div>
 
@@ -49,8 +55,12 @@
                 </div>
 
                 <div class="mt-20 d-flex align-items-center justify-content-between flex-wrap gap-3">
-                    <p class="mb-0 text-secondary-light">Selected: <strong>@{{ getSelectedSubjectCount() }}</strong> subject(s)</p>
-                    <button type="button" class="btn btn-outline-primary" ng-click="restoreDraft()" ng-if="hasDraftExam()">Resume Saved Exam</button>
+                    <p class="mb-0 text-secondary-light">
+                        Selected: <strong>@{{ getSelectedSubjectCount() }}</strong> subject(s)
+                    </p>
+                    <button type="button" class="btn btn-outline-primary" ng-click="restoreDraft()" ng-if="hasDraftExam()">
+                        Resume Saved Exam
+                    </button>
                 </div>
             </div>
         </div>
@@ -89,19 +99,30 @@
                 <div class="card-body p-24">
                     <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-20">
                         <div>
-                            <p class="text-sm text-secondary-light mb-2">Question @{{ currentQuestionIndex + 1 }} of @{{ questions.length }}</p>
+                            <p class="text-sm text-secondary-light mb-2">
+                                Question @{{ currentQuestionIndex + 1 }} of @{{ questions.length }}
+                            </p>
+
                             <div class="exam-passage-box mb-16" ng-if="getCurrentQuestion().passage">
                                 <p class="exam-passage-label mb-6">Passage</p>
-                                <h6 class="mb-8 text-primary-light" ng-if="getCurrentQuestion().passage.title">@{{ getCurrentQuestion().passage.title }}</h6>
-                                <p class="mb-0 text-secondary-light exam-passage-text">@{{ getCurrentQuestion().passage.description }}</p>
+                                <h6 class="mb-8 text-primary-light" ng-if="getCurrentQuestion().passage.title">
+                                    @{{ getCurrentQuestion().passage.title }}
+                                </h6>
+                                <p class="mb-0 text-secondary-light exam-passage-text">
+                                    @{{ getCurrentQuestion().passage.description }}
+                                </p>
                             </div>
+
                             <h5 class="mb-0 text-primary-light">@{{ getCurrentQuestion().question }}</h5>
                         </div>
-                        <button type="button" class="btn btn-danger" ng-click="submitExam(false)" ng-disabled="processing">Submit Exam</button>
+
+                        <button type="button" class="btn btn-danger" ng-click="submitExam(false)" ng-disabled="processing">
+                            Submit Exam
+                        </button>
                     </div>
 
                     <div class="row g-3">
-                        <div class="col-md-6" ng-repeat="option in getQuestionOptions(getCurrentQuestion()) track by option.key">
+                        <div class="col-md-6" ng-repeat="option in getCurrentQuestion()._options track by option.key">
                             <label class="exam-option-card w-100"
                                 ng-class="{'selected': isOptionSelected(getCurrentQuestion(), option.key)}"
                                 ng-click="!processing && selectAnswer(getCurrentQuestion(), option.key)">
@@ -116,9 +137,21 @@
                     </div>
 
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mt-24">
-                        <button type="button" class="btn btn-outline-primary" ng-click="previousQuestion()" ng-disabled="currentQuestionIndex === 0">Previous</button>
-                        <div class="text-secondary-light text-sm">Autosave is on. Answers are stored locally and on the server.</div>
-                        <button type="button" class="btn btn-primary-600" ng-click="nextQuestion()" ng-disabled="currentQuestionIndex === questions.length - 1">Next</button>
+                        <button type="button" class="btn btn-outline-primary"
+                            ng-click="previousQuestion()"
+                            ng-disabled="currentQuestionIndex === 0">
+                            Previous
+                        </button>
+
+                        <div class="text-secondary-light text-sm">
+                            Autosave is on. Answers are stored locally and on the server.
+                        </div>
+
+                        <button type="button" class="btn btn-primary-600"
+                            ng-click="nextQuestion()"
+                            ng-disabled="currentQuestionIndex === questions.length - 1">
+                            Next
+                        </button>
                     </div>
                 </div>
             </div>
@@ -135,6 +168,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-md-2 col-6">
                 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
@@ -143,6 +177,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-md-2 col-6">
                 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
@@ -151,6 +186,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-md-2 col-6">
                 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
@@ -159,6 +195,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-md-2 col-6">
                 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
@@ -173,7 +210,9 @@
             <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div>
                     <h6 class="mb-2 text-primary-light">Exam Submitted</h6>
-                    <p class="text-secondary-light mb-0">Your answers are locked and the result has been calculated with negative marking.</p>
+                    <p class="text-secondary-light mb-0">
+                        Your answers are locked and the result has been calculated with negative marking.
+                    </p>
                 </div>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-outline-primary" ng-click="loadAnswerKey()" ng-disabled="answerKeyLoading">
@@ -189,6 +228,7 @@
                 <div class="p-20 border-bottom">
                     <h6 class="mb-0 text-primary-light">Answer Key</h6>
                 </div>
+
                 <div class="table-responsive">
                     <table class="table bordered-table table-heading-dark-mode mb-0">
                         <thead>
@@ -216,6 +256,7 @@
                                             }">
                                             @{{ item.status }}
                                         </span>
+
                                         <button type="button"
                                             class="answerkey-info-btn"
                                             ng-click="showAnswerKeyInfo(item)"
@@ -226,8 +267,11 @@
                                     </div>
                                 </td>
                             </tr>
+
                             <tr ng-if="!answerKey.length">
-                                <td colspan="5" class="text-center py-4 text-secondary-light">No answer key available.</td>
+                                <td colspan="5" class="text-center py-4 text-secondary-light">
+                                    No answer key available.
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -243,12 +287,20 @@
                     <h5 class="modal-title text-primary-light">Question Info</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body">
-                    <p class="mb-12 text-primary-light"><strong>Reference:</strong> @{{ answerKeyInfo.reference || '-' }}</p>
-                    <p class="mb-0 text-primary-light"><strong>Remarks:</strong> @{{ answerKeyInfo.remarks || '-' }}</p>
+                    <p class="mb-12 text-primary-light">
+                        <strong>Reference:</strong> @{{ answerKeyInfo.reference || '-' }}
+                    </p>
+                    <p class="mb-0 text-primary-light">
+                        <strong>Remarks:</strong> @{{ answerKeyInfo.remarks || '-' }}
+                    </p>
                 </div>
+
                 <div class="modal-footer">
-                    <button type="button" class="border border-danger-600 text-danger-600 px-50 py-11 radius-8" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="border border-danger-600 text-danger-600 px-50 py-11 radius-8" data-bs-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
