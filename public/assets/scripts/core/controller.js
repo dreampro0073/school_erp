@@ -1890,6 +1890,10 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         });
     }
 
+    function normalizeExamName(value) {
+        return (value || '').replace(/\s+/g, ' ').trim();
+    }
+
     function hydrateExamState(response) {
         var exam = response.exam || {};
         var draft = readDraftState();
@@ -2020,8 +2024,15 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
     };
 
     $scope.startExam = function() {
-        if (!$scope.examName || !$scope.examName.trim()) {
-            $scope.errorMessage = 'Please enter exam name.';
+        var cleanExamName = normalizeExamName($scope.examName);
+
+        if (!cleanExamName) {
+            $scope.errorMessage = 'Please enter an exam name.';
+            return;
+        }
+
+        if (cleanExamName.length < 3) {
+            $scope.errorMessage = 'Exam name must be at least 3 characters long.';
             return;
         }
 
@@ -2032,9 +2043,10 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
 
         $scope.processing = true;
         $scope.errorMessage = '';
+        $scope.examName = cleanExamName;
 
         $http(apiConfig('POST', '/api/start-exam', {
-            exam_name: $scope.examName.trim(),
+            exam_name: cleanExamName,
             subject_ids: $scope.getSelectedSubjectIds()
         })).then(function(response) {
             var data = response.data || {};

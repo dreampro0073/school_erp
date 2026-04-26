@@ -422,9 +422,13 @@ class AspirantController extends Controller
     public function startExam(Request $request)
     {
         $user = $this->resolveApiUser($request);
+        $examName = preg_replace('/\s+/', ' ', trim((string) $request->exam_name));
+        $request->merge([
+            'exam_name' => $examName,
+        ]);
 
         $validator = Validator::make($request->all(), [
-            'exam_name' => 'required|string|max:150',
+            'exam_name' => 'required|string|min:3|max:150',
             'subject_ids' => 'required|array|min:3',
             'subject_ids.*' => 'integer|distinct|exists:subjects,id',
         ]);
@@ -436,7 +440,6 @@ class AspirantController extends Controller
             ], 200, []);
         }
 
-        $examName = trim((string) $request->exam_name);
         $subjectIds = array_values(array_unique(array_map('intval', $request->subject_ids)));
         $questions = $this->buildExamQuestionSet($subjectIds, 100);
 

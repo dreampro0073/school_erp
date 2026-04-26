@@ -30,7 +30,7 @@
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-20">
                     <div>
                         <h6 class="mb-4 text-primary-light">Choose Subjects</h6>
-                        <p class="text-secondary-light mb-0">Exam name dijiye, minimum 3 subjects choose kijiye, aur apna result baad me bhi kabhi dekh lijiye.</p>
+                        <p class="text-secondary-light mb-0">Enter an exam name, choose at least 3 subjects, and review your result again anytime from history.</p>
                     </div>
                     <button type="button" class="btn btn-primary-600" ng-click="startExam()" ng-disabled="processing">
                         @{{ processing ? 'Starting...' : 'Start Exam' }}
@@ -46,7 +46,7 @@
                             class="form-control"
                             ng-model="examName"
                             maxlength="150"
-                            placeholder="Jaise: Weekly Mock Test 1">
+                            placeholder="Example: Weekly Mock Test 1">
                     </div>
                 </div>
 
@@ -81,7 +81,7 @@
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-20">
                     <div>
                         <h6 class="mb-4 text-primary-light">My Exam History</h6>
-                        <p class="text-secondary-light mb-0">Aapke diye gaye sabhi exams, unka result aur answer key yahan se dobara khul jayega.</p>
+                        <p class="text-secondary-light mb-0">View all your previous exams, results, and answer keys from here.</p>
                     </div>
                     <span class="text-secondary-light text-sm" ng-if="historyLoading">Loading history...</span>
                 </div>
@@ -121,7 +121,7 @@
                             </tr>
 
                             <tr ng-if="!historyLoading && !examHistory.length">
-                                <td colspan="6" class="text-center py-4 text-secondary-light">Abhi tak koi exam history available nahi hai.</td>
+                                <td colspan="6" class="text-center py-4 text-secondary-light">No exam history is available yet.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -277,7 +277,7 @@
                     <div>
                         <h6 class="mb-2 text-primary-light">Exam Submitted</h6>
                         <p class="text-secondary-light mb-0">
-                            @{{ result.exam_name }} ka result save ho chuka hai. Aap isse kabhi bhi history se dobara dekh sakte hain.
+                            The result for @{{ result.exam_name }} has been saved. You can review it again anytime from exam history.
                         </p>
                     </div>
                 <div class="d-flex gap-2">
