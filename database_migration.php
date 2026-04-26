@@ -635,3 +635,4 @@ CREATE TABLE IF NOT EXISTS `passages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 ALTER TABLE `questions` CHANGE `paragraph_id` `passage_id` INT(11) NULL DEFAULT NULL;
+ALTER TABLE `exams` ADD `exam_name` VARCHAR(150) NULL DEFAULT NULL AFTER `exam_id`;

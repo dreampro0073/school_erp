@@ -219,6 +219,7 @@ use App\Http\Controllers\AspirantController;
     Route::controller(AspirantController::class)->group(function () {
         Route::get('/subjects', 'examSubjects');
         Route::post('/start-exam', 'startExam');
+        Route::get('/exam-history', 'examHistory');
         Route::get('/get-questions', 'getQuestions');
         Route::post('/save-answer', 'saveAnswer');
         Route::post('/submit-exam', 'submitExam');

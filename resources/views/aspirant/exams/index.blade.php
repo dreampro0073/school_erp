@@ -30,7 +30,7 @@
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-20">
                     <div>
                         <h6 class="mb-4 text-primary-light">Choose Subjects</h6>
-                        <p class="text-secondary-light mb-0">Minimum 3 subjects are required to generate a full exam paper.</p>
+                        <p class="text-secondary-light mb-0">Exam name dijiye, minimum 3 subjects choose kijiye, aur apna result baad me bhi kabhi dekh lijiye.</p>
                     </div>
                     <button type="button" class="btn btn-primary-600" ng-click="startExam()" ng-disabled="processing">
                         @{{ processing ? 'Starting...' : 'Start Exam' }}
@@ -38,6 +38,17 @@
                 </div>
 
                 <div class="alert alert-danger py-2" ng-if="errorMessage">@{{ errorMessage }}</div>
+
+                <div class="row g-3 mb-20">
+                    <div class="col-md-6">
+                        <label class="form-label">Exam Name</label>
+                        <input type="text"
+                            class="form-control"
+                            ng-model="examName"
+                            maxlength="150"
+                            placeholder="Jaise: Weekly Mock Test 1">
+                    </div>
+                </div>
 
                 <div class="row g-3">
                     <div class="col-md-4" ng-repeat="subject in subjects track by subject.id">
@@ -61,6 +72,59 @@
                     <button type="button" class="btn btn-outline-primary" ng-click="restoreDraft()" ng-if="hasDraftExam()">
                         Resume Saved Exam
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden mt-24">
+            <div class="card-body p-24">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-20">
+                    <div>
+                        <h6 class="mb-4 text-primary-light">My Exam History</h6>
+                        <p class="text-secondary-light mb-0">Aapke diye gaye sabhi exams, unka result aur answer key yahan se dobara khul jayega.</p>
+                    </div>
+                    <span class="text-secondary-light text-sm" ng-if="historyLoading">Loading history...</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table bordered-table table-heading-dark-mode mb-0">
+                        <thead>
+                            <tr>
+                                <th>Exam Name</th>
+                                <th>Status</th>
+                                <th>Subjects</th>
+                                <th>Score</th>
+                                <th>Submitted</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="exam in examHistory track by exam.exam_id">
+                                <td>
+                                    <div class="fw-semibold text-primary-light">@{{ exam.exam_name }}</div>
+                                    <div class="text-secondary-light text-sm">@{{ exam.exam_id }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                        ng-class="exam.status === 'submitted' ? 'bg-success-100 text-success-600' : 'bg-warning-100 text-warning-600'">
+                                        @{{ exam.status === 'submitted' ? 'Submitted' : 'In Progress' }}
+                                    </span>
+                                </td>
+                                <td class="text-secondary-light">@{{ (exam.subjects || []).join(', ') || '-' }}</td>
+                                <td class="text-primary-light">@{{ exam.status === 'submitted' ? exam.total_score : '-' }}</td>
+                                <td class="text-secondary-light">@{{ exam.submitted_at || '-' }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary-600" ng-click="openHistoryExam(exam)">
+                                        @{{ exam.status === 'submitted' ? 'View Result' : 'Resume Exam' }}
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr ng-if="!historyLoading && !examHistory.length">
+                                <td colspan="6" class="text-center py-4 text-secondary-light">Abhi tak koi exam history available nahi hai.</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -163,6 +227,8 @@
             <div class="col-md-4">
                 <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden">
                     <div class="card-body">
+                        <p class="text-primary-light fw-semibold mb-8">@{{ result.exam_name }}</p>
+                        <p class="text-secondary-light text-sm mb-12">Exam ID: @{{ result.exam_id }}</p>
                         <p class="text-secondary-light mb-4">Total Score</p>
                         <h3 class="mb-0 text-primary-light result-stat-value">@{{ result.total_score }}</h3>
                     </div>
@@ -207,13 +273,13 @@
         </div>
 
         <div class="shadow-1 radius-12 bg-base h-100 overflow-hidden mb-24">
-            <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-3">
-                <div>
-                    <h6 class="mb-2 text-primary-light">Exam Submitted</h6>
-                    <p class="text-secondary-light mb-0">
-                        Your answers are locked and the result has been calculated with negative marking.
-                    </p>
-                </div>
+                <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div>
+                        <h6 class="mb-2 text-primary-light">Exam Submitted</h6>
+                        <p class="text-secondary-light mb-0">
+                            @{{ result.exam_name }} ka result save ho chuka hai. Aap isse kabhi bhi history se dobara dekh sakte hain.
+                        </p>
+                    </div>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-outline-primary" ng-click="loadAnswerKey()" ng-disabled="answerKeyLoading">
                         @{{ answerKeyLoading ? 'Loading...' : 'View Answer Key' }}

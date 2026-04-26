@@ -1754,6 +1754,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
     $scope.answerKeyLoading = false;
     $scope.subjects = [];
     $scope.selectedSubjects = {};
+    $scope.examName = '';
     $scope.questions = [];
     $scope.answerMap = {};
     $scope.visitedMap = {};
@@ -1765,6 +1766,9 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
     $scope.answerKey = [];
     $scope.showAnswerKey = false;
     $scope.answerKeyInfo = null;
+    $scope.examHistory = [];
+    $scope.historyLoading = false;
+    $scope.selectedHistoryExamId = '';
     $scope.errorMessage = '';
 
     function apiConfig(method, route, payload, params) {
@@ -1894,6 +1898,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         var draftVisitedMap = (draft && draft.exam_id === exam.exam_id) ? (draft.visited_map || {}) : {};
 
         $scope.examId = exam.exam_id || '';
+        $scope.examName = exam.exam_name || '';
         $scope.questions = prepareQuestions(response.questions || []);
         $scope.answerMap = angular.extend({}, normalizeAnswerMap(serverAnswerMap), normalizeAnswerMap(draftAnswerMap));
         $scope.visitedMap = angular.extend({}, draftVisitedMap);
@@ -1945,6 +1950,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
             var data = response.data || {};
             $scope.subjects = data.subjects || [];
             $scope.loading = false;
+            $scope.loadHistory();
 
             var draft = readDraftState();
             if (draft && draft.exam_id) {
@@ -1953,6 +1959,18 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         }, function() {
             $scope.loading = false;
             $scope.errorMessage = 'Unable to load subjects.';
+        });
+    };
+
+    $scope.loadHistory = function() {
+        $scope.historyLoading = true;
+
+        $http(apiConfig('GET', '/api/exam-history')).then(function(response) {
+            var data = response.data || {};
+            $scope.historyLoading = false;
+            $scope.examHistory = data.exams || [];
+        }, function() {
+            $scope.historyLoading = false;
         });
     };
 
@@ -2002,6 +2020,11 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
     };
 
     $scope.startExam = function() {
+        if (!$scope.examName || !$scope.examName.trim()) {
+            $scope.errorMessage = 'Please enter exam name.';
+            return;
+        }
+
         if ($scope.getSelectedSubjectCount() < 3) {
             $scope.errorMessage = 'Please select at least 3 subjects.';
             return;
@@ -2011,6 +2034,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         $scope.errorMessage = '';
 
         $http(apiConfig('POST', '/api/start-exam', {
+            exam_name: $scope.examName.trim(),
             subject_ids: $scope.getSelectedSubjectIds()
         })).then(function(response) {
             var data = response.data || {};
@@ -2021,6 +2045,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
             }
 
             $scope.examId = data.exam_id;
+            $scope.examName = data.exam_name || $scope.examName;
             $scope.questions = [];
             $scope.answerMap = {};
             $scope.visitedMap = {};
@@ -2194,6 +2219,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
             $scope.result = data.result || null;
             $scope.examState = 'result';
             $scope.showAnswerKey = false;
+            $scope.loadHistory();
 
             if (isAutoSubmit) {
                 $scope.errorMessage = 'Time is over. Exam submitted automatically.';
@@ -2216,6 +2242,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         $http(apiConfig('GET', '/api/result', null, { exam_id: $scope.examId })).then(function(response) {
             if (response.data && response.data.success) {
                 $scope.result = response.data.result || null;
+                $scope.examName = ($scope.result && $scope.result.exam_name) ? $scope.result.exam_name : $scope.examName;
                 $scope.examState = 'result';
             }
         });
@@ -2252,6 +2279,7 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         cancelSavePromises();
         clearDraftState();
         $scope.selectedSubjects = {};
+        $scope.examName = '';
         $scope.questions = [];
         $scope.answerMap = {};
         $scope.visitedMap = {};
@@ -2262,8 +2290,53 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
         $scope.answerKey = [];
         $scope.showAnswerKey = false;
         $scope.answerKeyInfo = null;
+        $scope.selectedHistoryExamId = '';
         $scope.examState = 'entry';
         $scope.errorMessage = '';
+        $scope.loadHistory();
+    };
+
+    $scope.openHistoryExam = function(exam) {
+        if (!exam || !exam.exam_id) {
+            return;
+        }
+
+        $scope.selectedHistoryExamId = exam.exam_id;
+        $scope.examId = exam.exam_id;
+        $scope.examName = exam.exam_name || '';
+        $scope.result = angular.copy(exam);
+        $scope.examState = exam.status === 'submitted' ? 'result' : 'running';
+        $scope.showAnswerKey = false;
+        $scope.answerKey = [];
+
+        if (exam.status === 'submitted') {
+            stopTimer();
+            clearDraftState();
+            $scope.loadResult();
+            return;
+        }
+
+        $scope.restoreHistoryExam(exam.exam_id);
+    };
+
+    $scope.restoreHistoryExam = function(examId) {
+        if (!examId) {
+            return;
+        }
+
+        $scope.loading = true;
+        $http(apiConfig('GET', '/api/get-questions', null, { exam_id: examId })).then(function(response) {
+            $scope.loading = false;
+            if (response.data && response.data.success) {
+                hydrateExamState(response.data);
+                $scope.loadHistory();
+            } else {
+                $scope.errorMessage = (response.data && response.data.message) ? response.data.message : 'Unable to open exam.';
+            }
+        }, function() {
+            $scope.loading = false;
+            $scope.errorMessage = 'Unable to open exam.';
+        });
     };
 
     $scope.$on('$destroy', function() {

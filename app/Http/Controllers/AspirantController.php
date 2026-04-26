@@ -424,6 +424,7 @@ class AspirantController extends Controller
         $user = $this->resolveApiUser($request);
 
         $validator = Validator::make($request->all(), [
+            'exam_name' => 'required|string|max:150',
             'subject_ids' => 'required|array|min:3',
             'subject_ids.*' => 'integer|distinct|exists:subjects,id',
         ]);
@@ -435,6 +436,7 @@ class AspirantController extends Controller
             ], 200, []);
         }
 
+        $examName = trim((string) $request->exam_name);
         $subjectIds = array_values(array_unique(array_map('intval', $request->subject_ids)));
         $questions = $this->buildExamQuestionSet($subjectIds, 100);
 
@@ -447,10 +449,11 @@ class AspirantController extends Controller
 
         $examId = 'EXM' . now()->format('YmdHis') . strtoupper(Str::random(6));
 
-        DB::transaction(function () use ($user, $examId, $subjectIds, $questions) {
+        DB::transaction(function () use ($user, $examId, $examName, $subjectIds, $questions) {
             Exam::create([
                 'user_id' => $user->id,
                 'exam_id' => $examId,
+                'exam_name' => $examName,
                 'selected_subject_ids' => $subjectIds,
                 'start_time' => now(),
                 'duration_minutes' => 60,
@@ -476,10 +479,26 @@ class AspirantController extends Controller
         return response()->json([
             'success' => true,
             'exam_id' => $examId,
+            'exam_name' => $examName,
             'start_time' => now()->toDateTimeString(),
             'duration_minutes' => 60,
             'total_questions' => 100,
             'message' => 'Exam started successfully.',
+        ], 200, []);
+    }
+
+    public function examHistory(Request $request)
+    {
+        $user = $this->resolveApiUser($request);
+        $exams = Exam::where('user_id', $user->id)
+            ->orderByDesc('id')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'exams' => $exams->map(function (Exam $exam) {
+                return $this->transformExamHistoryItem($exam);
+            })->values(),
         ], 200, []);
     }
 
@@ -515,6 +534,7 @@ class AspirantController extends Controller
             'success' => true,
             'exam' => [
                 'exam_id' => $exam->exam_id,
+                'exam_name' => $exam->exam_name,
                 'status' => $exam->status,
                 'start_time' => optional($exam->start_time)->toDateTimeString(),
                 'submitted_at' => optional($exam->submitted_at)->toDateTimeString(),
@@ -817,94 +837,87 @@ class AspirantController extends Controller
 
         foreach ($allQuestions as $question) {
             $passageId = (int) ($question->passage_id ?? 0);
+            $subjectId = (int) ($question->subject_id ?? 0);
 
             if ($passageId > 0) {
-                if (!isset($passageGroups[$passageId])) {
-                    $passageGroups[$passageId] = [];
+                if (!isset($passageGroups[$subjectId])) {
+                    $passageGroups[$subjectId] = [];
                 }
 
-                $passageGroups[$passageId][] = $question;
+                if (!isset($passageGroups[$subjectId][$passageId])) {
+                    $passageGroups[$subjectId][$passageId] = [];
+                }
+
+                $passageGroups[$subjectId][$passageId][] = $question;
                 continue;
             }
 
             $standaloneQuestions[] = $question;
         }
 
-        foreach ($passageGroups as $passageId => $groupQuestions) {
-            usort($groupQuestions, function ($first, $second) {
-                return ((int) $first->id) <=> ((int) $second->id);
-            });
-            $passageGroups[$passageId] = $groupQuestions;
+        foreach ($passageGroups as $subjectId => $subjectPassages) {
+            foreach ($subjectPassages as $passageId => $groupQuestions) {
+                usort($groupQuestions, function ($first, $second) {
+                    return ((int) $first->id) <=> ((int) $second->id);
+                });
+
+                $passageGroups[$subjectId][$passageId] = $groupQuestions;
+            }
         }
 
         shuffle($standaloneQuestions);
 
-        $groupBuckets = array_values($passageGroups);
-        shuffle($groupBuckets);
+        $selectedPassageQuestions = [];
+        $subjectOrder = $subjectIds;
+        shuffle($subjectOrder);
 
-        $minPassageQuestions = max(0, $limit - count($standaloneQuestions));
-        $selectedGroupIndexes = $this->selectPassageGroupIndexes($groupBuckets, $minPassageQuestions, $limit);
+        foreach ($subjectOrder as $subjectId) {
+            $subjectId = (int) $subjectId;
 
-        $selectedQuestions = collect();
-
-        foreach ($selectedGroupIndexes as $groupIndex) {
-            foreach ($groupBuckets[$groupIndex] as $groupQuestion) {
-                $selectedQuestions->push($groupQuestion);
-            }
-        }
-
-        foreach ($standaloneQuestions as $question) {
-            if ($selectedQuestions->count() >= $limit) {
-                break;
-            }
-
-            $selectedQuestions->push($question);
-        }
-
-        if ($selectedQuestions->count() < $limit) {
-            return collect();
-        }
-
-        return $selectedQuestions
-            ->take($limit)
-            ->values();
-    }
-
-    protected function selectPassageGroupIndexes(array $groupBuckets, int $minQuestions, int $limit): array
-    {
-        $reachable = [
-            0 => [],
-        ];
-
-        foreach ($groupBuckets as $index => $bucket) {
-            $bucketSize = count($bucket);
-            $nextReachable = $reachable;
-
-            foreach ($reachable as $questionCount => $selectedIndexes) {
-                $newCount = $questionCount + $bucketSize;
-
-                if ($newCount > $limit || isset($nextReachable[$newCount])) {
-                    continue;
-                }
-
-                $nextReachable[$newCount] = array_merge($selectedIndexes, [$index]);
-            }
-
-            $reachable = $nextReachable;
-        }
-
-        $candidateCounts = array_keys($reachable);
-        rsort($candidateCounts);
-
-        foreach ($candidateCounts as $candidateCount) {
-            if ($candidateCount < $minQuestions || $candidateCount > $limit) {
+            if (!isset($passageGroups[$subjectId]) || !count($passageGroups[$subjectId])) {
                 continue;
             }
 
-            return $reachable[$candidateCount];
+            $subjectPassages = array_values($passageGroups[$subjectId]);
+            shuffle($subjectPassages);
+
+            foreach ($subjectPassages as $groupQuestions) {
+                $groupSize = count($groupQuestions);
+                $nextPassageCount = count($selectedPassageQuestions) + $groupSize;
+
+                if ($nextPassageCount > $limit) {
+                    continue;
+                }
+
+                if ($nextPassageCount + count($standaloneQuestions) < $limit) {
+                    continue;
+                }
+
+                foreach ($groupQuestions as $groupQuestion) {
+                    $selectedPassageQuestions[] = $groupQuestion;
+                }
+
+                // At most one passage block per subject.
+                break;
+            }
         }
 
-        return [];
+        $requiredStandaloneCount = $limit - count($selectedPassageQuestions);
+        $selectedStandaloneQuestions = array_slice($standaloneQuestions, 0, $requiredStandaloneCount);
+
+        if (count($selectedStandaloneQuestions) + count($selectedPassageQuestions) < $limit) {
+            return collect();
+        }
+
+        $beforePassageCount = (int) floor(count($selectedStandaloneQuestions) / 2);
+        $questionsBeforePassage = array_slice($selectedStandaloneQuestions, 0, $beforePassageCount);
+        $questionsAfterPassage = array_slice($selectedStandaloneQuestions, $beforePassageCount);
+
+        return collect(array_merge(
+            $questionsBeforePassage,
+            $selectedPassageQuestions,
+            $questionsAfterPassage
+        ))->take($limit)->values();
     }
 
     protected function transformQuestionPassage($row): ?array
@@ -1025,6 +1038,7 @@ class AspirantController extends Controller
 
         return [
             'exam_id' => $exam->exam_id,
+            'exam_name' => $exam->exam_name ?: ('Exam ' . $exam->exam_id),
             'total_questions' => count($rows),
             'attempted' => $attempted,
             'correct' => $correct,
@@ -1032,6 +1046,50 @@ class AspirantController extends Controller
             'unattempted' => $unattempted,
             'total_score' => round($score, 2),
             'status' => $exam->status === 'submitted' ? 'submitted' : 'in_progress',
+            'start_time' => optional($exam->start_time)->toDateTimeString(),
+            'submitted_at' => optional($exam->submitted_at)->toDateTimeString(),
+            'duration_minutes' => (int) ($exam->duration_minutes ?: 60),
+            'subjects' => $this->resolveSubjectNames($exam->selected_subject_ids),
         ];
+    }
+
+    protected function transformExamHistoryItem(Exam $exam): array
+    {
+        return [
+            'exam_id' => $exam->exam_id,
+            'exam_name' => $exam->exam_name ?: ('Exam ' . $exam->exam_id),
+            'status' => $exam->status,
+            'start_time' => optional($exam->start_time)->toDateTimeString(),
+            'submitted_at' => optional($exam->submitted_at)->toDateTimeString(),
+            'duration_minutes' => (int) ($exam->duration_minutes ?: 60),
+            'total_questions' => (int) ($exam->total_questions ?: 0),
+            'total_score' => (float) $exam->total_score,
+            'attempted' => (int) $exam->attempted,
+            'correct' => (int) $exam->correct,
+            'wrong' => (int) $exam->wrong,
+            'unattempted' => (int) $exam->unattempted,
+            'subjects' => $this->resolveSubjectNames($exam->selected_subject_ids),
+        ];
+    }
+
+    protected function resolveSubjectNames($selectedSubjectIds): array
+    {
+        $subjectIds = collect($selectedSubjectIds ?: [])
+            ->map(function ($subjectId) {
+                return (int) $subjectId;
+            })
+            ->filter()
+            ->values()
+            ->all();
+
+        if (!count($subjectIds)) {
+            return [];
+        }
+
+        return Subject::whereIn('id', $subjectIds)
+            ->orderBy('name')
+            ->pluck('name')
+            ->values()
+            ->all();
     }
 }
