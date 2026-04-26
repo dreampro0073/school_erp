@@ -52,10 +52,10 @@
 
                 <div class="row g-3">
                     <div class="col-md-4" ng-repeat="subject in subjects track by subject.id">
-                        <label class="exam-subject-card d-flex align-items-start gap-3 w-100">
+                        <label class="exam-subject-card d-flex align-items-start gap-3 w-100"
+                            ng-class="{'selected': selectedSubjects[subject.id]}">
                             <input type="checkbox"
-                                ng-checked="selectedSubjects[subject.id]"
-                                ng-click="toggleSubject(subject.id)"
+                                ng-model="selectedSubjects[subject.id]"
                                 ng-disabled="processing">
                             <span>
                                 <span class="d-block fw-semibold text-primary-light">@{{ subject.name }}</span>
@@ -383,11 +383,18 @@
         background: linear-gradient(135deg, #fdfaf3 0%, #f7fbff 100%);
         cursor: pointer;
         min-height: 100%;
+        transition: all 0.2s ease;
     }
 
     .exam-subject-card input {
         margin-top: 4px;
         transform: scale(1.15);
+    }
+
+    .exam-subject-card.selected {
+        border-color: #0e66aa;
+        background: linear-gradient(135deg, #eaf4ff 0%, #f4fbff 100%);
+        box-shadow: 0 0 0 3px rgba(14, 102, 170, 0.12);
     }
 
     .exam-palette-card {
