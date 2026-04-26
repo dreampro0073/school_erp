@@ -2031,11 +2031,6 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
             return;
         }
 
-        if (cleanExamName.length < 3) {
-            $scope.errorMessage = 'Exam name must be at least 3 characters long.';
-            return;
-        }
-
         if ($scope.getSelectedSubjectCount() < 3) {
             $scope.errorMessage = 'Please select at least 3 subjects.';
             return;

@@ -428,7 +428,7 @@ class AspirantController extends Controller
         ]);
 
         $validator = Validator::make($request->all(), [
-            'exam_name' => 'required|string|min:3|max:150',
+            'exam_name' => 'required|string|max:150',
             'subject_ids' => 'required|array|min:3',
             'subject_ids.*' => 'integer|distinct|exists:subjects,id',
         ]);
