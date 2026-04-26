@@ -423,12 +423,15 @@ class AspirantController extends Controller
     {
         $user = $this->resolveApiUser($request);
         $examName = preg_replace('/\s+/', ' ', trim((string) $request->exam_name));
+        if (!$examName) {
+            $examName = 'Mock Exam ' . now()->format('d M Y H:i');
+        }
         $request->merge([
             'exam_name' => $examName,
         ]);
 
         $validator = Validator::make($request->all(), [
-            'exam_name' => 'required|string|max:150',
+            'exam_name' => 'nullable|string|max:150',
             'subject_ids' => 'required|array|min:3',
             'subject_ids.*' => 'integer|distinct|exists:subjects,id',
         ]);

@@ -41,7 +41,7 @@
 
                 <div class="row g-3 mb-20">
                     <div class="col-md-6">
-                        <label class="form-label">Exam Name</label>
+                        <label class="form-label">Exam Name (Optional)</label>
                         <input type="text"
                             class="form-control"
                             ng-model="examName"

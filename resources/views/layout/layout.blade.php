@@ -99,7 +99,7 @@
     <script type="text/javascript" src="{{ url('assets/scripts/form-submit-validation.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/scripts/core/app.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/scripts/core/services.js') }}"></script>
-    <script type="text/javascript" src="{{ url('assets/scripts/core/controller.js') }}"></script>
+    <script type="text/javascript" src="{{ url('assets/scripts/core/controller.js') }}?v={{ $version ?: filemtime(public_path('assets/scripts/core/controller.js')) }}"></script>
     <script type="text/javascript" src="{{ url('assets/scripts/core/student_ctrl.js') }}"></script>
     <script type="text/javascript" src="{{ url('assets/scripts/core/school_controller.js') }}"></script>
 

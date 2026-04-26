@@ -2026,11 +2026,6 @@ app.controller('examCtrl', function($scope, $http, $interval, $timeout, $window)
     $scope.startExam = function() {
         var cleanExamName = normalizeExamName($scope.examName);
 
-        if (!cleanExamName) {
-            $scope.errorMessage = 'Please enter an exam name.';
-            return;
-        }
-
         if ($scope.getSelectedSubjectCount() < 3) {
             $scope.errorMessage = 'Please select at least 3 subjects.';
             return;
